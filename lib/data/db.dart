@@ -1,7 +1,8 @@
 import 'dart:convert';
 
 import 'package:drift/drift.dart';
-import 'package:drift_flutter/drift_flutter.dart';
+
+import 'db.steps.dart';
 
 part 'db.g.dart';
 
@@ -24,6 +25,9 @@ const knownStabilityDays = 21.0;
 /// Ids for words added in the app start here, well above KRDict's ids.
 const firstCustomWordId = 10000000;
 
+/// The topic unit for the user's own words unless they pick another.
+const customUnit = 'custom';
+
 class Words extends Table {
   IntColumn get id => integer()();
   TextColumn get word => text()();
@@ -40,6 +44,12 @@ class Words extends Table {
   BoolColumn get isCustom => boolean().withDefault(const Constant(false))();
   BoolColumn get starred => boolean().withDefault(const Constant(false))();
   TextColumn get note => text().nullable()();
+
+  /// Topic unit id from curriculum.json ("food", "custom", ...).
+  TextColumn get unit => text().nullable()();
+
+  /// KRDict conjugation forms for verbs/adjectives, JSON {"a": "들어", "euni": "들으니"}.
+  TextColumn get forms => text().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -75,6 +85,63 @@ class ReviewLogs extends Table {
   IntColumn get elapsedMs => integer()();
 }
 
+/// Everything that earns XP or counts toward quests and badges.
+class Activities extends Table {
+  IntColumn get id => integer().autoIncrement()();
+
+  /// One of [ActivityKind].
+  TextColumn get kind => text()();
+  IntColumn get xp => integer().withDefault(const Constant(0))();
+
+  /// Kind-specific number: the rating, combo, stars or game score.
+  IntColumn get value => integer().withDefault(const Constant(0))();
+
+  /// Kind-specific id: lesson id, unit id, game id or quest id.
+  TextColumn get ref => text().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+}
+
+abstract final class ActivityKind {
+  static const review = 'review';
+  static const answer = 'answer';
+  static const lesson = 'lesson';
+  static const challenge = 'challenge';
+  static const game = 'game';
+  static const sentence = 'sentence';
+  static const combo = 'combo';
+  static const quest = 'quest';
+  static const wordAdded = 'word_added';
+}
+
+class LessonProgress extends Table {
+  TextColumn get lessonId => text()();
+  IntColumn get stars => integer()();
+  RealColumn get bestAccuracy => real()();
+  IntColumn get completions => integer().withDefault(const Constant(1))();
+  DateTimeColumn get firstCompletedAt => dateTime()();
+  DateTimeColumn get lastCompletedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {lessonId};
+}
+
+class Achievements extends Table {
+  TextColumn get id => text()();
+  DateTimeColumn get unlockedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class QuestClaims extends Table {
+  /// Start of the study day the quest belongs to.
+  DateTimeColumn get day => dateTime()();
+  TextColumn get questId => text()();
+
+  @override
+  Set<Column> get primaryKey => {day, questId};
+}
+
 class Sense {
   const Sense({required this.meanings, this.definition = '', this.example});
 
@@ -97,6 +164,11 @@ extension WordSenses on Word {
 
   /// Short English gloss, e.g. "shop, store".
   String get gloss => senseList.isEmpty ? '' : senseList.first.meanings.join(', ');
+
+  Map<String, dynamic>? get formsMap => forms == null ? null : jsonDecode(forms!) as Map<String, dynamic>;
+
+  /// The unit a word is taught in; custom words without a topic live in "My words".
+  String get unitId => unit ?? (isCustom ? customUnit : 'more');
 }
 
 class CardWithWord {
@@ -156,15 +228,29 @@ DateTime studyDayStart(DateTime now) {
 /// Calendar-day arithmetic that keeps the wall-clock time across daylight-saving changes.
 DateTime addDays(DateTime d, int days) => DateTime(d.year, d.month, d.day + days, d.hour, d.minute);
 
-@DriftDatabase(tables: [Words, Cards, ReviewLogs])
+@DriftDatabase(tables: [Words, Cards, ReviewLogs, Activities, LessonProgress, Achievements, QuestClaims])
 class AppDatabase extends _$AppDatabase {
-  AppDatabase([QueryExecutor? executor]) : super(executor ?? driftDatabase(name: 'korean_cards'));
+  AppDatabase(super.executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
+        onCreate: (m) => m.createAll(),
+        onUpgrade: stepByStep(
+          // v1.1: topics, conjugation forms and gamification. Word text is refreshed by the
+          // importer on the next launch; review progress is untouched.
+          from1To2: (m, schema) async {
+            await m.addColumn(schema.words, schema.words.unit);
+            await m.addColumn(schema.words, schema.words.forms);
+            await m.createTable(schema.activities);
+            await m.createTable(schema.lessonProgress);
+            await m.createTable(schema.achievements);
+            await m.createTable(schema.questClaims);
+            await customStatement("UPDATE words SET unit = 'custom' WHERE is_custom = 1");
+          },
+        ),
         beforeOpen: (details) async => customStatement('PRAGMA foreign_keys = ON'),
       );
 
@@ -280,6 +366,23 @@ class AppDatabase extends _$AppDatabase {
     return select_.watch().map((rows) => rows.map((r) => CardWithWord(r.readTable(cards), r.readTable(words))).toList());
   }
 
+  Stream<List<Word>> watchUnitWords(String unitId) => (select(words)
+        ..where((w) => unitId == customUnit ? w.unit.equals(customUnit) | (w.unit.isNull() & w.isCustom.equals(true)) : w.unit.equals(unitId))
+        ..orderBy([(w) => OrderingTerm.asc(w.isCustom), (w) => OrderingTerm.asc(w.rank), (w) => OrderingTerm.asc(w.id)]))
+      .watch();
+
+  /// Ids of words whose Korean→English card has been studied at least once.
+  Stream<Set<int>> watchLearnedWordIds() => (selectOnly(cards)
+        ..addColumns([cards.wordId])
+        ..where(cards.direction.equals(Direction.koToEn) & cards.state.isNotValue(CardState.newCard)))
+      .map((r) => r.read(cards.wordId)!)
+      .watch()
+      .map((ids) => ids.toSet());
+
+  Future<List<StudyCard>> newForwardCards(List<int> wordIds) => (select(cards)
+        ..where((c) => c.wordId.isIn(wordIds) & c.direction.equals(Direction.koToEn) & c.state.equals(CardState.newCard)))
+      .get();
+
   Stream<Word> watchWord(int id) => (select(words)..where((w) => w.id.equals(id))).watchSingle();
 
   Stream<List<StudyCard>> watchCardsForWord(int wordId) =>
@@ -313,6 +416,7 @@ class AppDatabase extends _$AppDatabase {
     required List<String> meanings,
     String? example,
     String? note,
+    String unit = customUnit,
   }) =>
       transaction(() async {
         final maxId = words.id.max();
@@ -327,10 +431,28 @@ class AppDatabase extends _$AppDatabase {
           rank: 0,
           isCustom: const Value(true),
           note: Value(note),
+          unit: Value(unit),
         ));
         await ensureCards();
         return id;
       });
+
+  Future<void> updateCustomWord(
+    int id, {
+    required String word,
+    required String pos,
+    required List<String> meanings,
+    String? example,
+    String? note,
+    required String unit,
+  }) =>
+      (update(words)..where((w) => w.id.equals(id) & w.isCustom.equals(true))).write(WordsCompanion(
+        word: Value(word),
+        pos: Value(pos),
+        senses: Value(jsonEncode([Sense(meanings: meanings, example: example).toJson()])),
+        note: Value(note),
+        unit: Value(unit),
+      ));
 
   Future<void> deleteWord(int wordId) => (delete(words)..where((w) => w.id.equals(wordId))).go();
 

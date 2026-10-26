@@ -1,0 +1,144 @@
+{
+ "units": [
+  {
+   "id": "basics",
+   "title": "Greetings & basics",
+   "titleKo": "기본 표현",
+   "emoji": "👋",
+   "words": 118
+  },
+  {
+   "id": "numbers",
+   "title": "Numbers & counting",
+   "titleKo": "숫자",
+   "emoji": "🔢",
+   "words": 228
+  },
+  {
+   "id": "time",
+   "title": "Time & days",
+   "titleKo": "시간",
+   "emoji": "⏰",
+   "words": 167
+  },
+  {
+   "id": "people",
+   "title": "Family & people",
+   "titleKo": "가족과 사람",
+   "emoji": "👨‍👩‍👧",
+   "words": 103
+  },
+  {
+   "id": "food",
+   "title": "Food & drinks",
+   "titleKo": "음식",
+   "emoji": "🍜",
+   "words": 191
+  },
+  {
+   "id": "home",
+   "title": "Home & daily life",
+   "titleKo": "집과 일상",
+   "emoji": "🏠",
+   "words": 232
+  },
+  {
+   "id": "places",
+   "title": "Places & directions",
+   "titleKo": "장소와 방향",
+   "emoji": "🧭",
+   "words": 88
+  },
+  {
+   "id": "transport",
+   "title": "Getting around",
+   "titleKo": "교통",
+   "emoji": "🚇",
+   "words": 66
+  },
+  {
+   "id": "shopping",
+   "title": "Shopping & money",
+   "titleKo": "쇼핑과 돈",
+   "emoji": "🛍️",
+   "words": 76
+  },
+  {
+   "id": "feelings",
+   "title": "Feelings",
+   "titleKo": "감정",
+   "emoji": "😊",
+   "words": 81
+  },
+  {
+   "id": "body",
+   "title": "Body & health",
+   "titleKo": "몸과 건강",
+   "emoji": "💪",
+   "words": 181
+  },
+  {
+   "id": "clothes",
+   "title": "Clothes & looks",
+   "titleKo": "옷",
+   "emoji": "👕",
+   "words": 71
+  },
+  {
+   "id": "hobbies",
+   "title": "Hobbies & culture",
+   "titleKo": "취미와 문화",
+   "emoji": "🎮",
+   "words": 153
+  },
+  {
+   "id": "nature",
+   "title": "Weather & nature",
+   "titleKo": "날씨와 자연",
+   "emoji": "☀️",
+   "words": 84
+  },
+  {
+   "id": "school",
+   "title": "School & study",
+   "titleKo": "학교",
+   "emoji": "🎓",
+   "words": 101
+  },
+  {
+   "id": "work",
+   "title": "Work & society",
+   "titleKo": "일과 사회",
+   "emoji": "💼",
+   "words": 155
+  },
+  {
+   "id": "communication",
+   "title": "Talking & media",
+   "titleKo": "소통",
+   "emoji": "💬",
+   "words": 101
+  },
+  {
+   "id": "describing",
+   "title": "Describing things",
+   "titleKo": "모양과 성질",
+   "emoji": "🎨",
+   "words": 175
+  },
+  {
+   "id": "mind",
+   "title": "Thinking & abilities",
+   "titleKo": "생각과 능력",
+   "emoji": "🧠",
+   "words": 80
+  },
+  {
+   "id": "more",
+   "title": "More useful words",
+   "titleKo": "더 많은 단어",
+   "emoji": "📦",
+   "words": 41
+  }
+ ]
+}

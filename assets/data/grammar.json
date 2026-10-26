@@ -1,0 +1,654 @@
+{
+ "_format": "Hand-written grammar course. In 'choice', 'quiz' and 'meaning' items the FIRST option is the right one (the app shuffles). 'build' tiles are the Korean split on spaces plus 'extra' wrong tiles. Formula chips are 'text|caption'. Drills generate conjugation or particle questions from the word list.",
+ "units": [
+  {
+   "id": "basics", "title": "Sentence basics", "titleKo": "문장의 기초", "emoji": "🧱",
+   "lessons": [
+    {
+     "id": "b1", "title": "How a sentence works", "subtitle": "The verb goes last",
+     "cards": [
+      {"title": "The verb goes last", "body": "English says *I eat rice*. Korean says *I rice eat*. The verb (or adjective) always comes at the **end** of the sentence.",
+       "formula": ["저는|I (topic)", "밥을|rice (object)", "먹어요|eat"],
+       "examples": [{"ko": "저는 밥을 먹어요.", "en": "I eat rice."}, {"ko": "친구가 커피를 마셔요.", "en": "My friend drinks coffee."}, {"ko": "저는 한국어를 공부해요.", "en": "I study Korean."}]},
+      {"title": "Little tags show each word's job", "body": "Small endings called **particles** stick to nouns and tell you their role: **은/는** = topic, **이/가** = subject, **을/를** = object. Thanks to these tags the order of the nouns can move around — but the verb stays last.",
+       "examples": [{"ko": "저는 사과를 좋아해요.", "en": "I like apples."}, {"ko": "사과를 저는 좋아해요.", "en": "Apples, I like. (same meaning, different focus)"}]},
+      {"title": "Adding time and place", "body": "A natural order is **Who → When → Where → What → Verb**.",
+       "formula": ["저는|I", "오늘|today", "학교에서|at school", "한국어를|Korean", "공부해요|study"],
+       "examples": [{"ko": "저는 오늘 학교에서 한국어를 공부해요.", "en": "I study Korean at school today."}]},
+      {"title": "Drop what's obvious", "body": "Koreans leave out *I* and *you* whenever it's clear from context. A whole sentence can be just the verb!",
+       "examples": [{"ko": "밥 먹었어요?", "en": "(Did you) eat?"}, {"ko": "네, 먹었어요.", "en": "Yes, (I) ate."}]}
+     ],
+     "practice": [
+      {"type": "quiz", "q": "Where does the verb go in a Korean sentence?", "options": ["At the end", "At the start", "Right after the subject"]},
+      {"type": "build", "en": "I eat rice.", "ko": "저는 밥을 먹어요", "extra": ["물을"]},
+      {"type": "build", "en": "My friend drinks coffee.", "ko": "친구가 커피를 마셔요", "extra": ["밥을"]},
+      {"type": "meaning", "ko": "저는 사과를 좋아해요.", "options": ["I like apples.", "Apples like me.", "I eat apples."]},
+      {"type": "build", "en": "I study Korean at school today.", "ko": "저는 오늘 학교에서 한국어를 공부해요", "extra": []},
+      {"type": "meaning", "ko": "밥 먹었어요?", "options": ["Did you eat?", "Is there rice?", "I ate rice."]}
+     ]
+    },
+    {
+     "id": "b2", "title": "이에요 / 예요", "subtitle": "To be: A is B",
+     "cards": [
+      {"title": "A is B", "body": "Noun + **이에요/예요** = *is / am / are*. Use **이에요** after a consonant (a word with batchim) and **예요** after a vowel.",
+       "table": [["Noun ends in", "Use", "Example"], ["consonant", "이에요", "학생이에요"], ["vowel", "예요", "의사예요"]],
+       "examples": [{"ko": "저는 학생이에요.", "en": "I'm a student."}, {"ko": "이것은 사과예요.", "en": "This is an apple."}, {"ko": "제 이름은 민수예요.", "en": "My name is Minsu."}]},
+      {"title": "Asking", "body": "Same words, rising voice: **학생이에요?** = *Are you a student?*",
+       "examples": [{"ko": "학생이에요?", "en": "Are you a student?"}, {"ko": "네, 학생이에요.", "en": "Yes, I'm a student."}, {"ko": "이게 뭐예요?", "en": "What is this?"}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "저는 학생___.", "en": "I'm a student.", "options": ["이에요", "예요"], "explain": "학생 ends in ㅇ (a consonant) → 이에요"},
+      {"type": "choice", "q": "이것은 사과___.", "en": "This is an apple.", "options": ["예요", "이에요"], "explain": "사과 ends in a vowel → 예요"},
+      {"type": "choice", "q": "저는 회사원___.", "en": "I'm an office worker.", "options": ["이에요", "예요"], "explain": "회사원 ends in ㄴ → 이에요"},
+      {"type": "choice", "q": "제 이름은 민수___.", "en": "My name is Minsu.", "options": ["예요", "이에요"], "explain": "민수 ends in a vowel → 예요"},
+      {"type": "build", "en": "This is water.", "ko": "이것은 물이에요", "extra": ["물예요"]},
+      {"type": "meaning", "ko": "이게 뭐예요?", "options": ["What is this?", "Where is this?", "Who is this?"]}
+     ],
+     "drills": [{"particle": "copula", "count": 2}]
+    },
+    {
+     "id": "b3", "title": "아니에요 & questions", "subtitle": "Is not · what, who, where",
+     "cards": [
+      {"title": "Is not", "body": "Noun + **이/가 아니에요** = *is not*. **이** after a consonant, **가** after a vowel.",
+       "examples": [{"ko": "저는 학생이 아니에요.", "en": "I'm not a student."}, {"ko": "이것은 커피가 아니에요.", "en": "This isn't coffee."}]},
+      {"title": "Question words", "body": "Put the question word where the answer would go.",
+       "table": [["뭐", "what"], ["누구", "who"], ["어디", "where"], ["언제", "when"], ["왜", "why"], ["어떻게", "how"], ["몇", "how many"]],
+       "examples": [{"ko": "이름이 뭐예요?", "en": "What's your name?"}, {"ko": "화장실이 어디예요?", "en": "Where's the bathroom?"}, {"ko": "생일이 언제예요?", "en": "When's your birthday?"}, {"ko": "저 사람은 누구예요?", "en": "Who is that person?"}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "저는 의사___ 아니에요.", "en": "I'm not a doctor.", "options": ["가", "이"], "explain": "의사 ends in a vowel → 가"},
+      {"type": "choice", "q": "이것은 책___ 아니에요.", "en": "This isn't a book.", "options": ["이", "가"], "explain": "책 ends in ㄱ → 이"},
+      {"type": "choice", "q": "화장실이 ___예요?", "en": "Where is the bathroom?", "options": ["어디", "뭐", "누구"]},
+      {"type": "choice", "q": "이름이 ___예요?", "en": "What is your name?", "options": ["뭐", "어디", "언제"]},
+      {"type": "choice", "q": "생일이 ___예요?", "en": "When is your birthday?", "options": ["언제", "누구", "어디"]},
+      {"type": "build", "en": "I'm not a teacher.", "ko": "저는 선생님이 아니에요", "extra": ["선생님가"]},
+      {"type": "meaning", "ko": "저 사람은 누구예요?", "options": ["Who is that person?", "Where is that person?", "What is that?"]}
+     ]
+    },
+    {
+     "id": "b4", "title": "있어요 / 없어요", "subtitle": "There is · I have",
+     "cards": [
+      {"title": "Exist / have", "body": "**있어요** = *there is / I have*. **없어요** = *there isn't / I don't have*.",
+       "formula": ["시간이|time", "있어요|exists"],
+       "examples": [{"ko": "시간이 있어요.", "en": "I have time."}, {"ko": "돈이 없어요.", "en": "I have no money."}, {"ko": "질문이 있어요.", "en": "I have a question."}]},
+      {"title": "Where something is", "body": "Place + **에 있어요** = *is at / in* the place.",
+       "examples": [{"ko": "고양이가 집에 있어요.", "en": "The cat is at home."}, {"ko": "은행이 어디에 있어요?", "en": "Where is the bank?"}, {"ko": "가방 안에 책이 있어요.", "en": "There's a book in the bag."}]},
+      {"title": "Handy words built from it", "body": "**맛있어요** = it's delicious (*taste exists*), **재미있어요** = it's fun, **재미없어요** = it's boring.",
+       "examples": [{"ko": "이 음식은 맛있어요.", "en": "This food is delicious."}, {"ko": "영화가 재미있어요.", "en": "The movie is fun."}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "시간이 ___.", "en": "I don't have time.", "options": ["없어요", "있어요"]},
+      {"type": "choice", "q": "질문이 ___.", "en": "I have a question.", "options": ["있어요", "없어요"]},
+      {"type": "choice", "q": "고양이가 집___ 있어요.", "en": "The cat is at home.", "options": ["에", "를", "는"]},
+      {"type": "build", "en": "There is a book in the bag.", "ko": "가방 안에 책이 있어요", "extra": ["없어요"]},
+      {"type": "build", "en": "Where is the bank?", "ko": "은행이 어디에 있어요?", "extra": ["뭐"]},
+      {"type": "meaning", "ko": "영화가 재미없어요.", "options": ["The movie is boring.", "The movie is fun.", "There is no movie."]}
+     ]
+    },
+    {
+     "id": "b5", "title": "Polite, formal, casual", "subtitle": "Three speech levels",
+     "cards": [
+      {"title": "Three ways to say it", "body": "Korean changes the verb ending depending on who you're talking to.",
+       "table": [["Style", "Ending", "When"], ["Polite 해요체", "-아요/어요", "everyday, people you don't know well — your default"], ["Formal 합니다체", "-ㅂ니다/습니다", "news, announcements, presentations, shops"], ["Casual 반말", "-아/어", "close friends, younger people, family"]],
+       "examples": [{"ko": "먹어요.", "en": "I eat. (polite)"}, {"ko": "먹습니다.", "en": "I eat. (formal)"}, {"ko": "먹어.", "en": "I eat. (casual)"}]},
+      {"title": "Greetings in each style", "body": "You already know some of these!",
+       "examples": [{"ko": "안녕하세요.", "en": "Hello. (polite)"}, {"ko": "안녕하십니까.", "en": "Hello. (formal)"}, {"ko": "안녕!", "en": "Hi! (casual)"}, {"ko": "감사합니다.", "en": "Thank you. (formal)"}, {"ko": "고마워요.", "en": "Thanks. (polite)"}, {"ko": "고마워.", "en": "Thanks. (casual)"}]},
+      {"title": "Which one should I use?", "body": "Start with polite **-요** — it's never rude. You'll hear formal in shops and on the subway. Switch to casual only when the other person suggests it (**말 놓으세요** = *speak comfortably*)."}
+     ],
+     "practice": [
+      {"type": "quiz", "q": "Which style should you use with a stranger?", "options": ["Polite: 먹어요", "Casual: 먹어", "Any of them"]},
+      {"type": "quiz", "q": "Which ending is formal?", "options": ["-습니다", "-어요", "-어"]},
+      {"type": "choice", "q": "감사___.", "en": "Thank you. (formal)", "options": ["합니다", "해", "하요"]},
+      {"type": "meaning", "ko": "고마워.", "options": ["Thanks. (casual)", "Thank you. (formal)", "Hello."]}
+     ],
+     "drills": [{"forms": ["present", "formal"], "count": 3}]
+    }
+   ]
+  },
+  {
+   "id": "particles", "title": "Noun particles", "titleKo": "조사", "emoji": "🧲",
+   "lessons": [
+    {
+     "id": "p1", "title": "은 / 는", "subtitle": "Topic: as for…",
+     "cards": [
+      {"title": "As for…", "body": "**은/는** marks the topic — what the sentence is about. **은** after a consonant, **는** after a vowel.",
+       "table": [["Ends in", "Particle", "Example"], ["consonant", "은", "책은"], ["vowel", "는", "저는"]],
+       "examples": [{"ko": "저는 민수예요.", "en": "I'm Minsu."}, {"ko": "오늘은 월요일이에요.", "en": "Today is Monday."}, {"ko": "이 책은 재미있어요.", "en": "This book is interesting."}]},
+      {"title": "Contrast", "body": "**은/는** also contrasts things: *X…, but Y…*",
+       "examples": [{"ko": "커피는 좋아해요.", "en": "Coffee, I like. (but maybe not tea)"}, {"ko": "고기는 안 먹어요.", "en": "Meat, I don't eat."}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "저___ 학생이에요.", "en": "I'm a student.", "options": ["는", "은"], "explain": "저 ends in a vowel → 는"},
+      {"type": "choice", "q": "오늘___ 금요일이에요.", "en": "Today is Friday.", "options": ["은", "는"], "explain": "오늘 ends in ㄹ → 은"},
+      {"type": "choice", "q": "이 사과___ 맛있어요.", "en": "This apple is tasty.", "options": ["는", "은"], "explain": "사과 ends in a vowel → 는"},
+      {"type": "choice", "q": "동생___ 키가 커요.", "en": "My younger sibling is tall.", "options": ["은", "는"], "explain": "동생 ends in ㅇ → 은"},
+      {"type": "build", "en": "I'm Minsu.", "ko": "저는 민수예요", "extra": ["저은"]}
+     ],
+     "drills": [{"particle": "topic", "count": 3}]
+    },
+    {
+     "id": "p2", "title": "이 / 가", "subtitle": "Subject: who does it",
+     "cards": [
+      {"title": "Who does it", "body": "**이/가** marks the subject — often new information, or the answer to *who? / what?*. **이** after a consonant, **가** after a vowel.",
+       "examples": [{"ko": "비가 와요.", "en": "It's raining. (rain comes)"}, {"ko": "친구가 왔어요.", "en": "My friend came."}, {"ko": "누가 왔어요?", "en": "Who came?"}]},
+      {"title": "은/는 or 이/가?", "body": "Rough guide: **은/는** = what we're talking about (known, or contrasted). **이/가** = who or what does it (new, focused). Question words take **이/가**: 누가, 뭐가.",
+       "examples": [{"ko": "저는 학생이에요.", "en": "I am a student. (talking about me)"}, {"ko": "제가 할게요.", "en": "I'll do it. (me, not someone else)"}, {"ko": "날씨가 좋아요.", "en": "The weather is nice."}]},
+      {"title": "Special shapes", "body": "A few words change before 가: **나 → 내가**, **저 → 제가**, **너 → 네가**, **누구 → 누가**.",
+       "examples": [{"ko": "제가 민수예요.", "en": "I'm Minsu. (the one you're looking for)"}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "비___ 와요.", "en": "It's raining.", "options": ["가", "이"], "explain": "비 ends in a vowel → 가"},
+      {"type": "choice", "q": "물___ 없어요.", "en": "There's no water.", "options": ["이", "가"], "explain": "물 ends in ㄹ → 이"},
+      {"type": "choice", "q": "___ 왔어요?", "en": "Who came?", "options": ["누가", "누구가", "누구는"], "explain": "누구 + 가 → 누가"},
+      {"type": "choice", "q": "날씨___ 좋아요.", "en": "The weather is nice.", "options": ["가", "이"]},
+      {"type": "build", "en": "My friend came.", "ko": "친구가 왔어요", "extra": ["친구를"]},
+      {"type": "meaning", "ko": "제가 할게요.", "options": ["I'll do it.", "You do it.", "I did it."]}
+     ],
+     "drills": [{"particle": "subject", "count": 3}]
+    },
+    {
+     "id": "p3", "title": "을 / 를", "subtitle": "Object: what gets done",
+     "cards": [
+      {"title": "What gets done", "body": "**을/를** marks the object — the thing you eat, see, buy… **을** after a consonant, **를** after a vowel.",
+       "examples": [{"ko": "밥을 먹어요.", "en": "I eat rice."}, {"ko": "커피를 마셔요.", "en": "I drink coffee."}, {"ko": "영화를 봐요.", "en": "I watch a movie."}, {"ko": "한국어를 공부해요.", "en": "I study Korean."}]},
+      {"title": "Often dropped in speech", "body": "In relaxed speech 을/를 is often left out.",
+       "examples": [{"ko": "밥 먹었어?", "en": "Did you eat? (casual)"}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "책___ 읽어요.", "en": "I read a book.", "options": ["을", "를"], "explain": "책 ends in ㄱ → 을"},
+      {"type": "choice", "q": "물___ 마셔요.", "en": "I drink water.", "options": ["을", "를"]},
+      {"type": "choice", "q": "사과___ 사요.", "en": "I buy apples.", "options": ["를", "을"]},
+      {"type": "choice", "q": "음악___ 들어요.", "en": "I listen to music.", "options": ["을", "를"]},
+      {"type": "build", "en": "I watch a movie.", "ko": "저는 영화를 봐요", "extra": ["영화가"]},
+      {"type": "build", "en": "My friend drinks coffee.", "ko": "친구가 커피를 마셔요", "extra": ["커피가"]}
+     ],
+     "drills": [{"particle": "object", "count": 3}]
+    },
+    {
+     "id": "p4", "title": "도", "subtitle": "Also, too",
+     "cards": [
+      {"title": "Too!", "body": "**도** means *also / too*. It **replaces** 은/는, 이/가 and 을/를 — never stack them.",
+       "table": [["Instead of", "Say"], ["저는", "저도"], ["커피를", "커피도"], ["친구가", "친구도"]],
+       "examples": [{"ko": "저도 학생이에요.", "en": "I'm a student too."}, {"ko": "커피도 마셔요.", "en": "I drink coffee too."}, {"ko": "저도요!", "en": "Me too!"}]},
+      {"title": "Not … either", "body": "With a negative, **도** means *either*.",
+       "examples": [{"ko": "저도 몰라요.", "en": "I don't know either."}, {"ko": "고기도 안 먹어요.", "en": "I don't eat meat either."}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "A: 저는 학생이에요. B: 저___ 학생이에요.", "en": "B: I'm a student too.", "options": ["도", "는", "를"]},
+      {"type": "choice", "q": "저___요!", "en": "Me too!", "options": ["도", "는", "가"]},
+      {"type": "choice", "q": "커피___ 마셔요.", "en": "I drink coffee too.", "options": ["도", "를도", "도를"], "explain": "도 replaces 를 — don't stack them"},
+      {"type": "build", "en": "I'm a student too.", "ko": "저도 학생이에요", "extra": ["저는"]},
+      {"type": "build", "en": "I don't know either.", "ko": "저도 몰라요", "extra": ["알아요"]},
+      {"type": "meaning", "ko": "고기도 먹어요.", "options": ["I eat meat too.", "I don't eat meat.", "I only eat meat."]}
+     ]
+    },
+    {
+     "id": "p5", "title": "에", "subtitle": "To · at · on (place & time)",
+     "cards": [
+      {"title": "Going somewhere", "body": "Place + **에** + 가다/오다 = *go / come to*.",
+       "examples": [{"ko": "학교에 가요.", "en": "I go to school."}, {"ko": "집에 와요.", "en": "I come home."}, {"ko": "한국에 가고 싶어요.", "en": "I want to go to Korea."}]},
+      {"title": "Time", "body": "Time + **에** = *at / on / in*: 세 시에 (at 3), 월요일에 (on Monday), 아침에 (in the morning). **No 에** with 오늘, 내일, 어제, 지금.",
+       "examples": [{"ko": "일곱 시에 일어나요.", "en": "I get up at 7."}, {"ko": "주말에 영화를 봐요.", "en": "I watch movies on weekends."}, {"ko": "내일 만나요.", "en": "See you tomorrow."}]},
+      {"title": "Being somewhere", "body": "Place + **에 있어요** = *is at*.",
+       "examples": [{"ko": "화장실은 2층에 있어요.", "en": "The bathroom is on the 2nd floor."}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "학교___ 가요.", "en": "I go to school.", "options": ["에", "에서", "를"]},
+      {"type": "choice", "q": "세 시___ 만나요.", "en": "Let's meet at 3.", "options": ["에", "에서", "가"]},
+      {"type": "quiz", "q": "Which one is correct?", "options": ["내일 만나요.", "내일에 만나요."], "explain": "No 에 after 오늘, 내일, 어제, 지금"},
+      {"type": "build", "en": "I go to school at 8.", "ko": "저는 여덟 시에 학교에 가요", "extra": ["에서"]},
+      {"type": "meaning", "ko": "주말에 집에 있어요.", "options": ["I'm at home on weekends.", "I go home on weekends.", "I clean the house on weekends."]}
+     ]
+    },
+    {
+     "id": "p6", "title": "에서", "subtitle": "At (doing something) · from",
+     "cards": [
+      {"title": "Where it happens", "body": "Place + **에서** + action = do something *at* a place. **에** is where you go or are; **에서** is where you *do* things.",
+       "table": [["에", "에서"], ["학교에 가요 · go to school", "학교에서 공부해요 · study at school"], ["집에 있어요 · am at home", "집에서 쉬어요 · rest at home"]],
+       "examples": [{"ko": "카페에서 커피를 마셔요.", "en": "I drink coffee at a café."}, {"ko": "도서관에서 책을 읽어요.", "en": "I read at the library."}]},
+      {"title": "From", "body": "**에서** also means *from* a place.",
+       "examples": [{"ko": "저는 인도네시아에서 왔어요.", "en": "I'm from Indonesia."}, {"ko": "집에서 회사까지 멀어요.", "en": "It's far from home to work."}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "식당___ 밥을 먹어요.", "en": "I eat at a restaurant.", "options": ["에서", "에"], "explain": "Eating is an action → 에서"},
+      {"type": "choice", "q": "식당___ 가요.", "en": "I go to a restaurant.", "options": ["에", "에서"], "explain": "Going to a place → 에"},
+      {"type": "choice", "q": "어디___ 왔어요?", "en": "Where are you from?", "options": ["에서", "에", "를"]},
+      {"type": "choice", "q": "집___ 쉬어요.", "en": "I rest at home.", "options": ["에서", "에"]},
+      {"type": "build", "en": "I drink coffee at a café.", "ko": "카페에서 커피를 마셔요", "extra": ["카페에"]},
+      {"type": "meaning", "ko": "도서관에서 공부해요.", "options": ["I study at the library.", "I go to the library.", "The library is big."]}
+     ]
+    },
+    {
+     "id": "p7", "title": "의", "subtitle": "'s — belonging",
+     "cards": [
+      {"title": "'s", "body": "Noun + **의** + noun = *noun's noun*. In speech 의 is often said [에].",
+       "examples": [{"ko": "친구의 가방", "en": "my friend's bag"}, {"ko": "선생님의 책", "en": "the teacher's book"}, {"ko": "한국의 수도", "en": "the capital of Korea"}]},
+      {"title": "My, your", "body": "**저의 → 제**, **나의 → 내**, **너의 → 네**. And 의 is often dropped: **우리 엄마** (my mom), **친구 집** (a friend's house).",
+       "examples": [{"ko": "제 이름은 민수예요.", "en": "My name is Minsu."}, {"ko": "이건 제 휴대폰이에요.", "en": "This is my phone."}, {"ko": "우리 집에 오세요.", "en": "Come to my place."}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "___ 이름은 민수예요.", "en": "My name is Minsu.", "options": ["제", "저", "저는"], "explain": "저의 → 제"},
+      {"type": "choice", "q": "친구___ 가방이에요.", "en": "It's my friend's bag.", "options": ["의", "를", "가"]},
+      {"type": "quiz", "q": "What is the short form of 저의 (my)?", "options": ["제", "저는", "내"]},
+      {"type": "build", "en": "This is my phone.", "ko": "이건 제 휴대폰이에요", "extra": ["저"]},
+      {"type": "meaning", "ko": "선생님의 책이에요.", "options": ["It's the teacher's book.", "The teacher reads a book.", "I'm a teacher."]}
+     ]
+    },
+    {
+     "id": "p8", "title": "하고 · 와/과 · (이)랑", "subtitle": "And · with",
+     "cards": [
+      {"title": "Joining nouns", "body": "Three ways to say *and* between nouns — same meaning, different feel.",
+       "table": [["Form", "Feel", "After consonant / vowel"], ["하고", "everyday", "하고 / 하고"], ["와/과", "written, formal", "과 / 와"], ["(이)랑", "casual, spoken", "이랑 / 랑"]],
+       "examples": [{"ko": "빵하고 우유를 샀어요.", "en": "I bought bread and milk."}, {"ko": "책과 연필", "en": "a book and a pencil"}, {"ko": "사과랑 바나나", "en": "apples and bananas"}]},
+      {"title": "With someone", "body": "Person + **하고 / (이)랑** (+ 같이) = *with*.",
+       "examples": [{"ko": "친구하고 영화를 봤어요.", "en": "I watched a movie with a friend."}, {"ko": "엄마랑 같이 요리해요.", "en": "I cook with mom."}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "책___ 연필", "en": "a book and a pencil (written)", "options": ["과", "와"], "explain": "책 ends in a consonant → 과"},
+      {"type": "choice", "q": "우유___ 빵", "en": "milk and bread (written)", "options": ["와", "과"], "explain": "우유 ends in a vowel → 와"},
+      {"type": "choice", "q": "사과___ 바나나", "en": "apples and bananas (casual)", "options": ["랑", "이랑"]},
+      {"type": "choice", "q": "물___ 주스", "en": "water and juice (casual)", "options": ["이랑", "랑"]},
+      {"type": "build", "en": "I watched a movie with a friend.", "ko": "친구하고 영화를 봤어요", "extra": ["친구를"]}
+     ],
+     "drills": [{"particle": "and", "count": 2}]
+    },
+    {
+     "id": "p9", "title": "(으)로", "subtitle": "By · with · toward",
+     "cards": [
+      {"title": "By means of", "body": "**(으)로** = *by / with / in* (a tool, transport, language). **으로** after a consonant, **로** after a vowel **or ㄹ**.",
+       "examples": [{"ko": "버스로 가요.", "en": "I go by bus."}, {"ko": "지하철로 와요.", "en": "I come by subway."}, {"ko": "손으로 먹어요.", "en": "I eat with my hands."}, {"ko": "한국어로 말해요.", "en": "I speak in Korean."}]},
+      {"title": "Direction", "body": "Also *toward*: **오른쪽으로 가세요** = go to the right.",
+       "examples": [{"ko": "왼쪽으로 가세요.", "en": "Go left."}, {"ko": "어디로 가요?", "en": "Where are you heading?"}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "버스___ 가요.", "en": "I go by bus.", "options": ["로", "으로"]},
+      {"type": "choice", "q": "지하철___ 와요.", "en": "I come by subway.", "options": ["로", "으로"], "explain": "지하철 ends in ㄹ → 로"},
+      {"type": "choice", "q": "손___ 먹어요.", "en": "I eat with my hands.", "options": ["으로", "로"]},
+      {"type": "choice", "q": "한국어___ 말해 주세요.", "en": "Please say it in Korean.", "options": ["로", "으로"]},
+      {"type": "build", "en": "Go to the right.", "ko": "오른쪽으로 가세요", "extra": ["오른쪽에"]}
+     ],
+     "drills": [{"particle": "direction", "count": 2}]
+    },
+    {
+     "id": "p10", "title": "부터·까지 · 한테 · 만", "subtitle": "From–until · to someone · only",
+     "cards": [
+      {"title": "From … until", "body": "Time: **부터 … 까지**. Place: **에서 … 까지**.",
+       "examples": [{"ko": "아홉 시부터 여섯 시까지 일해요.", "en": "I work from 9 to 6."}, {"ko": "서울에서 부산까지", "en": "from Seoul to Busan"}, {"ko": "월요일부터 금요일까지", "en": "Monday to Friday"}]},
+      {"title": "To a person", "body": "**에게** (written) / **한테** (spoken) = *to* someone.",
+       "examples": [{"ko": "친구한테 전화했어요.", "en": "I called my friend."}, {"ko": "엄마에게 선물을 줬어요.", "en": "I gave mom a present."}]},
+      {"title": "Only", "body": "**만** = *only, just*.",
+       "examples": [{"ko": "물만 마셔요.", "en": "I only drink water."}, {"ko": "한 개만 주세요.", "en": "Just one, please."}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "아홉 시___ 시작해요.", "en": "It starts from 9.", "options": ["부터", "까지", "만"]},
+      {"type": "choice", "q": "다섯 시___ 일해요.", "en": "I work until 5.", "options": ["까지", "부터", "에서"]},
+      {"type": "choice", "q": "친구___ 전화했어요.", "en": "I called my friend.", "options": ["한테", "에서", "을"]},
+      {"type": "choice", "q": "물___ 마셔요.", "en": "I only drink water.", "options": ["만", "도", "를"]},
+      {"type": "build", "en": "I work from 9 to 6.", "ko": "아홉 시부터 여섯 시까지 일해요", "extra": ["에서"]},
+      {"type": "meaning", "ko": "한 개만 주세요.", "options": ["Just one, please.", "One more, please.", "One each, please."]}
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tenses", "title": "Past, present, future", "titleKo": "시제", "emoji": "⏳",
+   "lessons": [
+    {
+     "id": "t1", "title": "Present -아요 / -어요", "subtitle": "The vowel rule",
+     "cards": [
+      {"title": "The vowel rule", "body": "Take the **stem** (drop 다). If its last vowel is **ㅏ or ㅗ**, add **아요**. Otherwise add **어요**.",
+       "formula": ["먹|stem", "어요|polite present"],
+       "table": [["Stem", "Last vowel", "Present"], ["살-", "ㅏ", "살아요"], ["좋-", "ㅗ", "좋아요"], ["먹-", "ㅓ", "먹어요"], ["읽-", "ㅣ", "읽어요"]]},
+      {"title": "Vowels melt together", "body": "When the stem ends in a vowel, the sounds merge into one syllable.",
+       "table": [["가 + 아요", "가요"], ["오 + 아요", "와요"], ["마시 + 어요", "마셔요"], ["배우 + 어요", "배워요"], ["되 + 어요", "돼요"], ["쓰 + 어요", "써요"]],
+       "examples": [{"ko": "학교에 가요.", "en": "I go to school."}, {"ko": "물을 마셔요.", "en": "I drink water."}, {"ko": "한국어를 배워요.", "en": "I learn Korean."}]},
+      {"title": "One form, many uses", "body": "This form covers *I do*, *I'm doing* and — with a time word — even the near future: **내일 가요** = I'm going tomorrow."}
+     ],
+     "practice": [
+      {"type": "choice", "q": "물을 ___.", "en": "I drink water.", "options": ["마셔요", "마시어요", "마시요"], "explain": "마시 + 어요 → 마셔요"},
+      {"type": "build", "en": "I learn Korean.", "ko": "저는 한국어를 배워요", "extra": ["배우어요"]},
+      {"type": "meaning", "ko": "친구를 만나요.", "options": ["I meet a friend.", "I met a friend.", "I want to meet a friend."]}
+     ],
+     "drills": [{"forms": ["present"], "count": 5}]
+    },
+    {
+     "id": "t2", "title": "하다 → 해요", "subtitle": "The biggest verb family",
+     "cards": [
+      {"title": "하다 always becomes 해요", "body": "Hundreds of verbs are *noun + 하다* (*do the noun*): 공부하다 (study), 운동하다 (exercise), 요리하다 (cook). Every one of them: **하다 → 해요**.",
+       "table": [["공부하다", "공부해요"], ["일하다", "일해요"], ["좋아하다", "좋아해요"], ["전화하다", "전화해요"]],
+       "examples": [{"ko": "매일 운동해요.", "en": "I exercise every day."}, {"ko": "한국 음식을 좋아해요.", "en": "I like Korean food."}, {"ko": "친구한테 전화해요.", "en": "I call a friend."}]}
+     ],
+     "practice": [
+      {"type": "build", "en": "I like Korean food.", "ko": "저는 한국 음식을 좋아해요", "extra": ["좋아하요"]},
+      {"type": "meaning", "ko": "매일 요리해요.", "options": ["I cook every day.", "I cooked every day.", "I want to cook."]}
+     ],
+     "drills": [{"forms": ["present"], "count": 4, "hada": true}]
+    },
+    {
+     "id": "t3", "title": "Past -았어요 / -었어요", "subtitle": "Yesterday, last week…",
+     "cards": [
+      {"title": "Same rule, plus ㅆ", "body": "ㅏ/ㅗ → **았어요**, other vowels → **었어요**, 하다 → **했어요**.",
+       "formula": ["먹|stem", "었|past", "어요|polite"],
+       "table": [["Dictionary", "Present", "Past"], ["가다", "가요", "갔어요"], ["먹다", "먹어요", "먹었어요"], ["마시다", "마셔요", "마셨어요"], ["하다", "해요", "했어요"]]},
+      {"title": "The shortcut", "body": "Take the present form, drop 요, and slip **ㅆ** under the last syllable + 어요: 가요 → **갔어요**, 봐요 → **봤어요**.",
+       "examples": [{"ko": "어제 영화를 봤어요.", "en": "I watched a movie yesterday."}, {"ko": "아침을 먹었어요.", "en": "I ate breakfast."}, {"ko": "주말에 뭐 했어요?", "en": "What did you do on the weekend?"}]},
+      {"title": "Was a…", "body": "Noun + **이었어요 / 였어요** = *was a*.",
+       "examples": [{"ko": "저는 작년에 학생이었어요.", "en": "Last year I was a student."}, {"ko": "어제는 제 생일이었어요.", "en": "Yesterday was my birthday."}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "어제 친구를 ___.", "en": "I met a friend yesterday.", "options": ["만났어요", "만나요", "만날 거예요"]},
+      {"type": "build", "en": "I watched a movie yesterday.", "ko": "어제 영화를 봤어요", "extra": ["봐요"]},
+      {"type": "meaning", "ko": "주말에 뭐 했어요?", "options": ["What did you do on the weekend?", "What will you do this weekend?", "What do you do on weekends?"]}
+     ],
+     "drills": [{"forms": ["past"], "count": 5}]
+    },
+    {
+     "id": "t4", "title": "Future -(으)ㄹ 거예요", "subtitle": "Will, going to",
+     "cards": [
+      {"title": "Will / going to", "body": "Stem ends in a vowel → **ㄹ 거예요**. In a consonant → **을 거예요**. Stems ending in ㄹ just add **거예요**.",
+       "formula": ["먹|stem", "을 거예요|will"],
+       "table": [["가다", "갈 거예요"], ["먹다", "먹을 거예요"], ["살다", "살 거예요"], ["하다", "할 거예요"]]},
+      {"title": "Guessing", "body": "It also makes guesses: **비가 올 거예요** = it'll (probably) rain.",
+       "examples": [{"ko": "내일 친구를 만날 거예요.", "en": "I'll meet a friend tomorrow."}, {"ko": "주말에 뭐 할 거예요?", "en": "What will you do this weekend?"}, {"ko": "내일 추울 거예요.", "en": "It'll be cold tomorrow."}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "다음 주에 한국에 ___.", "en": "I'll go to Korea next week.", "options": ["갈 거예요", "갔어요", "가고 있어요"]},
+      {"type": "build", "en": "I'll meet a friend tomorrow.", "ko": "내일 친구를 만날 거예요", "extra": ["만났어요"]},
+      {"type": "meaning", "ko": "비가 올 거예요.", "options": ["It will rain.", "It rained.", "It's raining now."]}
+     ],
+     "drills": [{"forms": ["future"], "count": 5}]
+    },
+    {
+     "id": "t5", "title": "Now: -고 있어요", "subtitle": "I'm doing it right now",
+     "cards": [
+      {"title": "Right now", "body": "Stem + **고 있어요** = *am doing* right now. No vowel rules — just add it.",
+       "formula": ["먹|stem", "고 있어요|doing now"],
+       "examples": [{"ko": "지금 밥을 먹고 있어요.", "en": "I'm eating right now."}, {"ko": "뭐 하고 있어요?", "en": "What are you doing?"}, {"ko": "비가 오고 있어요.", "en": "It's raining."}]},
+      {"title": "Was doing", "body": "**-고 있었어요** = *was doing*.",
+       "examples": [{"ko": "그때 자고 있었어요.", "en": "I was sleeping then."}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "지금 공부___ 있어요.", "en": "I'm studying now.", "options": ["하고", "해", "했고"]},
+      {"type": "build", "en": "What are you doing?", "ko": "뭐 하고 있어요?", "extra": ["했어요?"]},
+      {"type": "meaning", "ko": "그때 자고 있었어요.", "options": ["I was sleeping then.", "I'm sleeping now.", "I will sleep then."]}
+     ],
+     "drills": [{"forms": ["progressive"], "count": 4}]
+    },
+    {
+     "id": "t6", "title": "Formal -ㅂ니다 / -습니다", "subtitle": "News-anchor Korean",
+     "cards": [
+      {"title": "Formal endings", "body": "Vowel stem → **ㅂ니다**. Consonant stem → **습니다**. ㄹ stems drop ㄹ → **ㅂ니다**. Questions: **-ㅂ니까 / 습니까?**",
+       "table": [["가다", "갑니다"], ["먹다", "먹습니다"], ["살다", "삽니다"], ["하다", "합니다"]],
+       "examples": [{"ko": "감사합니다.", "en": "Thank you."}, {"ko": "처음 뵙겠습니다.", "en": "Nice to meet you. (formal)"}, {"ko": "어디에 갑니까?", "en": "Where are you going? (formal)"}]},
+      {"title": "Formal past", "body": "**-았습니다 / 었습니다 / 했습니다**.",
+       "examples": [{"ko": "잘 먹었습니다.", "en": "Thanks for the meal. (I ate well)"}, {"ko": "수고하셨습니다.", "en": "Thank you for your hard work."}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "감사___.", "en": "Thank you.", "options": ["합니다", "습니다", "해요니다"]},
+      {"type": "meaning", "ko": "잘 먹었습니다.", "options": ["Thanks for the meal.", "Enjoy your meal.", "I'm hungry."]}
+     ],
+     "drills": [{"forms": ["formal", "formalPast"], "count": 5}]
+    },
+    {
+     "id": "t7", "title": "Not: 안 · -지 않아요 · 못", "subtitle": "Saying no",
+     "cards": [
+      {"title": "Two ways to say not", "body": "**안** + verb (short, spoken): 안 가요. Stem + **지 않아요** (a little more formal): 가지 않아요. Same meaning. For *noun + 하다* verbs, 안 goes before 하다: **공부 안 해요**.",
+       "examples": [{"ko": "오늘은 안 가요.", "en": "I'm not going today."}, {"ko": "고기를 먹지 않아요.", "en": "I don't eat meat."}, {"ko": "숙제를 안 했어요.", "en": "I didn't do my homework."}]},
+      {"title": "Can't: 못", "body": "**못** + verb = *can't* (unable to): 못 가요, 수영 못 해요.",
+       "examples": [{"ko": "수영 못 해요.", "en": "I can't swim."}, {"ko": "잘 못 들었어요.", "en": "I didn't catch that."}, {"ko": "매운 음식은 못 먹어요.", "en": "I can't eat spicy food."}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "공부 ___ 해요.", "en": "I don't study.", "options": ["안", "않", "지"]},
+      {"type": "choice", "q": "수영 ___ 해요.", "en": "I can't swim.", "options": ["못", "안", "없"]},
+      {"type": "build", "en": "I didn't do my homework.", "ko": "숙제를 안 했어요", "extra": ["해요"]},
+      {"type": "meaning", "ko": "매운 음식은 못 먹어요.", "options": ["I can't eat spicy food.", "I don't like spicy food.", "I ate spicy food."]}
+     ],
+     "drills": [{"forms": ["negative", "negativeJi"], "count": 4}]
+    },
+    {
+     "id": "t8", "title": "Irregular verbs", "subtitle": "Why 듣다 becomes 들어요",
+     "cards": [
+      {"title": "ㅂ → 우", "body": "Most adjectives ending in ㅂ turn ㅂ into **우** before a vowel. (Exceptions: 입다 → 입어요, 좁다 → 좁아요.)",
+       "table": [["덥다", "더워요", "더웠어요"], ["춥다", "추워요", "추웠어요"], ["쉽다", "쉬워요", "쉬웠어요"], ["어렵다", "어려워요", "어려웠어요"]],
+       "examples": [{"ko": "오늘 너무 더워요.", "en": "It's so hot today."}]},
+      {"title": "ㄷ → ㄹ", "body": "Some ㄷ verbs turn ㄷ into **ㄹ** before a vowel: 듣다 → **들어요**, 걷다 → **걸어요**, 묻다 (ask) → **물어요**. (But 받다 → 받아요 and 닫다 → 닫아요 stay regular.)",
+       "examples": [{"ko": "음악을 들어요.", "en": "I listen to music."}, {"ko": "매일 걸어요.", "en": "I walk every day."}]},
+      {"title": "르 → ㄹ라 / ㄹ러", "body": "르 verbs double the ㄹ.",
+       "table": [["모르다", "몰라요"], ["부르다", "불러요"], ["빠르다", "빨라요"], ["다르다", "달라요"]],
+       "examples": [{"ko": "잘 몰라요.", "en": "I don't really know."}]},
+      {"title": "ㄹ drops, 으 drops", "body": "ㄹ stems lose ㄹ before ㄴ, ㅂ, ㅅ: 살다 → **사는, 삽니다, 사세요**. 으 stems lose 으: 쓰다 → **써요**, 바쁘다 → **바빠요**, 예쁘다 → **예뻐요**.",
+       "examples": [{"ko": "요즘 바빠요.", "en": "I'm busy these days."}, {"ko": "서울에 사는 친구", "en": "a friend who lives in Seoul"}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "오늘 너무 ___.", "en": "It's so hot today.", "options": ["더워요", "덥어요", "더우어요"]},
+      {"type": "choice", "q": "음악을 ___.", "en": "I listen to music.", "options": ["들어요", "듣어요", "들러요"]},
+      {"type": "choice", "q": "잘 ___.", "en": "I don't really know.", "options": ["몰라요", "모르어요", "몰러요"]},
+      {"type": "meaning", "ko": "요즘 바빠요.", "options": ["I'm busy these days.", "I was busy.", "I'm free these days."]}
+     ],
+     "drills": [{"forms": ["present", "past"], "count": 6, "irregular": true}]
+    }
+   ]
+  },
+  {
+   "id": "endings", "title": "Connecting & describing", "titleKo": "연결 어미 · 관형형", "emoji": "🔗",
+   "lessons": [
+    {
+     "id": "e1", "title": "-고", "subtitle": "And · and then",
+     "cards": [
+      {"title": "Linking with 고", "body": "Stem + **고** joins two actions or facts: *and / and then*.",
+       "formula": ["먹|stem", "고|and"],
+       "examples": [{"ko": "밥을 먹고 커피를 마셔요.", "en": "I eat and then drink coffee."}, {"ko": "이 식당은 싸고 맛있어요.", "en": "This restaurant is cheap and tasty."}, {"ko": "샤워하고 잤어요.", "en": "I showered and went to sleep."}]},
+      {"title": "The tense goes at the end", "body": "Only the **last** verb shows the tense: **먹고 잤어요** = ate and slept."}
+     ],
+     "practice": [
+      {"type": "choice", "q": "책을 읽___ 잤어요.", "en": "I read a book and slept.", "options": ["고", "지만", "면"]},
+      {"type": "build", "en": "This restaurant is cheap and tasty.", "ko": "이 식당은 싸고 맛있어요", "extra": ["싸요"]},
+      {"type": "build", "en": "I showered and slept.", "ko": "샤워하고 잤어요", "extra": ["샤워해요"]},
+      {"type": "meaning", "ko": "숙제하고 놀았어요.", "options": ["I did homework and then played.", "I played instead of homework.", "If I do homework, I'll play."]}
+     ],
+     "drills": [{"forms": ["and"], "count": 3}]
+    },
+    {
+     "id": "e2", "title": "-지만", "subtitle": "But",
+     "cards": [
+      {"title": "But", "body": "Stem + **지만** = *but*. Past: **-았/었지만**.",
+       "formula": ["어렵|stem", "지만|but"],
+       "examples": [{"ko": "한국어는 어렵지만 재미있어요.", "en": "Korean is hard but fun."}, {"ko": "비싸지만 샀어요.", "en": "It was expensive, but I bought it."}, {"ko": "먹었지만 아직 배고파요.", "en": "I ate, but I'm still hungry."}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "비싸___ 맛있어요.", "en": "It's pricey but tasty.", "options": ["지만", "고", "면"]},
+      {"type": "build", "en": "Korean is hard but fun.", "ko": "한국어는 어렵지만 재미있어요", "extra": ["어렵고"]},
+      {"type": "meaning", "ko": "작지만 예뻐요.", "options": ["It's small but pretty.", "It's small and pretty.", "If it's small, it's pretty."]}
+     ],
+     "drills": [{"forms": ["but"], "count": 3}]
+    },
+    {
+     "id": "e3", "title": "-아서 / -어서", "subtitle": "So · and then (there)",
+     "cards": [
+      {"title": "Reason: so", "body": "Present-form vowel + **서**: 비가 와서 = *because it's raining*. Never put past tense before 서 (✗ 왔어서).",
+       "formula": ["고파|present form", "서|so"],
+       "examples": [{"ko": "배가 고파서 밥을 먹었어요.", "en": "I was hungry, so I ate."}, {"ko": "늦어서 미안해요.", "en": "Sorry I'm late."}, {"ko": "피곤해서 일찍 잤어요.", "en": "I was tired, so I slept early."}]},
+      {"title": "Sequence: and then (there)", "body": "가서, 만나서… = do A and then B *connected to A*: **친구를 만나서 영화를 봤어요** = I met a friend and (together) saw a movie.",
+       "examples": [{"ko": "학교에 가서 공부해요.", "en": "I go to school and study there."}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "피곤___ 일찍 잤어요.", "en": "I was tired, so I slept early.", "options": ["해서", "하고", "했어서"], "explain": "No past tense before -아서/어서"},
+      {"type": "build", "en": "Sorry I'm late.", "ko": "늦어서 미안해요", "extra": ["늦었어서"]},
+      {"type": "meaning", "ko": "배가 고파서 밥을 먹었어요.", "options": ["I was hungry, so I ate.", "I ate but I'm still hungry.", "I'll eat if I get hungry."]}
+     ],
+     "drills": [{"forms": ["so"], "count": 3}]
+    },
+    {
+     "id": "e4", "title": "-(으)니까", "subtitle": "Because (and so please…)",
+     "cards": [
+      {"title": "Because", "body": "Stem + **니까** (vowel) / **으니까** (consonant). Like -아서, but you **can** follow it with *please* or *let's*.",
+       "formula": ["추우|stem", "니까|because"],
+       "examples": [{"ko": "비가 오니까 우산을 가져가세요.", "en": "It's raining, so take an umbrella."}, {"ko": "추우니까 문을 닫아 주세요.", "en": "It's cold, so please close the door."}, {"ko": "시간이 없으니까 빨리 가요.", "en": "We don't have time, so let's go quickly."}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "비가 오___ 우산을 가져가세요.", "en": "It's raining, so take an umbrella.", "options": ["니까", "아서", "고"], "explain": "-아서 can't be followed by a request; -(으)니까 can"},
+      {"type": "build", "en": "It's cold, so please close the door.", "ko": "추우니까 문을 닫아 주세요", "extra": ["추워서"]},
+      {"type": "meaning", "ko": "시간이 없으니까 빨리 가요.", "options": ["We have no time, so let's go quickly.", "We had time, so we went slowly.", "If there's time, let's go."]}
+     ],
+     "drills": [{"forms": ["because"], "count": 3}]
+    },
+    {
+     "id": "e5", "title": "-(으)면", "subtitle": "If · when",
+     "cards": [
+      {"title": "If / when", "body": "Stem + **면** (vowel or ㄹ) / **으면** (consonant).",
+       "formula": ["있으|stem", "면|if"],
+       "examples": [{"ko": "시간이 있으면 같이 가요.", "en": "If you have time, let's go together."}, {"ko": "비가 오면 집에 있을 거예요.", "en": "If it rains, I'll stay home."}, {"ko": "한국에 가면 김치를 먹고 싶어요.", "en": "When I go to Korea, I want to eat kimchi."}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "돈이 많___ 여행하고 싶어요.", "en": "If I had lots of money, I'd want to travel.", "options": ["으면", "면", "니까"], "explain": "많 ends in a consonant → 으면"},
+      {"type": "build", "en": "If you have time, let's go together.", "ko": "시간이 있으면 같이 가요", "extra": ["있어서"]},
+      {"type": "meaning", "ko": "비가 오면 집에 있을 거예요.", "options": ["If it rains, I'll stay home.", "It rained, so I stayed home.", "It's raining but I'm going out."]}
+     ],
+     "drills": [{"forms": ["ifWhen"], "count": 3}]
+    },
+    {
+     "id": "e6", "title": "-는 (describing, now)", "subtitle": "먹는 사람: a person who eats",
+     "cards": [
+      {"title": "Verbs that describe nouns", "body": "Put a verb **before** a noun with **-는** to describe it: **먹는 사람** = *a person who eats*. It works for 있다/없다 too: **맛있는 음식**.",
+       "formula": ["먹|stem", "는|now", "사람|noun"],
+       "examples": [{"ko": "지금 자는 아이", "en": "the child who is sleeping now"}, {"ko": "제가 좋아하는 음식", "en": "the food I like"}, {"ko": "한국어를 공부하는 학생", "en": "a student who studies Korean"}, {"ko": "맛있는 커피", "en": "delicious coffee"}]},
+      {"title": "ㄹ drops", "body": "만들다 → **만드는**, 살다 → **사는**.",
+       "examples": [{"ko": "서울에 사는 친구", "en": "a friend who lives in Seoul"}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "서울에 ___ 친구", "en": "a friend who lives in Seoul", "options": ["사는", "살는", "살은"], "explain": "ㄹ drops before 는: 살 → 사는"},
+      {"type": "build", "en": "the food I like", "ko": "제가 좋아하는 음식", "extra": ["좋아한"]},
+      {"type": "meaning", "ko": "커피를 마시는 사람", "options": ["a person drinking coffee", "a person who drank coffee", "coffee that people drink"]}
+     ],
+     "drills": [{"forms": ["modPresent"], "count": 4, "pos": "verb"}]
+    },
+    {
+     "id": "e7", "title": "-(으)ㄴ (past & adjectives)", "subtitle": "본 영화 · 예쁜 꽃",
+     "cards": [
+      {"title": "Verbs: past", "body": "Verb + **ㄴ/은** + noun = the noun that was done: **어제 본 영화** = *the movie I saw yesterday*.",
+       "formula": ["보|stem", "ㄴ|past", "영화|noun"],
+       "examples": [{"ko": "어제 본 영화", "en": "the movie I saw yesterday"}, {"ko": "제가 만든 케이크", "en": "the cake I made"}, {"ko": "작년에 간 곳", "en": "the place I went last year"}]},
+      {"title": "Adjectives: now", "body": "Adjective + **ㄴ/은** + noun: **예쁜 꽃** (a pretty flower), **작은 집** (a small house), **추운 날** (a cold day — ㅂ → 운).",
+       "examples": [{"ko": "큰 가방", "en": "a big bag"}, {"ko": "좋은 사람", "en": "a good person"}, {"ko": "따뜻한 차", "en": "warm tea"}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "___ 꽃", "en": "a pretty flower", "options": ["예쁜", "예쁘는", "예쁠"]},
+      {"type": "build", "en": "the movie I saw yesterday", "ko": "어제 본 영화", "extra": ["보는"]},
+      {"type": "meaning", "ko": "제가 만든 케이크", "options": ["the cake I made", "the cake I'm making", "the cake I'll make"]}
+     ],
+     "drills": [{"forms": ["modPast"], "count": 3, "pos": "verb"}, {"forms": ["modPresent"], "count": 2, "pos": "adjective"}]
+    },
+    {
+     "id": "e8", "title": "-(으)ㄹ (describing, future)", "subtitle": "할 일: things to do",
+     "cards": [
+      {"title": "To do / will be done", "body": "Verb + **ㄹ/을** + noun = a noun *to do* or *that will be done*: **먹을 음식** (food to eat), **갈 곳** (a place to go), **할 일** (things to do).",
+       "formula": ["하|stem", "ㄹ|future", "일|noun"],
+       "examples": [{"ko": "내일 할 일이 많아요.", "en": "I have a lot to do tomorrow."}, {"ko": "마실 거 있어요?", "en": "Is there something to drink?"}, {"ko": "주말에 볼 영화", "en": "a movie to watch this weekend"}]},
+      {"title": "All three together", "body": "The ending tells you *when*.",
+       "table": [["-는 · now", "먹는 음식", "food I eat"], ["-(으)ㄴ · past", "먹은 음식", "food I ate"], ["-(으)ㄹ · future", "먹을 음식", "food I'll eat"]]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "내일 ___ 일이 많아요.", "en": "I have a lot to do tomorrow.", "options": ["할", "한", "하는"]},
+      {"type": "choice", "q": "어제 ___ 음식", "en": "the food I ate yesterday", "options": ["먹은", "먹는", "먹을"]},
+      {"type": "choice", "q": "지금 ___ 음식", "en": "the food I'm eating now", "options": ["먹는", "먹은", "먹을"]},
+      {"type": "build", "en": "Is there something to drink?", "ko": "마실 거 있어요?", "extra": ["마신"]},
+      {"type": "meaning", "ko": "갈 곳이 없어요.", "options": ["There's nowhere to go.", "I went nowhere.", "The place is gone."]}
+     ],
+     "drills": [{"forms": ["modFuture"], "count": 3}]
+    }
+   ]
+  },
+  {
+   "id": "patterns", "title": "Everyday patterns", "titleKo": "자주 쓰는 표현", "emoji": "💬",
+   "lessons": [
+    {
+     "id": "x1", "title": "-고 싶어요", "subtitle": "I want to…",
+     "cards": [
+      {"title": "Want to", "body": "Stem + **고 싶어요** = *I want to*. Past: **-고 싶었어요**.",
+       "formula": ["가|stem", "고 싶어요|want to"],
+       "examples": [{"ko": "한국에 가고 싶어요.", "en": "I want to go to Korea."}, {"ko": "뭐 먹고 싶어요?", "en": "What do you want to eat?"}, {"ko": "쉬고 싶었어요.", "en": "I wanted to rest."}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "뭐 먹___ 싶어요?", "en": "What do you want to eat?", "options": ["고", "어", "지"]},
+      {"type": "build", "en": "I want to go to Korea.", "ko": "한국에 가고 싶어요", "extra": ["가서"]},
+      {"type": "meaning", "ko": "자고 싶어요.", "options": ["I want to sleep.", "I'm sleeping.", "I slept."]}
+     ],
+     "drills": [{"forms": ["want"], "count": 3}]
+    },
+    {
+     "id": "x2", "title": "-(으)세요", "subtitle": "Please (polite request)",
+     "cards": [
+      {"title": "Please…", "body": "Stem + **세요** (vowel) / **으세요** (consonant): 가세요, 앉으세요. It also asks politely about someone: **어디 가세요?** = Where are you going?",
+       "examples": [{"ko": "여기 앉으세요.", "en": "Please sit here."}, {"ko": "어디 가세요?", "en": "Where are you going?"}]},
+      {"title": "Special honorific verbs", "body": "Some verbs have their own polite words: 먹다 → **드세요**, 자다 → **주무세요**, 있다 (stay) → **계세요**.",
+       "examples": [{"ko": "맛있게 드세요.", "en": "Enjoy your meal."}, {"ko": "안녕히 가세요.", "en": "Goodbye. (to someone leaving)"}, {"ko": "안녕히 계세요.", "en": "Goodbye. (when you are the one leaving)"}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "여기 앉___.", "en": "Please sit here.", "options": ["으세요", "세요"], "explain": "앉 ends in a consonant → 으세요"},
+      {"type": "quiz", "q": "You're leaving a shop. What do you say to the staff who stay?", "options": ["안녕히 계세요", "안녕히 가세요", "잘 자요"]},
+      {"type": "meaning", "ko": "맛있게 드세요.", "options": ["Enjoy your meal.", "It was delicious.", "Please cook."]}
+     ],
+     "drills": [{"forms": ["please"], "count": 3}]
+    },
+    {
+     "id": "x3", "title": "-아/어 주세요", "subtitle": "Please do it for me",
+     "cards": [
+      {"title": "Do it for me", "body": "Present-form vowel + **주세요** = *please do it (for me)*. Noun + 주세요 = *please give me*.",
+       "formula": ["말해|present form", "주세요|for me, please"],
+       "examples": [{"ko": "도와주세요!", "en": "Help me!"}, {"ko": "천천히 말해 주세요.", "en": "Please speak slowly."}, {"ko": "물 주세요.", "en": "Water, please."}, {"ko": "사진 좀 찍어 주세요.", "en": "Could you take a photo (for me)?"}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "사진 좀 찍___ 주세요.", "en": "Please take a photo for me.", "options": ["어", "아", "고"]},
+      {"type": "build", "en": "Please speak slowly.", "ko": "천천히 말해 주세요", "extra": ["말했어요"]},
+      {"type": "meaning", "ko": "도와주세요!", "options": ["Help me!", "I'll help you.", "Thanks for helping."]}
+     ],
+     "drills": [{"forms": ["doForMe"], "count": 3}]
+    },
+    {
+     "id": "x4", "title": "-(으)ㄹ 수 있어요", "subtitle": "Can · can't",
+     "cards": [
+      {"title": "Can / can't", "body": "Stem + **ㄹ/을 수 있어요** = *can*. **수 없어요** = *can't*.",
+       "formula": ["하|stem", "ㄹ 수 있어요|can"],
+       "examples": [{"ko": "한국어를 할 수 있어요.", "en": "I can speak Korean."}, {"ko": "매운 음식을 먹을 수 있어요?", "en": "Can you eat spicy food?"}, {"ko": "내일은 갈 수 없어요.", "en": "I can't go tomorrow."}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "내일은 갈 수 ___.", "en": "I can't go tomorrow.", "options": ["없어요", "있어요", "안 해요"]},
+      {"type": "build", "en": "I can speak Korean.", "ko": "한국어를 할 수 있어요", "extra": ["없어요"]},
+      {"type": "meaning", "ko": "읽을 수 있어요?", "options": ["Can you read it?", "Did you read it?", "Will you read it?"]}
+     ],
+     "drills": [{"forms": ["canDo"], "count": 3}]
+    },
+    {
+     "id": "x5", "title": "-아야/어야 해요", "subtitle": "Have to, must",
+     "cards": [
+      {"title": "Have to", "body": "Present-form vowel + **야 해요** = *have to*.",
+       "formula": ["가|present form", "야 해요|must"],
+       "examples": [{"ko": "내일 일찍 일어나야 해요.", "en": "I have to get up early tomorrow."}, {"ko": "숙제를 해야 해요.", "en": "I have to do homework."}, {"ko": "약을 먹어야 해요.", "en": "You have to take your medicine."}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "일찍 일어나___ 해요.", "en": "I have to get up early.", "options": ["야", "서", "면"]},
+      {"type": "build", "en": "I have to do homework.", "ko": "숙제를 해야 해요", "extra": ["하고"]},
+      {"type": "meaning", "ko": "지금 가야 해요.", "options": ["I have to go now.", "I want to go now.", "I can go now."]}
+     ],
+     "drills": [{"forms": ["mustDo"], "count": 3}]
+    },
+    {
+     "id": "x6", "title": "-(으)ㄹ까요? · -(으)ㅂ시다", "subtitle": "Shall we? · Let's",
+     "cards": [
+      {"title": "Shall we?", "body": "Stem + **ㄹ까요 / 을까요?** = *Shall we…?* (also *I wonder…*).",
+       "formula": ["가|stem", "ㄹ까요?|shall we"],
+       "examples": [{"ko": "같이 갈까요?", "en": "Shall we go together?"}, {"ko": "뭐 먹을까요?", "en": "What shall we eat?"}, {"ko": "커피 마실까요?", "en": "Shall we have coffee?"}]},
+      {"title": "Let's", "body": "Stem + **ㅂ시다 / 읍시다** = *Let's* (a bit formal — with friends just say **같이 가요!**).",
+       "examples": [{"ko": "시작합시다.", "en": "Let's begin."}, {"ko": "같이 가요!", "en": "Let's go together!"}]}
+     ],
+     "practice": [
+      {"type": "choice", "q": "뭐 먹___?", "en": "What shall we eat?", "options": ["을까요", "ㄹ까요", "을 거예요"]},
+      {"type": "build", "en": "Shall we go together?", "ko": "같이 갈까요?", "extra": ["갔어요?"]},
+      {"type": "meaning", "ko": "시작합시다.", "options": ["Let's begin.", "It has started.", "Shall I start?"]}
+     ],
+     "drills": [{"forms": ["shallWe", "letsDo"], "count": 3}]
+    }
+   ]
+  }
+ ]
+}

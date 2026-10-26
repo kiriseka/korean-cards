@@ -4,13 +4,14 @@ import 'package:drift/drift.dart';
 
 import '../data/db.dart';
 
-/// Whole-progress backup as JSON: custom words, stars and notes, cards and the review history.
+/// Whole-progress backup as JSON: custom words, stars and notes, cards, the review history and
+/// game progress (XP, lessons, badges, quests).
 /// Bundled word text is not included; it comes back from the app's own word list.
 class BackupService {
   BackupService(this.db);
   final AppDatabase db;
 
-  static const formatVersion = 1;
+  static const formatVersion = 2;
 
   Future<String> export() async {
     final words = await db.select(db.words).get();
@@ -27,6 +28,10 @@ class BackupService {
       ],
       'cards': [for (final c in cards) c.toJson()],
       'reviewLogs': [for (final l in logs) l.toJson()],
+      'activities': [for (final a in await db.select(db.activities).get()) a.toJson()],
+      'lessonProgress': [for (final l in await db.select(db.lessonProgress).get()) l.toJson()],
+      'achievements': [for (final a in await db.select(db.achievements).get()) a.toJson()],
+      'questClaims': [for (final q in await db.select(db.questClaims).get()) q.toJson()],
     });
   }
 
@@ -36,12 +41,17 @@ class BackupService {
     if (data is! Map<String, dynamic> || data['app'] != 'korean_cards') {
       throw const FormatException('Not a Korean Cards backup file');
     }
-    List<Map<String, dynamic>> list(String key) => (data[key] as List).cast<Map<String, dynamic>>();
+    // Version 1 files have no game progress; missing lists import as empty.
+    List<Map<String, dynamic>> list(String key) => ((data[key] as List?) ?? const []).cast<Map<String, dynamic>>();
 
     await db.transaction(() async {
       final bundledIds = (await db.select(db.words).get()).where((w) => !w.isCustom).map((w) => w.id).toSet();
       await db.delete(db.reviewLogs).go();
       await db.delete(db.cards).go();
+      await db.delete(db.activities).go();
+      await db.delete(db.lessonProgress).go();
+      await db.delete(db.achievements).go();
+      await db.delete(db.questClaims).go();
       await (db.delete(db.words)..where((w) => w.isCustom.equals(true))).go();
       await db.update(db.words).write(const WordsCompanion(starred: Value(false), note: Value(null)));
 
@@ -60,6 +70,10 @@ class BackupService {
         b.insertAll(db.cards, cards);
         b.insertAll(db.reviewLogs,
             [for (final l in list('reviewLogs')) ReviewLog.fromJson(l)].where((l) => cardIds.contains(l.cardId)));
+        b.insertAll(db.activities, [for (final a in list('activities')) Activity.fromJson(a)]);
+        b.insertAll(db.lessonProgress, [for (final l in list('lessonProgress')) LessonProgressData.fromJson(l)]);
+        b.insertAll(db.achievements, [for (final a in list('achievements')) Achievement.fromJson(a)]);
+        b.insertAll(db.questClaims, [for (final q in list('questClaims')) QuestClaim.fromJson(q)]);
       });
       await db.ensureCards();
     });

@@ -54,3 +54,6 @@ app.*.map.json
 # Release signing
 /android/key.properties
 *.jks
+
+# Built APKs kept per version (large)
+/releases/

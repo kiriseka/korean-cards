@@ -45,6 +45,102 @@ CJK = re.compile(r"[一-鿿]")
 # One dump file has an unescaped "<" inside an attribute value.
 ATTR_VAL = re.compile(r'val="([^"]*)"')
 
+# Topic units of the curriculum, in recommended order: (id, English, Korean, emoji).
+UNITS = [
+    ("basics", "Greetings & basics", "기본 표현", "👋"),
+    ("numbers", "Numbers & counting", "숫자", "🔢"),
+    ("time", "Time & days", "시간", "⏰"),
+    ("people", "Family & people", "가족과 사람", "👨‍👩‍👧"),
+    ("food", "Food & drinks", "음식", "🍜"),
+    ("home", "Home & daily life", "집과 일상", "🏠"),
+    ("places", "Places & directions", "장소와 방향", "🧭"),
+    ("transport", "Getting around", "교통", "🚇"),
+    ("shopping", "Shopping & money", "쇼핑과 돈", "🛍️"),
+    ("feelings", "Feelings", "감정", "😊"),
+    ("body", "Body & health", "몸과 건강", "💪"),
+    ("clothes", "Clothes & looks", "옷", "👕"),
+    ("hobbies", "Hobbies & culture", "취미와 문화", "🎮"),
+    ("nature", "Weather & nature", "날씨와 자연", "☀️"),
+    ("school", "School & study", "학교", "🎓"),
+    ("work", "Work & society", "일과 사회", "💼"),
+    ("communication", "Talking & media", "소통", "💬"),
+    ("describing", "Describing things", "모양과 성질", "🎨"),
+    ("mind", "Thinking & abilities", "생각과 능력", "🧠"),
+    ("more", "More useful words", "더 많은 단어", "📦"),
+]
+
+# KRDict semanticCategory -> unit. A "top > sub" key wins over its "top" key.
+CATEGORY_UNIT = {
+    "개념 > 인칭": "basics", "개념 > 지시": "basics", "개념 > 의문": "basics", "개념 > 접속": "basics",
+    "개념 > 수": "numbers", "개념 > 세는 말": "numbers", "개념 > 순서": "numbers", "개념 > 양": "numbers",
+    "개념 > 시간": "time", "개념 > 빈도": "time", "개념 > 속도": "time",
+    "개념 > 위치 및 방향": "places", "개념 > 지역": "places",
+    "개념": "describing",
+    "삶 > 친족 관계": "people", "삶 > 가족 행사": "people",
+    "인간 > 사람의 종류": "people", "인간 > 성격": "people", "인간 > 용모": "people",
+    "식생활": "food",
+    "주생활": "home", "삶 > 일상 행위": "home", "삶 > 삶의 행위": "home", "삶 > 삶의 상태": "home",
+    "인간 > 감정": "feelings", "인간 > 태도": "feelings",
+    "인간 > 인지 행위": "mind", "인간 > 능력": "mind",
+    "인간 > 감각": "describing", "인간 > 소리": "describing",
+    "인간": "body", "삶 > 병과 증상": "body", "삶 > 치료 행위": "body", "삶 > 치료 시설": "body",
+    "삶 > 약품류": "body",
+    "삶": "hobbies", "문화": "hobbies", "스포츠": "hobbies",
+    "사회 생활 > 교통 수단": "transport", "사회 생활 > 교통 이용 장소": "transport",
+    "사회 생활 > 교통 이용 행위": "transport",
+    "사회 생활 > 언어 행위": "communication", "사회 생활 > 소통 수단": "communication",
+    "사회 생활 > 통신 행위": "communication", "사회 생활 > 매체": "communication",
+    "사회 생활 > 말": "communication",
+    "사회 생활": "work",
+    "경제 생활": "shopping",
+    "의생활": "clothes",
+    "교육": "school", "과학": "school",
+    "자연": "nature", "동식물": "nature",
+    "정치와 행정": "places", "종교": "places",
+}
+
+
+def unit_of(category: str | None, pos: str) -> str:
+    if pos in ("interjection", "expression"):
+        return "basics"
+    if not category:
+        return "more"
+    top = category.split(" > ")[0]
+    return CATEGORY_UNIT.get(category) or CATEGORY_UNIT.get(top) or "more"
+
+
+def _jamo(syllable: str) -> tuple[int, int, int] | None:
+    code = ord(syllable) - 0xAC00
+    if not 0 <= code < 11172:
+        return None
+    return code // 588, (code % 588) // 28, code % 28
+
+
+# Medial vowels an 아/어 form can end in: ㅏ ㅐ ㅓ ㅕ ㅘ ㅙ ㅝ (해, 써, 와, 돼, 줘...).
+A_FORM_VOWELS = {0, 1, 4, 6, 9, 10, 14}
+
+
+def conjugation_forms(entry: ET.Element) -> dict | None:
+    """KRDict's 활용 forms: the 아/어 form (들어), the 으니 form (들으니) and the modifier (듣는/더운)."""
+    forms = {}
+    for wf in entry.findall("WordForm"):
+        f = feats(wf)
+        text = f.get("writtenForm", "")
+        if f.get("type") != "활용" or not text:
+            continue
+        last = _jamo(text[-1])
+        if text.endswith("니다"):
+            continue
+        if text.endswith("니"):
+            forms.setdefault("euni", text)
+        elif text.endswith("하여"):
+            forms.setdefault("a", text[:-2] + "해")
+        elif last and (text.endswith("는") or last[2] == 4):  # 는 or ㄴ batchim
+            forms.setdefault("mod", text)
+        elif last and last[2] == 0 and last[1] in A_FORM_VOWELS:
+            forms.setdefault("a", text)
+    return forms if {"a", "euni"} <= forms.keys() else None
+
 
 def download(url: str, dest: Path) -> None:
     if dest.exists():
@@ -157,15 +253,19 @@ def parse_entry(entry: ET.Element, levels: set[str]) -> dict | None:
     origin = f.get("origin", "")
     wordform = entry.find("WordForm")
     pron = feats(wordform).get("pronunciation") if wordform is not None else None
+    pos_en = POS_EN.get(pos, pos)
+    category = f.get("semanticCategory") or None
     return {
         "id": int(entry.get("val")),
         "word": word,
         "homonym": int(f.get("homonym_number", "0") or 0),
-        "pos": POS_EN.get(pos, pos),
+        "pos": pos_en,
         "level": level,
         "hanja": origin if CJK.search(origin) else None,
         "pronunciation": pron or None,
-        "category": f.get("semanticCategory") or None,
+        "category": category,
+        "unit": unit_of(category, pos_en),
+        "forms": conjugation_forms(entry) if word.endswith("다") else None,
         "senses": senses,
     }
 
@@ -240,8 +340,22 @@ def main() -> None:
         "words": words,
     }, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 
+    unit_counts = Counter(w["unit"] for w in words)
+    curriculum = out.parent / "curriculum.json"
+    curriculum.write_text(json.dumps({
+        "units": [
+            {"id": uid, "title": title, "titleKo": title_ko, "emoji": emoji, "words": unit_counts[uid]}
+            for uid, title, title_ko, emoji in UNITS
+        ],
+    }, ensure_ascii=False, indent=1), encoding="utf-8")
+
     print(f"wrote {len(words)} words to {out} ({out.stat().st_size / 1024:.0f} KB)")
     print(f"dropped (no English): {dropped_no_en}")
+    print("by unit:", {uid: unit_counts[uid] for uid, *_ in UNITS})
+    verbs = [w for w in words if w["word"].endswith("다") and w["pos"] in ("verb", "adjective")]
+    print(f"conjugation forms: {sum(1 for w in verbs if w['forms'])}/{len(verbs)} verbs and adjectives")
+    print("forms sample:", {w["word"]: w["forms"] for w in verbs if w["word"] in
+                            ("듣다", "덥다", "모르다", "공부하다", "쓰다", "되다", "오다", "있다", "만들다")})
     print("by level:", dict(Counter(w["level"] for w in words)))
     print("by pos:", dict(Counter(w["pos"] for w in words).most_common()))
     print("first 30:", " ".join(w["word"] for w in words[:30]))

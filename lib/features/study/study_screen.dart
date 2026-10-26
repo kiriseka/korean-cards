@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/db.dart';
+import '../../game/rules.dart';
+import '../../game/sound_service.dart';
 import '../../providers.dart';
 import '../../services/tts_service.dart';
 import '../../settings.dart';
@@ -77,6 +79,7 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
     final item = _current!;
     final outcome = _outcomes[rating]!;
     HapticFeedback.lightImpact();
+    ref.read(soundProvider).play(rating == Rating.again ? Sfx.flip : Sfx.tap);
     final now = DateTime.now();
     await ref.read(dbProvider).saveReview(
           outcome.card,
@@ -88,6 +91,10 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
             elapsedMs: now.difference(_shownAt).inMilliseconds,
           ),
         );
+    final game = ref.read(gameProvider);
+    game.award([
+      game.activity(ActivityKind.review, xp: rating == Rating.again ? Xp.reviewAgain : Xp.review, value: rating.fsrsRating.value),
+    ]);
     _done++;
     if (rating == Rating.again) _again++;
     _queue!.requeueIfDueSoon(CardWithWord(outcome.card, item.word), now);

@@ -1,6 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'data/db.dart';
+import 'game/game_service.dart';
+import 'game/sound_service.dart';
+import 'learn/curriculum.dart';
 import 'services/notification_service.dart';
 import 'services/tts_service.dart';
 import 'settings.dart';
@@ -20,6 +23,34 @@ final todayCountsProvider = StreamProvider<TodayCounts>((ref) {
 });
 
 final overviewProvider = StreamProvider<Overview>((ref) => ref.watch(dbProvider).watchOverview());
+
+final gameProvider = Provider<GameService>((ref) => throw UnimplementedError('overridden in main'));
+
+final soundProvider = Provider<SoundService>((ref) {
+  final sound = SoundService();
+  ref.listen(settingsProvider, (_, s) {
+    sound.soundOn = s.soundEffects;
+    sound.hapticsOn = s.haptics;
+  }, fireImmediately: true);
+  return sound;
+});
+
+final profileProvider = StreamProvider<Profile>((ref) => ref.watch(gameProvider).watchProfile());
+
+final lessonProgressProvider =
+    StreamProvider<Map<String, LessonProgressData>>((ref) => ref.watch(gameProvider).watchLessonProgress());
+
+final curriculumProvider = FutureProvider<List<TopicUnit>>((ref) => loadCurriculum());
+
+/// A topic's words in lesson order (the user's own words go last so lessons never shift).
+final unitWordsProvider = StreamProvider.family<List<Word>, String>((ref, unitId) => ref.watch(dbProvider).watchUnitWords(unitId));
+
+final topicLessonsProvider = Provider.family<AsyncValue<List<TopicLesson>>, String>(
+  (ref, unitId) => ref.watch(unitWordsProvider(unitId)).whenData((words) => buildTopicLessons(unitId, words)),
+);
+
+/// Every word, for wrong answer options and arcade pools.
+final allWordsProvider = StreamProvider<List<Word>>((ref) => ref.watch(dbProvider).select(ref.watch(dbProvider).words).watch());
 
 /// Speaks Korean text at the user's chosen speed.
 extension SpeakWidgetRef on WidgetRef {

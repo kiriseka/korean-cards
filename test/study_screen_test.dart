@@ -3,12 +3,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:korean_cards/data/db.dart';
 import 'package:korean_cards/features/study/study_screen.dart';
+import 'package:korean_cards/game/game_service.dart';
+import 'package:korean_cards/game/sound_service.dart';
 import 'package:korean_cards/providers.dart';
 import 'package:korean_cards/services/tts_service.dart';
 import 'package:korean_cards/settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'helpers.dart';
+
+class SilentSound extends SoundService {
+  @override
+  Future<void> play(Sfx sfx) async {}
+}
 
 class SilentTts extends TtsService {
   final spoken = <String>[];
@@ -35,6 +42,8 @@ void main() {
         prefsProvider.overrideWithValue(prefs),
         dbProvider.overrideWithValue(db),
         ttsProvider.overrideWithValue(tts),
+        gameProvider.overrideWithValue(GameService(db)),
+        soundProvider.overrideWithValue(SilentSound()),
       ],
       child: const MaterialApp(home: StudyScreen()),
     ));
@@ -64,6 +73,8 @@ void main() {
 
     final logs = await tester.runAsync(() => db.select(db.reviewLogs).get());
     expect(logs, hasLength(2));
+    final xp = await tester.runAsync(() => GameService(db).totalXp());
+    expect(xp, 4, reason: '2 XP per Easy review');
     await tester.runAsync(db.close);
   });
 }

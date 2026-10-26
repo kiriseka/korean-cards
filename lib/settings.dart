@@ -12,6 +12,10 @@ class Settings {
     this.reminderEnabled = false,
     this.reminderTime = const TimeOfDay(hour: 20, minute: 0),
     this.themeMode = ThemeMode.system,
+    this.dailyGoal = 50,
+    this.soundEffects = true,
+    this.haptics = true,
+    this.typingExercises = true,
   });
 
   final int newPerDay;
@@ -23,6 +27,12 @@ class Settings {
   final TimeOfDay reminderTime;
   final ThemeMode themeMode;
 
+  /// Daily XP goal: 20 casual, 50 regular, 100 serious, 200 intense.
+  final int dailyGoal;
+  final bool soundEffects;
+  final bool haptics;
+  final bool typingExercises;
+
   Settings copyWith({
     int? newPerDay,
     int? reviewCap,
@@ -32,6 +42,10 @@ class Settings {
     bool? reminderEnabled,
     TimeOfDay? reminderTime,
     ThemeMode? themeMode,
+    int? dailyGoal,
+    bool? soundEffects,
+    bool? haptics,
+    bool? typingExercises,
   }) =>
       Settings(
         newPerDay: newPerDay ?? this.newPerDay,
@@ -42,6 +56,10 @@ class Settings {
         reminderEnabled: reminderEnabled ?? this.reminderEnabled,
         reminderTime: reminderTime ?? this.reminderTime,
         themeMode: themeMode ?? this.themeMode,
+        dailyGoal: dailyGoal ?? this.dailyGoal,
+        soundEffects: soundEffects ?? this.soundEffects,
+        haptics: haptics ?? this.haptics,
+        typingExercises: typingExercises ?? this.typingExercises,
       );
 
   static Settings load(SharedPreferences p) {
@@ -58,6 +76,10 @@ class Settings {
         minute: p.getInt('reminderMinute') ?? d.reminderTime.minute,
       ),
       themeMode: ThemeMode.values[p.getInt('themeMode') ?? d.themeMode.index],
+      dailyGoal: p.getInt('dailyGoal') ?? d.dailyGoal,
+      soundEffects: p.getBool('soundEffects') ?? d.soundEffects,
+      haptics: p.getBool('haptics') ?? d.haptics,
+      typingExercises: p.getBool('typingExercises') ?? d.typingExercises,
     );
   }
 
@@ -71,6 +93,10 @@ class Settings {
     await p.setInt('reminderHour', reminderTime.hour);
     await p.setInt('reminderMinute', reminderTime.minute);
     await p.setInt('themeMode', themeMode.index);
+    await p.setInt('dailyGoal', dailyGoal);
+    await p.setBool('soundEffects', soundEffects);
+    await p.setBool('haptics', haptics);
+    await p.setBool('typingExercises', typingExercises);
   }
 }
 

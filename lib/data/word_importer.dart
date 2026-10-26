@@ -38,6 +38,8 @@ Future<void> importWords(AppDatabase db, List<Map<String, dynamic>> items) async
             category: Value(w['category'] as String?),
             senses: jsonEncode(w['senses']),
             rank: w['rank'] as int,
+            unit: Value(w['unit'] as String?),
+            forms: Value(w['forms'] == null ? null : jsonEncode(w['forms'])),
           ),
       ]);
     });

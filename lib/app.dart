@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'features/browse/browse_screen.dart';
 import 'features/home/home_screen.dart';
-import 'features/settings/settings_screen.dart';
-import 'features/stats/stats_screen.dart';
+import 'features/learn/learn_screen.dart';
+import 'features/me/me_screen.dart';
+import 'features/play/play_screen.dart';
 import 'settings.dart';
+import 'widgets/celebrations.dart';
 
 const _seed = Color(0xFF0047A0); // the blue of the taegeukgi
 
@@ -18,9 +20,12 @@ class KoreanCardsApp extends ConsumerWidget {
     return MaterialApp(
       title: 'Korean Cards',
       debugShowCheckedModeBanner: false,
+      navigatorKey: navigatorKey,
+      scaffoldMessengerKey: messengerKey,
       themeMode: themeMode,
       theme: ThemeData(colorSchemeSeed: _seed, brightness: Brightness.light),
       darkTheme: ThemeData(colorSchemeSeed: _seed, brightness: Brightness.dark),
+      builder: (context, child) => CelebrationHost(child: child!),
       home: const HomeShell(),
     );
   }
@@ -41,17 +46,17 @@ class _HomeShellState extends State<HomeShell> {
     return Scaffold(
       body: IndexedStack(
         index: _tab,
-        children: const [HomeScreen(), BrowseScreen(), StatsScreen(), SettingsScreen()],
+        children: const [HomeScreen(), LearnScreen(), PlayScreen(), BrowseScreen(), MeScreen()],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _tab,
         onDestinationSelected: (i) => setState(() => _tab = i),
         destinations: const [
-          NavigationDestination(icon: Icon(Icons.today_outlined), selectedIcon: Icon(Icons.today), label: 'Today'),
+          NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Home'),
+          NavigationDestination(icon: Icon(Icons.school_outlined), selectedIcon: Icon(Icons.school), label: 'Learn'),
+          NavigationDestination(icon: Icon(Icons.sports_esports_outlined), selectedIcon: Icon(Icons.sports_esports), label: 'Play'),
           NavigationDestination(icon: Icon(Icons.style_outlined), selectedIcon: Icon(Icons.style), label: 'Words'),
-          NavigationDestination(icon: Icon(Icons.insights_outlined), selectedIcon: Icon(Icons.insights), label: 'Stats'),
-          NavigationDestination(
-              icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: 'Settings'),
+          NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Me'),
         ],
       ),
     );

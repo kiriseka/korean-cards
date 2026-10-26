@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../data/db.dart';
 import '../../providers.dart';
 import '../../widgets/common.dart';
+import 'add_word_screen.dart';
 
 class WordDetailScreen extends ConsumerWidget {
   const WordDetailScreen({super.key, required this.wordId});
@@ -170,7 +171,7 @@ class _CardProgress extends StatelessWidget {
   }
 }
 
-enum _Action { suspend, reset, delete }
+enum _Action { edit, suspend, reset, delete }
 
 class _Menu extends ConsumerWidget {
   const _Menu({required this.word});
@@ -200,6 +201,8 @@ class _Menu extends ConsumerWidget {
         return PopupMenuButton<_Action>(
           onSelected: (action) async {
             switch (action) {
+              case _Action.edit:
+                await Navigator.of(context).push(MaterialPageRoute(builder: (_) => AddWordScreen(existing: word)));
               case _Action.suspend:
                 await db.setSuspended(word.id, !suspended);
               case _Action.reset:
@@ -214,6 +217,7 @@ class _Menu extends ConsumerWidget {
             }
           },
           itemBuilder: (_) => [
+            if (word.isCustom) const PopupMenuItem(value: _Action.edit, child: Text('Edit word')),
             PopupMenuItem(value: _Action.suspend, child: Text(suspended ? 'Unsuspend' : 'Suspend (stop showing)')),
             const PopupMenuItem(value: _Action.reset, child: Text('Reset progress')),
             if (word.isCustom) const PopupMenuItem(value: _Action.delete, child: Text('Delete word')),

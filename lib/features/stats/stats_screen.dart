@@ -30,7 +30,7 @@ class StatsScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           Row(
             children: [
-              Expanded(child: _Tile(label: 'Day streak', value: '${streakOf(logs, now)}')),
+              Expanded(child: _Tile(label: 'Day streak', value: '${ref.watch(profileProvider).value?.streak.days ?? streakOf(logs, now)}')),
               const SizedBox(width: 12),
               Expanded(child: _Tile(label: 'Retention (30d)', value: retention == null ? '–' : '${(retention * 100).round()}%')),
               const SizedBox(width: 12),

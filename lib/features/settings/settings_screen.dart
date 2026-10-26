@@ -27,9 +27,9 @@ class SettingsScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text('설정 · Settings')),
       body: ListView(
         children: [
-          header('Study'),
+          header('Flashcards'),
           ListTile(
-            title: const Text('New words per day'),
+            title: const Text('New flashcards per day'),
             subtitle: Slider(
               value: s.newPerDay.toDouble(),
               min: 0,
@@ -53,6 +53,39 @@ class SettingsScreen extends ConsumerWidget {
             subtitle: const Text('Adds a reverse card once you have studied a word'),
             value: s.reverseCards,
             onChanged: (v) => notifier.update((s) => s.copyWith(reverseCards: v)),
+          ),
+          header('Goals & fun'),
+          ListTile(
+            title: const Text('Daily XP goal'),
+            subtitle: Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: SegmentedButton<int>(
+                segments: const [
+                  ButtonSegment(value: 20, label: Text('20')),
+                  ButtonSegment(value: 50, label: Text('50')),
+                  ButtonSegment(value: 100, label: Text('100')),
+                  ButtonSegment(value: 200, label: Text('200')),
+                ],
+                selected: {s.dailyGoal},
+                onSelectionChanged: (v) => notifier.update((s) => s.copyWith(dailyGoal: v.first)),
+              ),
+            ),
+          ),
+          SwitchListTile(
+            title: const Text('Sound effects'),
+            value: s.soundEffects,
+            onChanged: (v) => notifier.update((s) => s.copyWith(soundEffects: v)),
+          ),
+          SwitchListTile(
+            title: const Text('Vibration'),
+            value: s.haptics,
+            onChanged: (v) => notifier.update((s) => s.copyWith(haptics: v)),
+          ),
+          SwitchListTile(
+            title: const Text('Typing exercises'),
+            subtitle: const Text('Type answers with your Korean keyboard in lessons'),
+            value: s.typingExercises,
+            onChanged: (v) => notifier.update((s) => s.copyWith(typingExercises: v)),
           ),
           header('Audio'),
           SwitchListTile(
