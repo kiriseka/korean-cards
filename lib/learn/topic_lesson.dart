@@ -38,13 +38,15 @@ List<ActivitiesCompanion> sessionActivities(GameService game, ExerciseSession s)
       if (s.xp > 0) game.activity(ActivityKind.answer, xp: s.xp, value: s.correctFirstTry),
       if (s.bestCombo > 0) game.activity(ActivityKind.combo, value: s.bestCombo),
       if (s.sentencesBuilt > 0) game.activity(ActivityKind.sentence, value: s.sentencesBuilt),
+      if (s.spoken > 0) game.activity(ActivityKind.spoken, value: s.spoken),
     ];
 
 Future<bool?> openTopicLesson(BuildContext context, WidgetRef ref, TopicLesson lesson, TopicUnit unit) async {
   final pool = await ref.read(allWordsProvider.future);
   if (!context.mounted) return null;
   final generator = ExerciseGenerator(pool: pool);
-  final exercises = generator.topicPractice(lesson.words, typingOn: ref.read(settingsProvider).typingExercises);
+  final settings = ref.read(settingsProvider);
+  final exercises = generator.topicPractice(lesson.words, typingOn: settings.typingExercises, speakingOn: settings.speakingExercises);
   return Navigator.of(context).push<bool>(MaterialPageRoute(
     fullscreenDialog: true,
     builder: (_) => LessonScreen(

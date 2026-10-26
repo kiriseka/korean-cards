@@ -12,7 +12,7 @@ sealed class Exercise {
   final List<int> wordIds;
 }
 
-enum PromptStyle { korean, english, audio, sentence }
+enum PromptStyle { korean, english, audio, sentence, dialogue }
 
 /// Pick one of several options. Covers meaning checks, listening, particles and conjugation.
 class ChoiceExercise extends Exercise {
@@ -81,6 +81,65 @@ class SentenceExercise extends Exercise {
   final String? explanation;
 
   String get sentence => answer.join(' ');
+}
+
+enum SpeakMode {
+  /// Korean shown; read it aloud.
+  readAloud,
+
+  /// English shown; say it in Korean (recall).
+  sayIt,
+
+  /// Hear it first, then repeat; the text appears after trying.
+  shadow,
+}
+
+/// Say something out loud; the phone's speech recognition checks it.
+class SpeakExercise extends Exercise {
+  const SpeakExercise({required this.target, required this.mode, this.english, super.wordIds});
+  final String target;
+  final SpeakMode mode;
+  final String? english;
+}
+
+/// Hear a sentence, rebuild it from word tiles (or type it).
+class DictationExercise extends Exercise {
+  const DictationExercise({required this.answer, required this.tiles, super.wordIds});
+  final List<String> answer;
+  final List<String> tiles;
+
+  String get sentence => answer.join(' ');
+}
+
+/// Korean example sentences and spoken mini dialogues from KRDict, for listening and speaking.
+class SentenceBank {
+  SentenceBank(this.sentences, this.dialogues);
+
+  /// (sentence, word id)
+  final List<(String, int)> sentences;
+
+  /// ([line A, line B], word id)
+  final List<(List<String>, int)> dialogues;
+
+  /// Collects short sentences from [words]; [maxLength] keeps them speakable.
+  factory SentenceBank.fromWords(Iterable<Word> words, {int maxLength = 32}) {
+    final sentences = <(String, int)>[];
+    final dialogues = <(List<String>, int)>[];
+    final seen = <String>{};
+    for (final w in words) {
+      for (final sense in w.senseList) {
+        for (final e in sense.examples) {
+          if (e.length <= maxLength && seen.add(e)) sentences.add((e, w.id));
+        }
+        for (final d in sense.dialogues) {
+          if (d.length == 2 && seen.add(d.join('|'))) dialogues.add((d, w.id));
+        }
+      }
+    }
+    return SentenceBank(sentences, dialogues);
+  }
+
+  bool get isEmpty => sentences.isEmpty && dialogues.isEmpty;
 }
 
 /// Hangul letters standing alone (ㄹ, ㅂ) — never valid inside a finished word.
@@ -190,8 +249,53 @@ class ExerciseGenerator {
         wordIds: [w.id],
       );
 
+  SpeakExercise speakRead(Word w) => SpeakExercise(target: w.word, mode: SpeakMode.readAloud, english: shortGloss(w), wordIds: [w.id]);
+
+  SpeakExercise speakSay(Word w) => SpeakExercise(target: w.word, mode: SpeakMode.sayIt, english: shortGloss(w), wordIds: [w.id]);
+
+  SpeakExercise shadow(String sentence, {int? wordId, String? english}) =>
+      SpeakExercise(target: sentence, mode: SpeakMode.shadow, english: english, wordIds: [?wordId]);
+
+  /// Rebuild [sentence] after hearing it; two decoy words come from [decoys].
+  DictationExercise dictation(String sentence, {int? wordId, List<String> decoys = const []}) {
+    final answer = sentence.split(' ');
+    final extra = <String>{};
+    for (final d in [...decoys]..shuffle(rng)) {
+      for (final token in d.split(' ')) {
+        if (!answer.contains(token) && token.length >= 2) extra.add(token);
+      }
+      if (extra.length >= 2) break;
+    }
+    return DictationExercise(answer: answer, tiles: [...answer, ...extra.take(2)]..shuffle(rng), wordIds: [?wordId]);
+  }
+
+  /// Line A of a mini dialogue → pick B among replies from other dialogues.
+  ChoiceExercise? reply(List<String> dialogue, List<List<String>> others, {int? wordId}) {
+    final wrong = <String>{};
+    for (final o in [...others]..shuffle(rng)) {
+      if (o[1] != dialogue[1] && o[0] != dialogue[0]) wrong.add(o[1]);
+      if (wrong.length == 3) break;
+    }
+    if (wrong.length < 2) return null;
+    final options = [dialogue[1], ...wrong]..shuffle(rng);
+    return ChoiceExercise(
+      instruction: 'Pick the natural reply',
+      prompt: dialogue[0],
+      style: PromptStyle.dialogue,
+      options: options,
+      answer: options.indexOf(dialogue[1]),
+      optionsKorean: true,
+      speak: dialogue[1],
+      wordIds: [?wordId],
+    );
+  }
+
   /// About 14 exercises covering every word of a topic lesson, easy to hard.
-  List<Exercise> topicPractice(List<Word> words, {required bool typingOn}) {
+  /// Phrase lessons lean on speaking: saying a phrase is the whole point.
+  List<Exercise> topicPractice(List<Word> words, {required bool typingOn, bool speakingOn = false}) {
+    if (words.isNotEmpty && words.every((w) => w.pos == 'phrase')) {
+      return _phrasePractice(words, typingOn: typingOn, speakingOn: speakingOn);
+    }
     final shuffled = [...words]..shuffle(rng);
     final firstPass = shuffled.take(6).toList();
     final rest = shuffled.skip(6).toList();
@@ -211,6 +315,38 @@ class ExerciseGenerator {
     if (typingOn) {
       final short = pick.where((w) => w.word.length <= 4).toList();
       if (short.isNotEmpty) out.add(typing(short.last));
+    }
+    if (speakingOn) {
+      out.insert(out.length ~/ 2, speakRead(pick[5 % pick.length]));
+      out.add(speakSay(pick[6 % pick.length]));
+    }
+    return out;
+  }
+
+  List<Exercise> _phrasePractice(List<Word> words, {required bool typingOn, required bool speakingOn}) {
+    final pick = [...words]..shuffle(rng);
+    final out = <Exercise>[
+      for (final w in pick.take(5)) meaning(w),
+      if (pick.length >= 3) match(pick.take(5).toList()),
+      for (final w in pick.skip(5).take(3)) reverse(w),
+      listening(pick[0], pickKorean: false),
+      listening(pick[1 % pick.length]),
+    ];
+    if (speakingOn) {
+      for (final w in pick.take(2)) {
+        out.add(speakRead(w));
+      }
+      for (final w in pick.skip(2).take(3)) {
+        out.add(speakSay(w));
+      }
+    } else {
+      for (final w in pick.skip(2).take(3)) {
+        out.add(reverse(w));
+      }
+    }
+    if (typingOn) {
+      final short = pick.where((w) => w.word.replaceAll(RegExp(r'[.?!,]'), '').length <= 5).toList();
+      if (short.isNotEmpty) out.add(typing(short.first));
     }
     return out;
   }

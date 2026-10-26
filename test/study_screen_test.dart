@@ -24,7 +24,7 @@ class SilentTts extends TtsService {
   Future<bool> get koreanAvailable async => true;
 
   @override
-  Future<void> speak(String text, {required double rate}) async => spoken.add(text);
+  Future<void> speak(String text, {required double rate, double pitch = 1.0}) async => spoken.add(text);
 
   @override
   Future<void> stop() async {}

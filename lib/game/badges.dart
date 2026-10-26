@@ -10,6 +10,10 @@ class GameStats {
     this.challengesPassed = 0,
     this.bestSpeedRound = 0,
     this.customWords = 0,
+    this.spokenTotal = 0,
+    this.scenesDone = 0,
+    this.dailyDays = 0,
+    this.phrasesLearned = 0,
     this.completedLessons = const {},
     this.grammarUnits = const {},
     this.hour = 12,
@@ -24,6 +28,10 @@ class GameStats {
   final int challengesPassed;
   final int bestSpeedRound;
   final int customWords;
+  final int spokenTotal;
+  final int scenesDone;
+  final int dailyDays;
+  final int phrasesLearned;
   final Set<String> completedLessons;
 
   /// Grammar unit id → its lesson ids.
@@ -69,6 +77,13 @@ final badges = <GameBadge>[
   GameBadge('challenge5', '🗺️', 'World tour', 'Pass 5 unit challenges', (s) => s.challengesPassed >= 5),
   GameBadge('speed30', '🏎️', 'Speed demon', 'Score 30 in Speed Round', (s) => s.bestSpeedRound >= 30),
   GameBadge('collector', '✏️', 'My own words', 'Add 10 words of your own', (s) => s.customWords >= 10),
+  GameBadge('spoken1', '🎤', 'First words', 'Say something in Korean out loud', (s) => s.spokenTotal >= 1),
+  GameBadge('spoken100', '📣', 'Chatterbox', 'Say 100 things out loud', (s) => s.spokenTotal >= 100),
+  GameBadge('roleplay', '🎭', 'Role-play star', 'Finish a conversation scene', (s) => s.scenesDone >= 1),
+  GameBadge('scenes10', '🎬', 'Drama star', 'Finish 10 conversation scenes', (s) => s.scenesDone >= 10),
+  GameBadge('phrasebook', '📕', 'Phrasebook', 'Learn all 150 survival phrases', (s) => s.phrasesLearned >= 150),
+  GameBadge('daily7', '⏱️', 'Daily habit', "Finish today's session 7 times", (s) => s.dailyDays >= 7),
+  GameBadge('daily30', '🗓️', 'Unbreakable habit', "Finish today's session 30 times", (s) => s.dailyDays >= 30),
   GameBadge('night_owl', '🦉', 'Night owl', 'Study after 11 pm', (s) => s.hour >= 23 || s.hour < 4),
   GameBadge('early_bird', '🐦', 'Early bird', 'Study before 7 am', (s) => s.hour >= 4 && s.hour < 7),
 ];

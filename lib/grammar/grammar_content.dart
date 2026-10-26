@@ -255,10 +255,18 @@ class GrammarExerciseBuilder {
   }
 
   /// Written items first in order, drills mixed in after the first two.
-  List<Exercise> lessonPractice(GrammarLesson lesson, {required bool typingOn}) {
+  List<Exercise> lessonPractice(GrammarLesson lesson, {required bool typingOn, bool speakingOn = false}) {
     final written = [for (final item in lesson.practice) fromItem(item)];
     final drills = [for (final d in lesson.drills) ...drill(d)]..shuffle(rng);
     final out = [...written.take(2), ...drills, ...written.skip(2)];
+    if (speakingOn) {
+      // Repeat one of the lesson's own example sentences out loud.
+      final examples = [for (final c in lesson.cards) ...c.examples].where((e) => e.ko.length <= 30).toList();
+      if (examples.isNotEmpty) {
+        final e = examples[rng.nextInt(examples.length)];
+        out.insert(min(3, out.length), SpeakExercise(target: e.ko, mode: SpeakMode.shadow, english: e.en));
+      }
+    }
     if (typingOn) {
       // One typed conjugation for tense-style lessons keeps the keyboard in play.
       final conj = drills.whereType<ChoiceExercise>().where((e) => e.instruction.startsWith('Conjugate')).firstOrNull;

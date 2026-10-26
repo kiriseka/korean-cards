@@ -21,12 +21,15 @@ class TopicUnit {
 
 const myWordsUnit = TopicUnit(id: customUnit, title: 'My words', titleKo: '내 단어', emoji: '✏️');
 
-/// Units in recommended order, with "My words" last.
+/// Units in recommended order: survival phrases first, then word topics, "My words" last.
 Future<List<TopicUnit>> loadCurriculum([AssetBundle? bundle]) async {
-  final raw = await (bundle ?? rootBundle).loadString('assets/data/curriculum.json');
-  final units = (jsonDecode(raw)['units'] as List).cast<Map<String, dynamic>>();
-  return [...units.map(TopicUnit.fromJson), myWordsUnit];
+  final b = bundle ?? rootBundle;
+  final phrases = (jsonDecode(await b.loadString('assets/data/phrases.json'))['units'] as List).cast<Map<String, dynamic>>();
+  final units = (jsonDecode(await b.loadString('assets/data/curriculum.json'))['units'] as List).cast<Map<String, dynamic>>();
+  return [...phrases.map(TopicUnit.fromJson), ...units.map(TopicUnit.fromJson), myWordsUnit];
 }
+
+bool isPhraseUnit(String unitId) => unitId.startsWith('phrases_');
 
 class TopicLesson {
   const TopicLesson({required this.unitId, required this.index, required this.words});

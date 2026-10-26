@@ -16,6 +16,7 @@ Future<void> main() async {
   final prefs = await SharedPreferences.getInstance();
   final db = openAppDatabase();
   await importBundledWords(db, prefs);
+  await importBundledPhrases(db);
   final grammar = await loadGrammar();
   final game = GameService(db, grammarUnits: {
     for (final u in grammar) u.id: [for (final l in u.lessons) l.progressId],

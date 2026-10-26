@@ -111,6 +111,9 @@ abstract final class ActivityKind {
   static const combo = 'combo';
   static const quest = 'quest';
   static const wordAdded = 'word_added';
+  static const spoken = 'spoken';
+  static const dialogue = 'dialogue';
+  static const daily = 'daily';
 }
 
 class LessonProgress extends Table {
@@ -143,19 +146,39 @@ class QuestClaims extends Table {
 }
 
 class Sense {
-  const Sense({required this.meanings, this.definition = '', this.example});
+  const Sense({
+    required this.meanings,
+    this.definition = '',
+    this.example,
+    this.examples = const [],
+    this.dialogues = const [],
+  });
 
   final List<String> meanings;
   final String definition;
   final String? example;
 
+  /// Up to 3 KRDict example sentences (written style, Korean only).
+  final List<String> examples;
+
+  /// Two-line spoken mini dialogues from KRDict: [question, answer].
+  final List<List<String>> dialogues;
+
   factory Sense.fromJson(Map<String, dynamic> json) => Sense(
         meanings: (json['meanings'] as List).cast<String>(),
         definition: json['definition'] as String? ?? '',
         example: json['example'] as String?,
+        examples: ((json['examples'] as List?) ?? [if (json['example'] != null) json['example']]).cast<String>(),
+        dialogues: [for (final d in (json['dialogues'] as List?) ?? const []) (d as List).cast<String>()],
       );
 
-  Map<String, dynamic> toJson() => {'meanings': meanings, 'definition': definition, 'example': example};
+  Map<String, dynamic> toJson() => {
+        'meanings': meanings,
+        'definition': definition,
+        'example': example,
+        'examples': examples,
+        'dialogues': dialogues,
+      };
 }
 
 extension WordSenses on Word {
@@ -266,8 +289,9 @@ class AppDatabase extends _$AppDatabase {
     return rows.map((r) => CardWithWord(r.readTable(cards), r.readTable(words))).toList();
   }
 
+  /// Phrases are always practised both ways: saying them is the point.
   Expression<bool> _reverseAllowed(bool reverse) =>
-      reverse ? const Constant(true) : cards.direction.equals(Direction.koToEn);
+      reverse ? const Constant(true) : cards.direction.equals(Direction.koToEn) | words.pos.equals('phrase');
 
   /// Learning cards due soon and review cards due before the next study day.
   Future<List<CardWithWord>> dueCards(DateTime now, {required bool reverse, int? limit}) {
@@ -427,7 +451,7 @@ class AppDatabase extends _$AppDatabase {
           word: word,
           pos: pos,
           level: 'custom',
-          senses: jsonEncode([Sense(meanings: meanings, example: example).toJson()]),
+          senses: jsonEncode([Sense(meanings: meanings, example: example, examples: [?example]).toJson()]),
           rank: 0,
           isCustom: const Value(true),
           note: Value(note),
@@ -449,7 +473,7 @@ class AppDatabase extends _$AppDatabase {
       (update(words)..where((w) => w.id.equals(id) & w.isCustom.equals(true))).write(WordsCompanion(
         word: Value(word),
         pos: Value(pos),
-        senses: Value(jsonEncode([Sense(meanings: meanings, example: example).toJson()])),
+        senses: Value(jsonEncode([Sense(meanings: meanings, example: example, examples: [?example]).toJson()])),
         note: Value(note),
         unit: Value(unit),
       ));

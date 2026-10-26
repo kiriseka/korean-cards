@@ -6,6 +6,7 @@ import 'game/sound_service.dart';
 import 'learn/curriculum.dart';
 import 'services/notification_service.dart';
 import 'services/tts_service.dart';
+import 'speech/speech_service.dart';
 import 'settings.dart';
 import 'srs/scheduler.dart';
 
@@ -13,6 +14,7 @@ final dbProvider = Provider<AppDatabase>((ref) => throw UnimplementedError('over
 final notificationsProvider = Provider<NotificationService>((ref) => throw UnimplementedError('overridden in main'));
 
 final ttsProvider = Provider<TtsService>((ref) => TtsService());
+final speechProvider = Provider<SpeechService>((ref) => DeviceSpeechService());
 final schedulerProvider = Provider<Scheduler>((ref) => Scheduler());
 
 final koreanVoiceProvider = FutureProvider<bool>((ref) => ref.watch(ttsProvider).koreanAvailable);

@@ -5,12 +5,14 @@ import '../../data/db.dart';
 import '../../game/game_service.dart';
 import '../../grammar/grammar_content.dart';
 import '../../learn/curriculum.dart';
+import '../../learn/daily_plan.dart';
 import '../../learn/grammar_lesson.dart';
 import '../../learn/topic_lesson.dart';
 import '../../providers.dart';
 import '../../settings.dart';
 import '../../widgets/common.dart';
 import '../browse/add_word_screen.dart';
+import '../daily/daily_session_screen.dart';
 import '../study/study_screen.dart';
 
 /// The first unfinished topic lesson, following the curriculum order.
@@ -70,6 +72,8 @@ class HomeScreen extends ConsumerWidget {
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
         children: [
           if (!hasVoice) const _NoVoiceBanner(),
+          const _TodayCard(),
+          const SizedBox(height: 12),
           if (profile != null) _GoalCard(profile: profile, goal: goal),
           const SizedBox(height: 12),
           const _ContinueCard(),
@@ -107,6 +111,56 @@ class _Chip extends StatelessWidget {
           child: Text(text, style: const TextStyle(fontWeight: FontWeight.bold)),
         ),
       );
+}
+
+/// The main button: today's guided session and how far along it is.
+class _TodayCard extends ConsumerWidget {
+  const _TodayCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final done = ref.watch(dailyProgressProvider).value ?? const {};
+    final minutes = ref.watch(settingsProvider.select((s) => s.dailyMinutes));
+    final steps = DailyStep.values.where((s) => done.contains(s.code)).length;
+    final complete = done.contains(DailyStep.completeCode);
+    final theme = Theme.of(context);
+    return Card(
+      color: complete ? Colors.green.withValues(alpha: 0.15) : theme.colorScheme.tertiaryContainer,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const DailySessionScreen())),
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Row(children: [
+            Text(complete ? '🏅' : '⏱️', style: const TextStyle(fontSize: 44)),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(complete ? "Today's session done!" : '오늘의 $minutes분', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                Text(complete ? 'See you tomorrow 🐯' : "Today's session · review, speak & listen, something new"),
+                const SizedBox(height: 8),
+                Row(children: [
+                  for (final s in DailyStep.values)
+                    Expanded(
+                      child: Container(
+                        height: 8,
+                        margin: const EdgeInsets.only(right: 4),
+                        decoration: BoxDecoration(
+                          color: done.contains(s.code) ? Colors.green : theme.colorScheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    ),
+                ]),
+                Text('$steps / 3 steps', style: theme.textTheme.bodySmall),
+              ]),
+            ),
+            const Icon(Icons.chevron_right, size: 32),
+          ]),
+        ),
+      ),
+    );
+  }
 }
 
 class _GoalCard extends StatelessWidget {

@@ -75,8 +75,18 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
     setState(() {});
   }
 
+  /// "Can't talk now": move on without judging the exercise.
+  Future<void> _skip() async {
+    _session.skip();
+    await _afterStep();
+  }
+
   Future<void> _continue() async {
     _session.next();
+    await _afterStep();
+  }
+
+  Future<void> _afterStep() async {
     _turn++;
     if (_session.finished) {
       final outcome = await widget.onComplete(_session);
@@ -191,7 +201,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                     ),
                     child: KeyedSubtree(
                       key: ValueKey(_turn),
-                      child: ExerciseView(exercise: ex, onAnswer: _onAnswer),
+                      child: ExerciseView(exercise: ex, onAnswer: _onAnswer, onSkip: _skip),
                     ),
                   ),
           ),
@@ -236,6 +246,8 @@ class _FeedbackBar extends StatelessWidget {
         final SyllableExercise e => e.answer,
         final TypingExercise e => e.answer,
         final SentenceExercise e => e.sentence,
+        final SpeakExercise e => e.target,
+        final DictationExercise e => e.sentence,
         MatchExercise() => null,
       };
 

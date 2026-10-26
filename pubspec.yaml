@@ -1,7 +1,7 @@
 name: korean_cards
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.1.0+2
+version: 1.2.0+3
 
 environment:
   sdk: ^3.13.7
@@ -22,6 +22,7 @@ dependencies:
   intl: ^0.20.3
   path_provider: ^2.1.6
   shared_preferences: ^2.5.6
+  speech_to_text: ^7.5.0
   timezone: ^0.11.2
 
 dev_dependencies:

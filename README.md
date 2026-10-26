@@ -1,13 +1,16 @@
 # Korean Cards
 
-A personal, offline, gamified Korean app for Android: topic lessons, grammar lessons, word games and Anki-style flashcards (FSRS), built on 2,492 beginner (초급) words from the National Institute of Korean Language's Basic Korean Dictionary, with Korean pronunciation through the phone's text-to-speech.
+A personal, offline, gamified Korean app for Android focused on talking with people: speaking practice with speech recognition, conversation role-play, survival phrases, topic and grammar lessons, word games and Anki-style flashcards (FSRS), built on 2,492 beginner (초급) words from the National Institute of Korean Language's Basic Korean Dictionary, with Korean pronunciation through the phone's text-to-speech.
 
 ## Using it
 
+- **Today's session (오늘의 15분)**: one button on Home, three short steps sized to 10/15/20 minutes — due flashcards, speak & listen (shadowing, natural replies, dictation, a phrase from English), then something new (the next conversation scene, topic lesson or grammar point). +25 XP for finishing.
+- **Speaking**: lessons, scenes and the Echo game use the phone's speech recognition (Google, works offline with the Korean speech pack). You see which syllables were heard right; two tries; "Can't talk now" skips without penalty.
 - **Home**: daily XP goal ring, streak 🔥 (with streak freezes 🧊), three daily quests, *Continue* buttons for your next topic and grammar lesson, flashcard review, word of the day.
-- **Learn → Topics**: 20 topics (Food, Family, Weather, Transport…) plus *My words*. Each is a path of 8-word lessons: meet the words, then ~14 mixed exercises (meaning, listening, matching pairs, syllable building, typing), then stars. Lessons inside a topic unlock in order; finish them all to unlock the 🏆 unit challenge (3 hearts). Learned words go into your flashcards automatically.
+- **Learn → Topics**: 8 survival-phrase units first (150 phrases: politeness, not understanding, café, shopping, getting around, meeting people, reactions, help — practised by saying them), then 20 topics (Food, Family, Weather, Transport…) plus *My words*. Each is a path of 8-word lessons: meet the words, then ~14 mixed exercises (meaning, listening, matching pairs, syllable building, typing), then stars. Lessons inside a topic unlock in order; finish them all to unlock the 🏆 unit challenge (3 hearts). Learned words go into your flashcards automatically.
+- **Learn → Talk**: 24 everyday conversation scenes (introductions, café, taxi, pharmacy, weekend plans…). Listen, understand, shadow your lines, then role-play: the app speaks the other person and checks what you say.
 - **Learn → Grammar**: 37 lessons in 5 units — sentence basics (word order, 이에요, 있어요, speech levels), particles (은/는, 이/가, 을/를, 도, 에, 에서, 의, 하고, (으)로, 부터/까지, 한테, 만), tenses (present, past, future, -고 있어요, formal, negation, irregular verbs), connecting & describing endings (-고, -지만, -아서, -(으)니까, -(으)면, -는, -(으)ㄴ, -(으)ㄹ) and everyday patterns (-고 싶어요, -(으)세요, -아/어 주세요, can, must, shall we). Each lesson has swipeable explanation cards with formulas and tap-to-hear examples, then sentence building, fill-in-the-blank and conjugation drills generated from real words.
-- **Play**: Speed Round, Match Madness, Listening Challenge, Sentence Builder, Spelling Bee — with your learned words, a topic, or your own words. Personal bests are kept.
+- **Play**: Speed Round, Match Madness, Listening Challenge (now with "pick the natural reply"), Sentence Builder, Spelling Bee, Echo (repeat sentences against the clock) — with your learned words, a topic, or your own words. Personal bests are kept.
 - **Words**: search and filter all words; add your own (with a topic) and edit them.
 - **Me**: level and title (새싹 → 한국어 왕), XP, 23 badges, detailed stats, ⚙ settings (daily goal, sounds, vibration, typing exercises, flashcards, reminder, theme, backup).
 
@@ -18,7 +21,8 @@ The study day rolls over at 4am.
 Built APKs are kept per version in `releases/` (git-ignored):
 
 - `releases/v1.0.0/` — the first build (flashcards only; reports version 0.1.0).
-- `releases/v1.1.0/korean-cards-1.1.0-arm64.apk` — this version. Installs over either earlier APK and keeps your progress (same signing key, higher version code).
+- `releases/v1.1.0/` — topics, grammar, games, gamification.
+- `releases/v1.2.0/korean-cards-1.2.0-arm64.apk` — this version: speaking, conversations, phrases, Today's session. Installs over any earlier APK and keeps your progress (same signing key, higher version code).
 
 ## Phone setup
 
@@ -43,6 +47,7 @@ Layout: `lib/data` (drift database, word import, migrations), `lib/srs` (FSRS), 
 
 Content:
 
+- `assets/data/phrases.json` / `dialogues.json` — hand-written survival phrases (ids are permanent) and conversation scenes. Checked by `test/talk_test.dart`.
 - `assets/data/grammar.json` — the hand-written grammar course (first option in a question is the right one; the app shuffles). `test/content_test.dart` checks it.
 - `assets/sounds/*.wav` — generated by `python tools/make_sounds.py`.
 - Database schema changes: bump `schemaVersion`, run `dart run drift_dev make-migrations`, write the step in `lib/data/db.dart`, and fill in `test/drift/default/migration_test.dart`.

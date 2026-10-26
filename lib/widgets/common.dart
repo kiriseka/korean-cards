@@ -58,7 +58,7 @@ class TagChip extends StatelessWidget {
   }
 }
 
-String levelLabel(String level) => level == 'custom' ? 'My word' : level;
+String levelLabel(String level) => switch (level) { 'custom' => 'My word', 'phrase' => 'Phrase', _ => level };
 
 class SpeakButton extends ConsumerWidget {
   const SpeakButton(this.text, {super.key, this.size = 28});

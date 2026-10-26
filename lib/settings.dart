@@ -16,6 +16,8 @@ class Settings {
     this.soundEffects = true,
     this.haptics = true,
     this.typingExercises = true,
+    this.speakingExercises = true,
+    this.dailyMinutes = 15,
   });
 
   final int newPerDay;
@@ -32,6 +34,10 @@ class Settings {
   final bool soundEffects;
   final bool haptics;
   final bool typingExercises;
+  final bool speakingExercises;
+
+  /// Length of "Today's session": 10, 15 or 20 minutes.
+  final int dailyMinutes;
 
   Settings copyWith({
     int? newPerDay,
@@ -46,6 +52,8 @@ class Settings {
     bool? soundEffects,
     bool? haptics,
     bool? typingExercises,
+    bool? speakingExercises,
+    int? dailyMinutes,
   }) =>
       Settings(
         newPerDay: newPerDay ?? this.newPerDay,
@@ -60,6 +68,8 @@ class Settings {
         soundEffects: soundEffects ?? this.soundEffects,
         haptics: haptics ?? this.haptics,
         typingExercises: typingExercises ?? this.typingExercises,
+        speakingExercises: speakingExercises ?? this.speakingExercises,
+        dailyMinutes: dailyMinutes ?? this.dailyMinutes,
       );
 
   static Settings load(SharedPreferences p) {
@@ -80,6 +90,8 @@ class Settings {
       soundEffects: p.getBool('soundEffects') ?? d.soundEffects,
       haptics: p.getBool('haptics') ?? d.haptics,
       typingExercises: p.getBool('typingExercises') ?? d.typingExercises,
+      speakingExercises: p.getBool('speakingExercises') ?? d.speakingExercises,
+      dailyMinutes: p.getInt('dailyMinutes') ?? d.dailyMinutes,
     );
   }
 
@@ -97,6 +109,8 @@ class Settings {
     await p.setBool('soundEffects', soundEffects);
     await p.setBool('haptics', haptics);
     await p.setBool('typingExercises', typingExercises);
+    await p.setBool('speakingExercises', speakingExercises);
+    await p.setInt('dailyMinutes', dailyMinutes);
   }
 }
 

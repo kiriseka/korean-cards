@@ -9,7 +9,13 @@ import 'package:korean_cards/game/sound_service.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  const dataFiles = ['assets/data/words.json', 'assets/data/curriculum.json', 'assets/data/grammar.json'];
+  const dataFiles = [
+    'assets/data/words.json',
+    'assets/data/curriculum.json',
+    'assets/data/grammar.json',
+    'assets/data/phrases.json',
+    'assets/data/dialogues.json',
+  ];
 
   for (final path in dataFiles) {
     test('$path is bundled', () async {

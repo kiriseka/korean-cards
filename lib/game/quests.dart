@@ -2,7 +2,7 @@ import 'dart:math';
 
 import '../data/db.dart';
 
-enum QuestMetric { xp, lessons, reviews, combo, sentences, games, perfect, answers }
+enum QuestMetric { xp, lessons, reviews, combo, sentences, games, perfect, answers, spoken, dialogues, daily }
 
 class Quest {
   const Quest(this.id, this.emoji, this.title, this.metric, this.target);
@@ -26,6 +26,9 @@ const questPool = [
   Quest('game1', '🎮', 'Play an arcade game', QuestMetric.games, 1),
   Quest('perfect1', '💯', 'Finish a lesson with no mistakes', QuestMetric.perfect, 1),
   Quest('answers25', '✅', 'Answer 25 questions right', QuestMetric.answers, 25),
+  Quest('speak10', '🎤', 'Say 10 things out loud', QuestMetric.spoken, 10),
+  Quest('dialogue1', '🎭', 'Finish a conversation scene', QuestMetric.dialogues, 1),
+  Quest('daily', '⏱️', "Complete today's session", QuestMetric.daily, 1),
 ];
 
 /// Three quests for the study day starting at [day], each measuring something different.
@@ -54,5 +57,8 @@ int questProgress(QuestMetric metric, List<Activity> today, int reviewsToday) {
     QuestMetric.games => sum(ActivityKind.game, (_) => 1),
     QuestMetric.perfect => sum(ActivityKind.lesson, (a) => a.value == 100 ? 1 : 0), // value = accuracy %
     QuestMetric.answers => sum(ActivityKind.answer, (a) => a.value),
+    QuestMetric.spoken => sum(ActivityKind.spoken, (a) => a.value),
+    QuestMetric.dialogues => sum(ActivityKind.dialogue, (_) => 1),
+    QuestMetric.daily => sum(ActivityKind.daily, (a) => a.value == 99 ? 1 : 0),
   };
 }

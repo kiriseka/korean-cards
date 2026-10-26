@@ -211,17 +211,28 @@ def split_meanings(lemma: str) -> list[str]:
     return [p.strip() for p in parts if p.strip()]
 
 
-def pick_example(sense: ET.Element) -> str | None:
-    sentences, phrases = [], []
+MAX_EXAMPLES = 3
+MAX_DIALOGUES = 2
+MAX_DIALOGUE_LINE = 30
+
+
+def pick_examples(sense: ET.Element) -> tuple[list[str], list[list[str]]]:
+    """Up to 3 example sentences (short ones first) and 2 two-line mini dialogues."""
+    sentences, phrases, dialogues = [], [], []
     for ex in sense.findall("SenseExample"):
         f = ex.findall("feat")
         kind = next((x.get("val") for x in f if x.get("att") == "type"), "")
         texts = [x.get("val").strip() for x in f if x.get("att") == "example"]
-        if len(texts) != 1:  # dialogues have two lines
-            continue
-        (sentences if kind == "문장" else phrases).append(texts[0])
-    pool = [s for s in sentences if len(s) <= 40] or sentences or phrases
-    return min(pool, key=len) if pool else None
+        if kind == "대화":
+            if len(texts) == 2 and all(0 < len(t) <= MAX_DIALOGUE_LINE for t in texts):
+                dialogues.append(texts)
+        elif len(texts) == 1:
+            (sentences if kind == "문장" else phrases).append(texts[0])
+    short = sorted((s for s in sentences if len(s) <= 40), key=len)
+    longer = sorted((s for s in sentences if len(s) > 40), key=len)
+    examples = (short + longer)[:MAX_EXAMPLES] or sorted(phrases, key=len)[:1]
+    dialogues.sort(key=lambda d: len(d[0]) + len(d[1]))
+    return examples, dialogues[:MAX_DIALOGUES]
 
 
 def parse_entry(entry: ET.Element, levels: set[str]) -> dict | None:
@@ -240,10 +251,13 @@ def parse_entry(entry: ET.Element, levels: set[str]) -> dict | None:
                    if feats(eq).get("language") == "영어"), None)
         if not en or not en.get("lemma"):
             continue
+        examples, dialogues = pick_examples(sense)
         senses.append({
             "meanings": split_meanings(en["lemma"]),
             "definition": en.get("definition", ""),
-            "example": pick_example(sense),
+            "example": examples[0] if examples else None,
+            "examples": examples,
+            "dialogues": dialogues,
         })
         if len(senses) == MAX_SENSES:
             break
@@ -353,6 +367,8 @@ def main() -> None:
     print(f"dropped (no English): {dropped_no_en}")
     print("by unit:", {uid: unit_counts[uid] for uid, *_ in UNITS})
     verbs = [w for w in words if w["word"].endswith("다") and w["pos"] in ("verb", "adjective")]
+    senses = [s for w in words for s in w["senses"]]
+    print(f"examples: {sum(len(s['examples']) for s in senses)}, mini dialogues: {sum(len(s['dialogues']) for s in senses)}")
     print(f"conjugation forms: {sum(1 for w in verbs if w['forms'])}/{len(verbs)} verbs and adjectives")
     print("forms sample:", {w["word"]: w["forms"] for w in verbs if w["word"] in
                             ("듣다", "덥다", "모르다", "공부하다", "쓰다", "되다", "오다", "있다", "만들다")})

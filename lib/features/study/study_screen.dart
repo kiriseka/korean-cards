@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,10 +15,13 @@ import '../../srs/session_queue.dart';
 import 'flashcard.dart';
 
 class StudyScreen extends ConsumerStatefulWidget {
-  const StudyScreen({super.key, this.extraNew = 0});
+  const StudyScreen({super.key, this.extraNew = 0, this.maxCards});
 
   /// New words beyond today's limit, for "Learn 5 more words".
   final int extraNew;
+
+  /// Caps the session (Today's session keeps flashcards to its time budget).
+  final int? maxCards;
 
   @override
   ConsumerState<StudyScreen> createState() => _StudyScreenState();
@@ -44,9 +49,11 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
     final db = ref.read(dbProvider);
     final s = ref.read(settingsProvider);
     final now = DateTime.now();
-    final due = await db.dueCards(now, reverse: s.reverseCards, limit: s.reviewCap);
+    final cap = widget.maxCards;
+    final due = await db.dueCards(now, reverse: s.reverseCards, limit: cap == null ? s.reviewCap : min(s.reviewCap, cap));
     final newToday = await db.newIntroducedSince(studyDayStart(now));
-    final newLimit = (s.newPerDay - newToday).clamp(0, 9999) + widget.extraNew;
+    var newLimit = (s.newPerDay - newToday).clamp(0, 9999) + widget.extraNew;
+    if (cap != null) newLimit = min(newLimit, max(0, cap - due.length));
     final fresh = await db.newCards(reverse: s.reverseCards, limit: newLimit);
     if (!mounted) return;
     _queue = SessionQueue(due: due, newCards: fresh);

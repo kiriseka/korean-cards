@@ -13,6 +13,7 @@ import '../../learn/grammar_lesson.dart';
 import '../../learn/lesson_screen.dart';
 import '../../learn/topic_lesson.dart';
 import '../../providers.dart';
+import 'echo_screen.dart';
 import 'match_madness_screen.dart';
 import 'speed_round_screen.dart';
 
@@ -31,6 +32,7 @@ const arcadeGames = [
   ArcadeGame('listen', '🎧', 'Listening Challenge', 'Hear it, pick it. 10 rounds.', Color(0xFF1E88E5)),
   ArcadeGame('sentences', '🏗️', 'Sentence Builder', 'Build sentences from your grammar lessons.', Color(0xFF43A047)),
   ArcadeGame('spell', '🐝', 'Spelling Bee', 'Type the Korean word. 10 rounds.', Color(0xFFE53935)),
+  ArcadeGame('echo', '🦜', 'Echo', 'Repeat as many sentences as you can in 2 minutes. 🎤', Color(0xFF00897B)),
 ];
 
 /// Best score per game.
@@ -97,8 +99,19 @@ class _PlayScreenState extends ConsumerState<PlayScreen> {
       case 'match':
         await Navigator.of(context).push(MaterialPageRoute(fullscreenDialog: true, builder: (_) => MatchMadnessScreen(words: words, generator: gen)));
       case 'listen':
+        // Mix word listening with "pick the natural reply" rounds from KRDict mini dialogues.
         final picks = ([...words]..shuffle(rng)).take(10).toList();
-        await _runLessonGame(game, [for (final (i, w) in picks.indexed) gen.listening(w, pickKorean: i.isEven)]);
+        final bank = SentenceBank.fromWords(words);
+        final dialogues = [...bank.dialogues]..shuffle(rng);
+        final others = [for (final d in SentenceBank.fromWords(pool).dialogues) d.$1];
+        final rounds = <Exercise>[];
+        for (final (i, w) in picks.indexed) {
+          final reply = i % 3 == 2 && dialogues.isNotEmpty ? gen.reply(dialogues.removeLast().$1, others) : null;
+          rounds.add(reply ?? gen.listening(w, pickKorean: i.isEven));
+        }
+        await _runLessonGame(game, rounds);
+      case 'echo':
+        await Navigator.of(context).push(MaterialPageRoute(fullscreenDialog: true, builder: (_) => EchoScreen(words: words)));
       case 'spell':
         final picks = (words.where((w) => w.word.length <= 5).toList()..shuffle(rng)).take(10).toList();
         await _runLessonGame(game, [for (final w in picks) gen.typing(w)]);

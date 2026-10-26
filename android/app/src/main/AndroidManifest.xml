@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Daily reminder: re-schedule after reboot. POST_NOTIFICATIONS comes from the plugin. -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <!-- Speaking practice: asked the first time you tap the microphone. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
     <application
         android:label="Korean Cards"
@@ -56,6 +58,10 @@
         <!-- Lets flutter_tts find the phone's text-to-speech engine (Android 11+). -->
         <intent>
             <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+        <!-- Lets speech_to_text find the phone's speech recognizer (Android 11+). -->
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
         </intent>
     </queries>
 </manifest>

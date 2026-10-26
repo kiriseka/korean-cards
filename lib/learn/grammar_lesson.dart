@@ -18,7 +18,8 @@ Future<bool?> openGrammarLesson(BuildContext context, WidgetRef ref, GrammarLess
   final learned = await ref.read(learnedWordIdsProvider.future);
   if (!context.mounted) return null;
   final exercises = GrammarExerciseBuilder(words: words, learned: learned)
-      .lessonPractice(lesson, typingOn: ref.read(settingsProvider).typingExercises);
+      .lessonPractice(lesson,
+          typingOn: ref.read(settingsProvider).typingExercises, speakingOn: ref.read(settingsProvider).speakingExercises);
   return Navigator.of(context).push<bool>(MaterialPageRoute(
     fullscreenDialog: true,
     builder: (_) => LessonScreen(

@@ -7,14 +7,18 @@ import '../game/sound_service.dart';
 import '../learn/exercises.dart';
 import '../providers.dart';
 import '../settings.dart';
+import 'speak_view.dart';
 
 typedef AnswerCallback = void Function(bool correct);
 
 /// Shows any [Exercise]; calls [onAnswer] once. After that it shows what was right.
 class ExerciseView extends StatelessWidget {
-  const ExerciseView({super.key, required this.exercise, required this.onAnswer, this.instant = false});
+  const ExerciseView({super.key, required this.exercise, required this.onAnswer, this.onSkip, this.instant = false});
   final Exercise exercise;
   final AnswerCallback onAnswer;
+
+  /// "Can't talk now" on speaking exercises.
+  final VoidCallback? onSkip;
 
   /// Arcade mode: tapping an option answers immediately, no Check button.
   final bool instant;
@@ -26,6 +30,8 @@ class ExerciseView extends StatelessWidget {
         final SyllableExercise e => SyllableView(exercise: e, onAnswer: onAnswer),
         final TypingExercise e => TypingView(exercise: e, onAnswer: onAnswer),
         final SentenceExercise e => SentenceView(exercise: e, onAnswer: onAnswer),
+        final SpeakExercise e => SpeakView(exercise: e, onAnswer: onAnswer, onSkip: onSkip ?? () => onAnswer(true)),
+        final DictationExercise e => DictationView(exercise: e, onAnswer: onAnswer),
       };
 }
 
@@ -60,7 +66,9 @@ class _ChoiceViewState extends ConsumerState<ChoiceView> {
   void initState() {
     super.initState();
     final autoPlay = ref.read(settingsProvider).autoPlay;
-    if (e.speak != null && (e.style == PromptStyle.audio || (e.style == PromptStyle.korean && autoPlay))) {
+    if (e.style == PromptStyle.dialogue) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => ref.speak(e.prompt));
+    } else if (e.speak != null && (e.style == PromptStyle.audio || (e.style == PromptStyle.korean && autoPlay))) {
       WidgetsBinding.instance.addPostFrameCallback((_) => ref.speak(e.style == PromptStyle.audio ? e.prompt : e.speak!));
     }
   }
@@ -70,7 +78,9 @@ class _ChoiceViewState extends ConsumerState<ChoiceView> {
     setState(() => _picked = i);
     final correct = i == e.answer;
     widget.onAnswer(correct);
-    if (e.speak != null && e.style != PromptStyle.audio && (e.optionsKorean || e.style == PromptStyle.sentence)) {
+    if (e.speak != null &&
+        e.style != PromptStyle.audio &&
+        (e.optionsKorean || e.style == PromptStyle.sentence || e.style == PromptStyle.dialogue)) {
       ref.speak(e.speak!);
     }
   }
@@ -101,6 +111,24 @@ class _ChoiceViewState extends ConsumerState<ChoiceView> {
                   if (e.subPrompt != null) Text(e.subPrompt!, style: theme.textTheme.titleMedium, textAlign: TextAlign.center),
                 ]),
               PromptStyle.english => Text(e.prompt, textAlign: TextAlign.center, style: theme.textTheme.headlineMedium),
+              PromptStyle.dialogue => Row(children: [
+                  const Text('🧑', style: TextStyle(fontSize: 40)),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: InkWell(
+                      onTap: () => ref.speak(e.prompt),
+                      borderRadius: BorderRadius.circular(18),
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(color: scheme.secondaryContainer, borderRadius: BorderRadius.circular(18)),
+                        child: Row(children: [
+                          Expanded(child: Text(e.prompt, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600))),
+                          const Icon(Icons.volume_up_rounded),
+                        ]),
+                      ),
+                    ),
+                  ),
+                ]),
               PromptStyle.sentence => Column(mainAxisSize: MainAxisSize.min, children: [
                   Text(e.prompt, textAlign: TextAlign.center, style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w600)),
                   if (e.subPrompt != null) ...[
@@ -617,6 +645,59 @@ class _TypingViewState extends ConsumerState<TypingView> {
           ),
         const Spacer(),
         if (_result == null) _CheckButton(enabled: _controller.text.trim().isNotEmpty, onPressed: _check),
+      ],
+    );
+  }
+}
+
+// ---- Dictation --------------------------------------------------------------------
+
+class DictationView extends ConsumerStatefulWidget {
+  const DictationView({super.key, required this.exercise, required this.onAnswer});
+  final DictationExercise exercise;
+  final AnswerCallback onAnswer;
+
+  @override
+  ConsumerState<DictationView> createState() => _DictationViewState();
+}
+
+class _DictationViewState extends ConsumerState<DictationView> {
+  final List<int> _placed = [];
+  bool? _result;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => ref.speak(widget.exercise.sentence));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final e = widget.exercise;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const _Instruction('Listen and build what you hear'),
+        Center(child: _AudioPrompt(text: e.sentence)),
+        const SizedBox(height: 24),
+        _TileBuilder(
+          tiles: e.tiles,
+          placed: _placed,
+          locked: _result != null,
+          result: _result,
+          onPlace: (i) => setState(() => _placed.add(i)),
+          onRemove: (i) => setState(() => _placed.remove(i)),
+        ),
+        const Spacer(),
+        if (_result == null)
+          _CheckButton(
+            enabled: _placed.isNotEmpty,
+            onPressed: () {
+              final ok = _placed.map((i) => e.tiles[i]).join(' ') == e.sentence;
+              setState(() => _result = ok);
+              widget.onAnswer(ok);
+            },
+          ),
       ],
     );
   }

@@ -25,6 +25,12 @@ class ExerciseSession extends ChangeNotifier {
   int correctFirstTry = 0;
   int mistakes = 0;
   int sentencesBuilt = 0;
+
+  /// Speaking exercises passed (also counts toward "spoken" quests and badges).
+  int spoken = 0;
+
+  /// Exercises skipped with "Can't talk now"; they don't count for or against accuracy.
+  int skipped = 0;
   final Set<int> missedWordIds = {};
 
   /// Set after each answer until [next] is called.
@@ -39,8 +45,8 @@ class ExerciseSession extends ChangeNotifier {
   /// Progress through the first pass, 0..1 (retries don't move the bar back).
   double get progress => (_index.clamp(0, total) / total).clamp(0, 1).toDouble();
 
-  /// Share of exercises answered right on the first try.
-  double get accuracy => total == 0 ? 1 : correctFirstTry / total;
+  /// Share of exercises answered right on the first try (skipped ones left out).
+  double get accuracy => total - skipped <= 0 ? 1 : (correctFirstTry / (total - skipped)).clamp(0.0, 1.0);
 
   /// 3 stars for 90%+, 2 for 70%+, otherwise 1.
   int get stars => accuracy >= 0.9 ? 3 : accuracy >= 0.7 ? 2 : 1;
@@ -57,7 +63,8 @@ class ExerciseSession extends ChangeNotifier {
       lastXp = Xp.forAnswer(combo);
       xp += lastXp;
       if (!retry) correctFirstTry++;
-      if (ex is SentenceExercise) sentencesBuilt++;
+      if (ex is SentenceExercise || ex is DictationExercise) sentencesBuilt++;
+      if (ex is SpeakExercise) spoken++;
     } else {
       combo = 0;
       lastXp = 0;
@@ -68,6 +75,14 @@ class ExerciseSession extends ChangeNotifier {
         _queue.add(ex);
       }
     }
+    notifyListeners();
+  }
+
+  /// Moves past the current exercise without judging it.
+  void skip() {
+    if (current == null || lastCorrect != null) return;
+    if (!_missed.contains(current)) skipped++;
+    _index++;
     notifyListeners();
   }
 

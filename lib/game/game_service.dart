@@ -198,7 +198,11 @@ class GameService {
       "(SELECT COUNT(DISTINCT ref) FROM activities WHERE kind = 'challenge') AS challenges, "
       "(SELECT MAX(value) FROM activities WHERE kind = 'game' AND ref = 'speed') AS speed, "
       '(SELECT COUNT(*) FROM words WHERE is_custom = 1) AS custom, '
-      '(SELECT COUNT(*) FROM lesson_progress WHERE best_accuracy >= 1.0) AS perfect',
+      '(SELECT COUNT(*) FROM lesson_progress WHERE best_accuracy >= 1.0) AS perfect, '
+      "(SELECT COALESCE(SUM(value), 0) FROM activities WHERE kind = 'spoken') AS spoken, "
+      "(SELECT COUNT(DISTINCT ref) FROM activities WHERE kind = 'dialogue') AS scenes, "
+      "(SELECT COUNT(*) FROM activities WHERE kind = 'daily' AND value = 99) AS daily_days, "
+      "(SELECT COUNT(*) FROM cards c JOIN words w ON w.id = c.word_id WHERE w.pos = 'phrase' AND c.direction = 0 AND c.state != 0) AS phrases",
       readsFrom: {db.cards, db.activities, db.words, db.lessonProgress},
     ).getSingle();
     final completed = (await db.select(db.lessonProgress).get()).map((l) => l.lessonId).toSet();
@@ -212,6 +216,10 @@ class GameService {
       challengesPassed: readInt(row, 'challenges'),
       bestSpeedRound: readInt(row, 'speed'),
       customWords: readInt(row, 'custom'),
+      spokenTotal: readInt(row, 'spoken'),
+      scenesDone: readInt(row, 'scenes'),
+      dailyDays: readInt(row, 'daily_days'),
+      phrasesLearned: readInt(row, 'phrases'),
       completedLessons: completed,
       grammarUnits: grammarUnits,
       hour: _clock().hour,

@@ -82,6 +82,27 @@ class SettingsScreen extends ConsumerWidget {
             onChanged: (v) => notifier.update((s) => s.copyWith(haptics: v)),
           ),
           SwitchListTile(
+            title: const Text('Speaking exercises'),
+            subtitle: const Text('Say words and sentences out loud (uses the microphone)'),
+            value: s.speakingExercises,
+            onChanged: (v) => notifier.update((s) => s.copyWith(speakingExercises: v)),
+          ),
+          ListTile(
+            title: const Text("Today's session length"),
+            subtitle: Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: SegmentedButton<int>(
+                segments: const [
+                  ButtonSegment(value: 10, label: Text('10 min')),
+                  ButtonSegment(value: 15, label: Text('15 min')),
+                  ButtonSegment(value: 20, label: Text('20 min')),
+                ],
+                selected: {s.dailyMinutes},
+                onSelectionChanged: (v) => notifier.update((s) => s.copyWith(dailyMinutes: v.first)),
+              ),
+            ),
+          ),
+          SwitchListTile(
             title: const Text('Typing exercises'),
             subtitle: const Text('Type answers with your Korean keyboard in lessons'),
             value: s.typingExercises,
