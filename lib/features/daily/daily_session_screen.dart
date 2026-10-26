@@ -13,6 +13,7 @@ import '../../providers.dart';
 import '../../settings.dart';
 import '../../talk/dialogue.dart';
 import '../home/home_screen.dart';
+import '../practice/practice_screen.dart';
 import '../study/study_screen.dart';
 import '../talk/dialogue_screen.dart';
 
@@ -101,13 +102,19 @@ class _DailySessionScreenState extends ConsumerState<DailySessionScreen> {
     final common = (all.where((w) => w.pos != 'phrase').toList()..sort((a, b) => a.rank.compareTo(b.rank))).take(150).toList();
     final learnedPhrases = all.where((w) => w.pos == 'phrase' && learned.contains(w.id)).toList();
     final phrases = learnedPhrases.isNotEmpty ? learnedPhrases : (all.where((w) => w.pos == 'phrase').toList()..sort((a, b) => a.rank.compareTo(b.rank))).take(20).toList();
-    final exercises = speakListenSet(
-      known: known.length >= 15 ? known : [...known, ...common],
-      phrases: phrases,
-      pool: all,
-      count: DailyBudget(settings.dailyMinutes).speakListenItems,
-      speakingOn: settings.speakingExercises,
-    );
+    // Smart review: grammar skills that are due come first (2 items each, at most 2 skills).
+    final dueSkills = (await ref.read(skillServiceProvider).dueSkills()).take(2).toList();
+    final grammar = await skillExercises(ref, {for (final s in dueSkills) s: 2});
+    final exercises = [
+      ...grammar,
+      ...speakListenSet(
+        known: known.length >= 15 ? known : [...known, ...common],
+        phrases: phrases,
+        pool: all,
+        count: (DailyBudget(settings.dailyMinutes).speakListenItems - grammar.length ~/ 2).clamp(3, 8),
+        speakingOn: settings.speakingExercises,
+      ),
+    ];
     if (!mounted) return null;
     return Navigator.of(context).push<bool>(MaterialPageRoute(
       fullscreenDialog: true,

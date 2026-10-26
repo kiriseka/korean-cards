@@ -6,10 +6,13 @@ import '../grammar/hangul.dart';
 
 /// One question in a lesson, challenge or arcade game.
 sealed class Exercise {
-  const Exercise({this.wordIds = const []});
+  const Exercise({this.wordIds = const [], this.skillIds = const []});
 
   /// Words this exercise practises (for "words you got wrong").
   final List<int> wordIds;
+
+  /// Grammar/number skills this exercise trains (Gym, smart review).
+  final List<String> skillIds;
 }
 
 enum PromptStyle { korean, english, audio, sentence, dialogue }
@@ -27,6 +30,7 @@ class ChoiceExercise extends Exercise {
     this.explanation,
     this.optionsKorean = false,
     super.wordIds,
+    super.skillIds,
   });
 
   final String instruction;
@@ -60,7 +64,7 @@ class SyllableExercise extends Exercise {
 
 /// Type the Korean.
 class TypingExercise extends Exercise {
-  const TypingExercise({required this.prompt, required this.answer, this.hint, super.wordIds});
+  const TypingExercise({required this.prompt, required this.answer, this.hint, super.wordIds, super.skillIds});
   final String prompt;
   final String answer;
   final String? hint;
@@ -74,7 +78,7 @@ class TypingExercise extends Exercise {
 
 /// Arrange word tiles into a sentence.
 class SentenceExercise extends Exercise {
-  const SentenceExercise({required this.english, required this.answer, required this.tiles, this.explanation});
+  const SentenceExercise({required this.english, required this.answer, required this.tiles, this.explanation, super.skillIds});
   final String english;
   final List<String> answer;
   final List<String> tiles;
@@ -96,7 +100,7 @@ enum SpeakMode {
 
 /// Say something out loud; the phone's speech recognition checks it.
 class SpeakExercise extends Exercise {
-  const SpeakExercise({required this.target, required this.mode, this.english, super.wordIds});
+  const SpeakExercise({required this.target, required this.mode, this.english, super.wordIds, super.skillIds});
   final String target;
   final SpeakMode mode;
   final String? english;
@@ -383,12 +387,18 @@ class ExerciseGenerator {
       Form.formal => ['${c.stem}습니다', '${c.stem}니다'],
       _ => <String>[],
     }..shuffle(rng);
+    // Present and formal present are both "present", so neither is a wrong answer for the other.
     final siblings = [Form.present, Form.past, Form.future, Form.formal, Form.negativeJi, Form.want]
+        .where((f) => !(form == Form.present && f == Form.formal) && !(form == Form.formal && f == Form.present))
         .where(c.forms.contains)
         .map(c.conjugate)
         .toList()
       ..shuffle(rng);
-    final others = c.forms.map(c.conjugate).toList()..shuffle(rng);
+    final others = c.forms
+        .where((f) => !(form == Form.present && f == Form.formal) && !(form == Form.formal && f == Form.present))
+        .map(c.conjugate)
+        .toList()
+      ..shuffle(rng);
     final wrong = <String>{};
     for (final candidate in [...naive.take(1), ...siblings, ...naive.skip(1), ...others]) {
       if (candidate != right && isHangul(candidate) && !_looseJamo.hasMatch(candidate)) wrong.add(candidate);

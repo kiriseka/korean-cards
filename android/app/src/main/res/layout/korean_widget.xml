@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_background"
+    android:orientation="vertical"
+    android:padding="14dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/widget_streak"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:text="🔥 0" />
+        <TextView
+            android:id="@+id/widget_due"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:textColor="#D0E0FF"
+            android:textSize="13sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="" />
+        <TextView
+            android:id="@+id/widget_steps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFD54F"
+            android:textSize="14sp"
+            android:text="○○○" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/widget_word"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="안녕하세요" />
+
+    <TextView
+        android:id="@+id/widget_gloss"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#D0E0FF"
+        android:textSize="14sp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="hello" />
+</LinearLayout>

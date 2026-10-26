@@ -670,8 +670,347 @@ i1.GeneratedColumn<String> _column_46(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
+
+final class Schema3 extends i0.VersionedSchema {
+  Schema3({required super.database}) : super(version: 3);
+  @override
+  late final List<i1.DatabaseSchemaEntity> entities = [
+    words,
+    cards,
+    reviewLogs,
+    activities,
+    lessonProgress,
+    achievements,
+    questClaims,
+    skills,
+    mistakes,
+    dictionary,
+    dictionaryWord,
+  ];
+  late final Shape0 words = Shape0(
+    source: i0.VersionedTable(
+      entityName: 'words',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_8,
+        _column_9,
+        _column_10,
+        _column_11,
+        _column_12,
+        _column_13,
+        _column_14,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape1 cards = Shape1(
+    source: i0.VersionedTable(
+      entityName: 'cards',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['UNIQUE(word_id, direction)'],
+      columns: [
+        _column_15,
+        _column_16,
+        _column_17,
+        _column_18,
+        _column_19,
+        _column_20,
+        _column_21,
+        _column_22,
+        _column_23,
+        _column_24,
+        _column_25,
+        _column_26,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape2 reviewLogs = Shape2(
+    source: i0.VersionedTable(
+      entityName: 'review_logs',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_15,
+        _column_27,
+        _column_28,
+        _column_29,
+        _column_30,
+        _column_31,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape3 activities = Shape3(
+    source: i0.VersionedTable(
+      entityName: 'activities',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_15,
+        _column_32,
+        _column_33,
+        _column_34,
+        _column_35,
+        _column_36,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape4 lessonProgress = Shape4(
+    source: i0.VersionedTable(
+      entityName: 'lesson_progress',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(lesson_id)'],
+      columns: [
+        _column_37,
+        _column_38,
+        _column_39,
+        _column_40,
+        _column_41,
+        _column_42,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape5 achievements = Shape5(
+    source: i0.VersionedTable(
+      entityName: 'achievements',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [_column_43, _column_44],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape6 questClaims = Shape6(
+    source: i0.VersionedTable(
+      entityName: 'quest_claims',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(day, quest_id)'],
+      columns: [_column_45, _column_46],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape7 skills = Shape7(
+    source: i0.VersionedTable(
+      entityName: 'skills',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_43,
+        _column_18,
+        _column_19,
+        _column_20,
+        _column_21,
+        _column_22,
+        _column_23,
+        _column_24,
+        _column_25,
+        _column_47,
+        _column_48,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape8 mistakes = Shape8(
+    source: i0.VersionedTable(
+      entityName: 'mistakes',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_15,
+        _column_49,
+        _column_50,
+        _column_36,
+        _column_51,
+        _column_52,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape9 dictionary = Shape9(
+    source: i0.VersionedTable(
+      entityName: 'dictionary',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_8,
+        _column_53,
+        _column_14,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index dictionaryWord = i1.Index(
+    'dictionary_word',
+    'CREATE INDEX dictionary_word ON dictionary (word)',
+  );
+}
+
+class Shape7 extends i0.VersionedTable {
+  Shape7({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get state =>
+      columnsByName['state']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get step =>
+      columnsByName['step']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<double> get stability =>
+      columnsByName['stability']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<double> get difficulty =>
+      columnsByName['difficulty']! as i1.GeneratedColumn<double>;
+  i1.GeneratedColumn<int> get due =>
+      columnsByName['due']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get lastReview =>
+      columnsByName['last_review']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get reps =>
+      columnsByName['reps']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get lapses =>
+      columnsByName['lapses']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get correct =>
+      columnsByName['correct']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get attempts =>
+      columnsByName['attempts']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<int> _column_47(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'correct',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL DEFAULT 0',
+      defaultValue: const i1.CustomExpression('0'),
+    );
+i1.GeneratedColumn<int> _column_48(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'attempts',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL DEFAULT 0',
+      defaultValue: const i1.CustomExpression('0'),
+    );
+
+class Shape8 extends i0.VersionedTable {
+  Shape8({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<int> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get wordId =>
+      columnsByName['word_id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get skillId =>
+      columnsByName['skill_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get createdAt =>
+      columnsByName['created_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get rightStreak =>
+      columnsByName['right_streak']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get resolved =>
+      columnsByName['resolved']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<int> _column_49(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'word_id',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_50(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'skill_id',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<int> _column_51(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'right_streak',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL DEFAULT 0',
+      defaultValue: const i1.CustomExpression('0'),
+    );
+i1.GeneratedColumn<int> _column_52(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'resolved',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL DEFAULT 0 CHECK (resolved IN (0, 1))',
+      defaultValue: const i1.CustomExpression('0'),
+    );
+
+class Shape9 extends i0.VersionedTable {
+  Shape9({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<int> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get word =>
+      columnsByName['word']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get pos =>
+      columnsByName['pos']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get level =>
+      columnsByName['level']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get hanja =>
+      columnsByName['hanja']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get pronunciation =>
+      columnsByName['pronunciation']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get senses =>
+      columnsByName['senses']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get example =>
+      columnsByName['example']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get forms =>
+      columnsByName['forms']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<String> _column_53(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'example',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
+  required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
 }) {
   return (currentVersion, database) async {
     switch (currentVersion) {
@@ -680,6 +1019,11 @@ i0.MigrationStepWithVersion migrationSteps({
         final migrator = i1.Migrator(database, schema);
         await from1To2(migrator, schema);
         return 2;
+      case 2:
+        final schema = Schema3(database: database);
+        final migrator = i1.Migrator(database, schema);
+        await from2To3(migrator, schema);
+        return 3;
       default:
         throw ArgumentError.value('Unknown migration from $currentVersion');
     }
@@ -688,6 +1032,7 @@ i0.MigrationStepWithVersion migrationSteps({
 
 i1.OnUpgrade stepByStep({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
+  required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
 }) => i0.VersionedSchema.stepByStepHelper(
-  step: migrationSteps(from1To2: from1To2),
+  step: migrationSteps(from1To2: from1To2, from2To3: from2To3),
 );

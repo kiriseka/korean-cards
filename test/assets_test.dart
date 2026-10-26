@@ -15,6 +15,7 @@ void main() {
     'assets/data/grammar.json',
     'assets/data/phrases.json',
     'assets/data/dialogues.json',
+    'assets/data/sentence_frames.json',
   ];
 
   for (final path in dataFiles) {
@@ -24,7 +25,11 @@ void main() {
     });
   }
 
-  for (final sfx in Sfx.values) {
+  test('dictionary and icon are bundled', () async {
+    expect((await rootBundle.load('assets/data/dictionary.json.gz')).lengthInBytes, greaterThan(1000000));
+  });
+
+    for (final sfx in Sfx.values) {
     test('sound ${sfx.name} is bundled', () async {
       final data = await rootBundle.load('assets/sounds/${sfx.name}.wav');
       expect(data.lengthInBytes, greaterThan(100));

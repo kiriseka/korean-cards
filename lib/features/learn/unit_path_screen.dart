@@ -37,24 +37,32 @@ class UnitPathScreen extends ConsumerWidget {
               ),
             );
           }
-          final words = [for (final l in lessons) ...l.words];
-          final allDone = lessons.every((l) => progress.containsKey(l.id));
-          final currentIndex = lessons.indexWhere((l) => !progress.containsKey(l.id));
+          final beginner = lessons.where((l) => !l.intermediate).toList();
+          final level2 = lessons.where((l) => l.intermediate).toList();
+          final words = [for (final l in beginner) ...l.words];
+          final allDone = beginner.every((l) => progress.containsKey(l.id));
           final challenge = progress[TopicLesson.challengeId(unit.id)];
+          // Lessons unlock in order; Level 2 (중급) starts once every beginner lesson is done.
+          final unlockedUpTo = lessons.indexWhere((l) => !progress.containsKey(l.id));
+          PathNode node(TopicLesson lesson) {
+            final locked = unlockedUpTo != -1 && lesson.index > unlockedUpTo;
+            return PathNode(
+              label: '${lesson.index + 1}',
+              color: lesson.intermediate ? Colors.teal : null,
+              stars: progress[lesson.id]?.stars ?? 0,
+              state: progress.containsKey(lesson.id)
+                  ? NodeState.done
+                  : lesson.index == unlockedUpTo
+                      ? NodeState.current
+                      : NodeState.locked,
+              onTap: () => _openLesson(context, ref, lesson, locked: locked),
+            );
+          }
+
           return ZigzagPath(
-            header: _UnitHeader(unit: unit, lessons: lessons, progress: progress),
+            header: _UnitHeader(unit: unit, lessons: beginner, progress: progress),
             children: [
-              for (final lesson in lessons)
-                PathNode(
-                  label: '${lesson.index + 1}',
-                  stars: progress[lesson.id]?.stars ?? 0,
-                  state: progress.containsKey(lesson.id)
-                      ? NodeState.done
-                      : lesson.index == currentIndex
-                          ? NodeState.current
-                          : NodeState.locked,
-                  onTap: () => _openLesson(context, ref, lesson, locked: lesson.index > currentIndex && currentIndex != -1),
-                ),
+              for (final lesson in beginner) node(lesson),
               PathNode(
                 label: '🏆',
                 big: true,
@@ -73,6 +81,16 @@ class UnitPathScreen extends ConsumerWidget {
                   }
                 },
               ),
+              if (level2.isNotEmpty) ...[
+                Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: Chip(
+                    avatar: const Icon(Icons.trending_up, color: Colors.teal),
+                    label: Text('Level 2 · 중급 · ${level2.where((l) => progress.containsKey(l.id)).length}/${level2.length}'),
+                  ),
+                ),
+                for (final lesson in level2) node(lesson),
+              ],
             ],
           );
         },

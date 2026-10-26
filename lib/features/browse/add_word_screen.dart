@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/db.dart';
+import '../../dictionary/dictionary_service.dart';
 import '../../providers.dart';
 
 final _hangul = RegExp(r'[가-힣ᄀ-ᇿ㄰-㆏]');
@@ -26,8 +29,34 @@ class _AddWordScreenState extends ConsumerState<AddWordScreen> {
 
   static const _posOptions = ['noun', 'verb', 'adjective', 'adverb', 'expression', 'other'];
 
+  Timer? _debounce;
+  List<DictEntry> _suggestions = const [];
+
+  /// Dictionary matches for what's typed (only once the dictionary has been set up).
+  void _suggest(String text) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () async {
+      final dict = ref.read(dictionaryProvider);
+      if (text.trim().isEmpty || !await dict.ready) {
+        if (mounted) setState(() => _suggestions = const []);
+        return;
+      }
+      final found = (await dict.lookup(text.trim())).take(3).toList();
+      if (mounted) setState(() => _suggestions = found);
+    });
+  }
+
+  void _fill(DictEntry e) => setState(() {
+        _word.text = e.word;
+        _meaning.text = e.senseList.expand((s) => s.meanings).take(4).join(', ');
+        if (e.example != null) _example.text = e.example!;
+        _pos = _posOptions.contains(e.pos) ? e.pos : (e.pos == 'phrase' ? 'expression' : 'other');
+        _suggestions = const [];
+      });
+
   @override
   void dispose() {
+    _debounce?.cancel();
     for (final c in [_word, _meaning, _example, _note]) {
       c.dispose();
     }
@@ -72,7 +101,20 @@ class _AddWordScreenState extends ConsumerState<AddWordScreen> {
               style: const TextStyle(fontSize: 24),
               decoration: const InputDecoration(labelText: 'Korean', hintText: '예: 맛있다', border: OutlineInputBorder()),
               validator: (v) => v == null || !_hangul.hasMatch(v) ? 'Enter the word in Hangul' : null,
+              onChanged: widget.existing == null ? _suggest : null,
             ),
+            if (_suggestions.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Wrap(spacing: 8, runSpacing: 4, children: [
+                  for (final e in _suggestions)
+                    ActionChip(
+                      avatar: const Icon(Icons.auto_fix_high, size: 18),
+                      label: Text('${e.word} · ${e.gloss}', overflow: TextOverflow.ellipsis),
+                      onPressed: () => _fill(e),
+                    ),
+                ]),
+              ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _meaning,

@@ -4,6 +4,8 @@ import 'dart:math';
 import 'package:drift/drift.dart';
 
 import '../data/db.dart';
+import '../learn/skill_service.dart';
+import '../learn/skills.dart';
 import 'badges.dart';
 import 'quests.dart';
 import 'rules.dart';
@@ -206,6 +208,7 @@ class GameService {
       readsFrom: {db.cards, db.activities, db.words, db.lessonProgress},
     ).getSingle();
     final completed = (await db.select(db.lessonProgress).get()).map((l) => l.lessonId).toSet();
+    final skillRows = {for (final r in await db.select(db.skills).get()) r.id: r};
     return GameStats(
       wordsLearned: readInt(row, 'words'),
       streak: (await _streak()).days,
@@ -220,6 +223,7 @@ class GameService {
       scenesDone: readInt(row, 'scenes'),
       dailyDays: readInt(row, 'daily_days'),
       phrasesLearned: readInt(row, 'phrases'),
+      skillMastery: {for (final s in skills) s.id: SkillService.mastery(skillRows[s.id])},
       completedLessons: completed,
       grammarUnits: grammarUnits,
       hour: _clock().hour,

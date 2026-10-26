@@ -89,6 +89,9 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
   Future<void> _afterStep() async {
     _turn++;
     if (_session.finished) {
+      // Every session feeds smart review: skill schedules and the mistakes notebook.
+      await ref.read(skillServiceProvider).recordResults(_session.skillResults);
+      await ref.read(mistakeServiceProvider).recordSession(widget.exercises, _session);
       final outcome = await widget.onComplete(_session);
       if (!mounted) return;
       setState(() {

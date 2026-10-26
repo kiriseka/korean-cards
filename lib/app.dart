@@ -5,9 +5,11 @@ import 'features/browse/browse_screen.dart';
 import 'features/home/home_screen.dart';
 import 'features/learn/learn_screen.dart';
 import 'features/me/me_screen.dart';
-import 'features/play/play_screen.dart';
+import 'features/practice/practice_screen.dart';
 import 'settings.dart';
 import 'widgets/celebrations.dart';
+import 'widgets/home_widget_sync.dart';
+import 'widgets/share_listener.dart';
 
 const _seed = Color(0xFF0047A0); // the blue of the taegeukgi
 
@@ -25,7 +27,7 @@ class KoreanCardsApp extends ConsumerWidget {
       themeMode: themeMode,
       theme: ThemeData(colorSchemeSeed: _seed, brightness: Brightness.light),
       darkTheme: ThemeData(colorSchemeSeed: _seed, brightness: Brightness.dark),
-      builder: (context, child) => CelebrationHost(child: child!),
+      builder: (context, child) => CelebrationHost(child: ShareListener(child: HomeWidgetSync(child: child!))),
       home: const HomeShell(),
     );
   }
@@ -46,7 +48,7 @@ class _HomeShellState extends State<HomeShell> {
     return Scaffold(
       body: IndexedStack(
         index: _tab,
-        children: const [HomeScreen(), LearnScreen(), PlayScreen(), BrowseScreen(), MeScreen()],
+        children: const [HomeScreen(), LearnScreen(), PracticeScreen(), BrowseScreen(), MeScreen()],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _tab,
@@ -54,7 +56,7 @@ class _HomeShellState extends State<HomeShell> {
         destinations: const [
           NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Home'),
           NavigationDestination(icon: Icon(Icons.school_outlined), selectedIcon: Icon(Icons.school), label: 'Learn'),
-          NavigationDestination(icon: Icon(Icons.sports_esports_outlined), selectedIcon: Icon(Icons.sports_esports), label: 'Play'),
+          NavigationDestination(icon: Icon(Icons.fitness_center_outlined), selectedIcon: Icon(Icons.fitness_center), label: 'Practice'),
           NavigationDestination(icon: Icon(Icons.style_outlined), selectedIcon: Icon(Icons.style), label: 'Words'),
           NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Me'),
         ],

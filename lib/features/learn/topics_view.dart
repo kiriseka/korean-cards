@@ -25,7 +25,7 @@ class TopicsView extends ConsumerWidget {
     // The first unit with unfinished lessons is the suggested next one.
     String? suggested;
     for (final u in units) {
-      final lessons = ref.watch(topicLessonsProvider(u.id)).value;
+      final lessons = ref.watch(topicLessonsProvider(u.id)).value?.where((l) => !l.intermediate).toList();
       if (lessons == null || lessons.isEmpty) continue;
       final (done, total, _) = unitProgress(u.id, lessons, progress);
       if (done < total) {
@@ -45,7 +45,7 @@ class TopicsView extends ConsumerWidget {
       itemCount: units.length,
       itemBuilder: (context, i) {
         final unit = units[i];
-        final lessons = ref.watch(topicLessonsProvider(unit.id)).value ?? const [];
+        final lessons = (ref.watch(topicLessonsProvider(unit.id)).value ?? const <TopicLesson>[]).where((l) => !l.intermediate).toList();
         final (done, total, trophy) = unitProgress(unit.id, lessons, progress);
         return _UnitCard(
           unit: unit,

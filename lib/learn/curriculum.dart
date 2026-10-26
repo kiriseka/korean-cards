@@ -32,10 +32,13 @@ Future<List<TopicUnit>> loadCurriculum([AssetBundle? bundle]) async {
 bool isPhraseUnit(String unitId) => unitId.startsWith('phrases_');
 
 class TopicLesson {
-  const TopicLesson({required this.unitId, required this.index, required this.words});
+  const TopicLesson({required this.unitId, required this.index, required this.words, this.intermediate = false});
   final String unitId;
   final int index;
   final List<Word> words;
+
+  /// A "Level 2" lesson of 중급 words (after the unit's beginner lessons).
+  final bool intermediate;
 
   String get id => lessonId(unitId, index);
   static String lessonId(String unitId, int index) => 'topic:$unitId:$index';
@@ -48,6 +51,25 @@ const wordsPerLesson = 8;
 /// spelling is already in the current lesson (homographs like 이 "this" / 이 "two") waits for the
 /// next one, so no lesson asks to tell two identical words apart. A short tail merges backwards.
 List<TopicLesson> buildTopicLessons(String unitId, List<Word> words) {
+  // Beginner (and own) words first, then 중급 as Level 2 — so beginner lesson ids never shift.
+  var level1 = words.where((w) => w.level != intermediateLevel).toList();
+  var level2 = words.where((w) => w.level == intermediateLevel).toList();
+  if (level2.length < wordsPerLesson ~/ 2) {
+    // A Level 2 of 1–3 words isn't worth a lesson: they join the end of the path.
+    level1 = [...level1, ...level2];
+    level2 = [];
+  }
+  final beginner = _chunk(level1);
+  final inter = _chunk(level2);
+  return [
+    for (final (i, c) in beginner.indexed) TopicLesson(unitId: unitId, index: i, words: c),
+    for (final (i, c) in inter.indexed) TopicLesson(unitId: unitId, index: beginner.length + i, words: c, intermediate: true),
+  ];
+}
+
+const intermediateLevel = '중급';
+
+List<List<Word>> _chunk(List<Word> words) {
   final chunks = <List<Word>>[];
   final pending = [...words];
   while (pending.isNotEmpty) {
@@ -63,11 +85,12 @@ List<TopicLesson> buildTopicLessons(String unitId, List<Word> words) {
     chunks.add(chunk);
   }
   if (chunks.length > 1 && chunks.last.length < wordsPerLesson ~/ 2) {
-    final tail = chunks.last;
-    final prev = chunks[chunks.length - 2];
-    if (tail.every((w) => prev.every((p) => p.word != w.word))) {
-      prev.addAll(chunks.removeLast());
+    // Spread a short tail over the nearest earlier lessons that don't already have that spelling.
+    final tail = chunks.removeLast();
+    for (final w in tail) {
+      final home = chunks.reversed.firstWhere((c) => c.every((p) => p.word != w.word), orElse: () => chunks.last);
+      home.add(w);
     }
   }
-  return [for (final (i, c) in chunks.indexed) TopicLesson(unitId: unitId, index: i, words: c)];
+  return chunks;
 }

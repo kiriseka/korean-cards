@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../data/db.dart' show intermediateUnlockAt;
 import '../../providers.dart';
 import '../../services/backup_service.dart';
 import '../../settings.dart';
@@ -48,6 +49,18 @@ class SettingsScreen extends ConsumerWidget {
               onChanged: (v) => notifier.update((s) => s.copyWith(reviewCap: v)),
             ),
           ),
+          Consumer(builder: (context, ref, _) {
+            final learned = ref.watch(learnedBeginnerProvider).value ?? 0;
+            final auto = learned >= intermediateUnlockAt;
+            return SwitchListTile(
+              title: const Text('Intermediate words (중급)'),
+              subtitle: Text(auto
+                  ? 'Unlocked — you know $learned beginner words 🎉'
+                  : 'Unlocks by itself at $intermediateUnlockAt beginner words ($learned so far). Turn on to start now.'),
+              value: auto || s.intermediate,
+              onChanged: auto ? null : (v) => notifier.update((s) => s.copyWith(intermediate: v)),
+            );
+          }),
           SwitchListTile(
             title: const Text('Also practise English → Korean'),
             subtitle: const Text('Adds a reverse card once you have studied a word'),

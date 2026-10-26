@@ -2,7 +2,7 @@ import 'dart:math';
 
 import '../data/db.dart';
 
-enum QuestMetric { xp, lessons, reviews, combo, sentences, games, perfect, answers, spoken, dialogues, daily }
+enum QuestMetric { xp, lessons, reviews, combo, sentences, games, perfect, answers, spoken, dialogues, daily, gym, fixed }
 
 class Quest {
   const Quest(this.id, this.emoji, this.title, this.metric, this.target);
@@ -29,6 +29,8 @@ const questPool = [
   Quest('speak10', '🎤', 'Say 10 things out loud', QuestMetric.spoken, 10),
   Quest('dialogue1', '🎭', 'Finish a conversation scene', QuestMetric.dialogues, 1),
   Quest('daily', '⏱️', "Complete today's session", QuestMetric.daily, 1),
+  Quest('gym2', '💪', 'Train 2 skills in the Gym', QuestMetric.gym, 2),
+  Quest('fix1', '🩹', 'Review your mistakes', QuestMetric.fixed, 1),
 ];
 
 /// Three quests for the study day starting at [day], each measuring something different.
@@ -60,5 +62,7 @@ int questProgress(QuestMetric metric, List<Activity> today, int reviewsToday) {
     QuestMetric.spoken => sum(ActivityKind.spoken, (a) => a.value),
     QuestMetric.dialogues => sum(ActivityKind.dialogue, (_) => 1),
     QuestMetric.daily => sum(ActivityKind.daily, (a) => a.value == 99 ? 1 : 0),
+    QuestMetric.gym => sum(ActivityKind.gym, (a) => a.value),
+    QuestMetric.fixed => sum(ActivityKind.fixed, (a) => a.value),
   };
 }

@@ -14,6 +14,7 @@ class GameStats {
     this.scenesDone = 0,
     this.dailyDays = 0,
     this.phrasesLearned = 0,
+    this.skillMastery = const {},
     this.completedLessons = const {},
     this.grammarUnits = const {},
     this.hour = 12,
@@ -32,6 +33,14 @@ class GameStats {
   final int scenesDone;
   final int dailyDays;
   final int phrasesLearned;
+
+  /// Skill id → mastery 0..1 (lib/learn/skill_service.dart).
+  final Map<String, double> skillMastery;
+
+  bool groupMastered(String prefix) {
+    final ids = skillMastery.keys.where((k) => k.startsWith(prefix)).toList();
+    return ids.isNotEmpty && ids.every((k) => skillMastery[k]! >= 0.8);
+  }
   final Set<String> completedLessons;
 
   /// Grammar unit id → its lesson ids.
@@ -84,6 +93,9 @@ final badges = <GameBadge>[
   GameBadge('phrasebook', '📕', 'Phrasebook', 'Learn all 150 survival phrases', (s) => s.phrasesLearned >= 150),
   GameBadge('daily7', '⏱️', 'Daily habit', "Finish today's session 7 times", (s) => s.dailyDays >= 7),
   GameBadge('daily30', '🗓️', 'Unbreakable habit', "Finish today's session 30 times", (s) => s.dailyDays >= 30),
+  GameBadge('particle_master', '🧲', 'Particle master', 'Master every particle skill in the Gym (80%+)', (s) => s.groupMastered('p_')),
+  GameBadge('tense_master', '⌛', 'Tense master', 'Master every tense skill in the Gym (80%+)', (s) => s.groupMastered('t_')),
+  GameBadge('number_cruncher', '🔢', 'Number cruncher', 'Master every number skill (80%+)', (s) => s.groupMastered('n_')),
   GameBadge('night_owl', '🦉', 'Night owl', 'Study after 11 pm', (s) => s.hour >= 23 || s.hour < 4),
   GameBadge('early_bird', '🐦', 'Early bird', 'Study before 7 am', (s) => s.hour >= 4 && s.hour < 7),
 ];

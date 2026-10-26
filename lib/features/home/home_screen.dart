@@ -6,6 +6,7 @@ import '../../game/game_service.dart';
 import '../../grammar/grammar_content.dart';
 import '../../learn/curriculum.dart';
 import '../../learn/daily_plan.dart';
+import '../../learn/word_of_day.dart';
 import '../../learn/grammar_lesson.dart';
 import '../../learn/topic_lesson.dart';
 import '../../providers.dart';
@@ -20,11 +21,14 @@ final nextTopicLessonProvider = Provider<(TopicUnit, TopicLesson)?>((ref) {
   final units = ref.watch(curriculumProvider).value;
   final progress = ref.watch(lessonProgressProvider).value;
   if (units == null || progress == null) return null;
-  for (final u in units.where((u) => u.id != customUnit)) {
-    final lessons = ref.watch(topicLessonsProvider(u.id)).value;
-    if (lessons == null) return null;
-    for (final l in lessons) {
-      if (!progress.containsKey(l.id)) return (u, l);
+  // Every topic's beginner lessons first, then Level 2 (중급).
+  for (final level2 in [false, true]) {
+    for (final u in units.where((u) => u.id != customUnit)) {
+      final lessons = ref.watch(topicLessonsProvider(u.id)).value;
+      if (lessons == null) return null;
+      for (final l in lessons.where((l) => l.intermediate == level2)) {
+        if (!progress.containsKey(l.id)) return (u, l);
+      }
     }
   }
   return null;
@@ -361,10 +365,7 @@ class _WordOfTheDay extends ConsumerWidget {
     final words = ref.watch(allWordsProvider).value;
     final learned = ref.watch(learnedWordIdsProvider).value ?? const {};
     if (words == null || words.isEmpty) return const SizedBox();
-    var pool = words.where((w) => learned.contains(w.id)).toList();
-    if (pool.length < 10) pool = (words.toList()..sort((a, b) => a.rank.compareTo(b.rank))).take(300).toList();
-    final day = studyDayStart(DateTime.now());
-    final w = pool[(day.year * 400 + day.month * 31 + day.day) % pool.length];
+    final w = wordOfTheDay(words, learned, DateTime.now());
     final theme = Theme.of(context);
     final example = w.senseList.firstOrNull?.example;
     return Card(

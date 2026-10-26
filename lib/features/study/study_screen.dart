@@ -54,7 +54,8 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
     final newToday = await db.newIntroducedSince(studyDayStart(now));
     var newLimit = (s.newPerDay - newToday).clamp(0, 9999) + widget.extraNew;
     if (cap != null) newLimit = min(newLimit, max(0, cap - due.length));
-    final fresh = await db.newCards(reverse: s.reverseCards, limit: newLimit);
+    final intermediate = s.intermediate || await db.learnedBeginnerCount() >= intermediateUnlockAt;
+    final fresh = await db.newCards(reverse: s.reverseCards, limit: newLimit, intermediate: intermediate);
     if (!mounted) return;
     _queue = SessionQueue(due: due, newCards: fresh);
     _showNext();

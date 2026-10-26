@@ -3168,6 +3168,1599 @@ class QuestClaimsCompanion extends UpdateCompanion<QuestClaim> {
   }
 }
 
+class $SkillsTable extends Skills with TableInfo<$SkillsTable, SkillRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SkillsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _stateMeta = const VerificationMeta('state');
+  @override
+  late final GeneratedColumn<int> state = GeneratedColumn<int>(
+    'state',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(CardState.newCard),
+  );
+  static const VerificationMeta _stepMeta = const VerificationMeta('step');
+  @override
+  late final GeneratedColumn<int> step = GeneratedColumn<int>(
+    'step',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _stabilityMeta = const VerificationMeta(
+    'stability',
+  );
+  @override
+  late final GeneratedColumn<double> stability = GeneratedColumn<double>(
+    'stability',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _difficultyMeta = const VerificationMeta(
+    'difficulty',
+  );
+  @override
+  late final GeneratedColumn<double> difficulty = GeneratedColumn<double>(
+    'difficulty',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _dueMeta = const VerificationMeta('due');
+  @override
+  late final GeneratedColumn<DateTime> due = GeneratedColumn<DateTime>(
+    'due',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _lastReviewMeta = const VerificationMeta(
+    'lastReview',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastReview = GeneratedColumn<DateTime>(
+    'last_review',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _repsMeta = const VerificationMeta('reps');
+  @override
+  late final GeneratedColumn<int> reps = GeneratedColumn<int>(
+    'reps',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _lapsesMeta = const VerificationMeta('lapses');
+  @override
+  late final GeneratedColumn<int> lapses = GeneratedColumn<int>(
+    'lapses',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _correctMeta = const VerificationMeta(
+    'correct',
+  );
+  @override
+  late final GeneratedColumn<int> correct = GeneratedColumn<int>(
+    'correct',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _attemptsMeta = const VerificationMeta(
+    'attempts',
+  );
+  @override
+  late final GeneratedColumn<int> attempts = GeneratedColumn<int>(
+    'attempts',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    state,
+    step,
+    stability,
+    difficulty,
+    due,
+    lastReview,
+    reps,
+    lapses,
+    correct,
+    attempts,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'skills';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SkillRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('state')) {
+      context.handle(
+        _stateMeta,
+        state.isAcceptableOrUnknown(data['state']!, _stateMeta),
+      );
+    }
+    if (data.containsKey('step')) {
+      context.handle(
+        _stepMeta,
+        step.isAcceptableOrUnknown(data['step']!, _stepMeta),
+      );
+    }
+    if (data.containsKey('stability')) {
+      context.handle(
+        _stabilityMeta,
+        stability.isAcceptableOrUnknown(data['stability']!, _stabilityMeta),
+      );
+    }
+    if (data.containsKey('difficulty')) {
+      context.handle(
+        _difficultyMeta,
+        difficulty.isAcceptableOrUnknown(data['difficulty']!, _difficultyMeta),
+      );
+    }
+    if (data.containsKey('due')) {
+      context.handle(
+        _dueMeta,
+        due.isAcceptableOrUnknown(data['due']!, _dueMeta),
+      );
+    }
+    if (data.containsKey('last_review')) {
+      context.handle(
+        _lastReviewMeta,
+        lastReview.isAcceptableOrUnknown(data['last_review']!, _lastReviewMeta),
+      );
+    }
+    if (data.containsKey('reps')) {
+      context.handle(
+        _repsMeta,
+        reps.isAcceptableOrUnknown(data['reps']!, _repsMeta),
+      );
+    }
+    if (data.containsKey('lapses')) {
+      context.handle(
+        _lapsesMeta,
+        lapses.isAcceptableOrUnknown(data['lapses']!, _lapsesMeta),
+      );
+    }
+    if (data.containsKey('correct')) {
+      context.handle(
+        _correctMeta,
+        correct.isAcceptableOrUnknown(data['correct']!, _correctMeta),
+      );
+    }
+    if (data.containsKey('attempts')) {
+      context.handle(
+        _attemptsMeta,
+        attempts.isAcceptableOrUnknown(data['attempts']!, _attemptsMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SkillRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SkillRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      state: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}state'],
+      )!,
+      step: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}step'],
+      ),
+      stability: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}stability'],
+      ),
+      difficulty: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}difficulty'],
+      ),
+      due: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}due'],
+      )!,
+      lastReview: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_review'],
+      ),
+      reps: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}reps'],
+      )!,
+      lapses: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}lapses'],
+      )!,
+      correct: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}correct'],
+      )!,
+      attempts: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}attempts'],
+      )!,
+    );
+  }
+
+  @override
+  $SkillsTable createAlias(String alias) {
+    return $SkillsTable(attachedDatabase, alias);
+  }
+}
+
+class SkillRow extends DataClass implements Insertable<SkillRow> {
+  final String id;
+  final int state;
+  final int? step;
+  final double? stability;
+  final double? difficulty;
+  final DateTime due;
+  final DateTime? lastReview;
+  final int reps;
+  final int lapses;
+
+  /// Exercises answered right / attempted, first tries only.
+  final int correct;
+  final int attempts;
+  const SkillRow({
+    required this.id,
+    required this.state,
+    this.step,
+    this.stability,
+    this.difficulty,
+    required this.due,
+    this.lastReview,
+    required this.reps,
+    required this.lapses,
+    required this.correct,
+    required this.attempts,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['state'] = Variable<int>(state);
+    if (!nullToAbsent || step != null) {
+      map['step'] = Variable<int>(step);
+    }
+    if (!nullToAbsent || stability != null) {
+      map['stability'] = Variable<double>(stability);
+    }
+    if (!nullToAbsent || difficulty != null) {
+      map['difficulty'] = Variable<double>(difficulty);
+    }
+    map['due'] = Variable<DateTime>(due);
+    if (!nullToAbsent || lastReview != null) {
+      map['last_review'] = Variable<DateTime>(lastReview);
+    }
+    map['reps'] = Variable<int>(reps);
+    map['lapses'] = Variable<int>(lapses);
+    map['correct'] = Variable<int>(correct);
+    map['attempts'] = Variable<int>(attempts);
+    return map;
+  }
+
+  SkillsCompanion toCompanion(bool nullToAbsent) {
+    return SkillsCompanion(
+      id: Value(id),
+      state: Value(state),
+      step: step == null && nullToAbsent ? const Value.absent() : Value(step),
+      stability: stability == null && nullToAbsent
+          ? const Value.absent()
+          : Value(stability),
+      difficulty: difficulty == null && nullToAbsent
+          ? const Value.absent()
+          : Value(difficulty),
+      due: Value(due),
+      lastReview: lastReview == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastReview),
+      reps: Value(reps),
+      lapses: Value(lapses),
+      correct: Value(correct),
+      attempts: Value(attempts),
+    );
+  }
+
+  factory SkillRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SkillRow(
+      id: serializer.fromJson<String>(json['id']),
+      state: serializer.fromJson<int>(json['state']),
+      step: serializer.fromJson<int?>(json['step']),
+      stability: serializer.fromJson<double?>(json['stability']),
+      difficulty: serializer.fromJson<double?>(json['difficulty']),
+      due: serializer.fromJson<DateTime>(json['due']),
+      lastReview: serializer.fromJson<DateTime?>(json['lastReview']),
+      reps: serializer.fromJson<int>(json['reps']),
+      lapses: serializer.fromJson<int>(json['lapses']),
+      correct: serializer.fromJson<int>(json['correct']),
+      attempts: serializer.fromJson<int>(json['attempts']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'state': serializer.toJson<int>(state),
+      'step': serializer.toJson<int?>(step),
+      'stability': serializer.toJson<double?>(stability),
+      'difficulty': serializer.toJson<double?>(difficulty),
+      'due': serializer.toJson<DateTime>(due),
+      'lastReview': serializer.toJson<DateTime?>(lastReview),
+      'reps': serializer.toJson<int>(reps),
+      'lapses': serializer.toJson<int>(lapses),
+      'correct': serializer.toJson<int>(correct),
+      'attempts': serializer.toJson<int>(attempts),
+    };
+  }
+
+  SkillRow copyWith({
+    String? id,
+    int? state,
+    Value<int?> step = const Value.absent(),
+    Value<double?> stability = const Value.absent(),
+    Value<double?> difficulty = const Value.absent(),
+    DateTime? due,
+    Value<DateTime?> lastReview = const Value.absent(),
+    int? reps,
+    int? lapses,
+    int? correct,
+    int? attempts,
+  }) => SkillRow(
+    id: id ?? this.id,
+    state: state ?? this.state,
+    step: step.present ? step.value : this.step,
+    stability: stability.present ? stability.value : this.stability,
+    difficulty: difficulty.present ? difficulty.value : this.difficulty,
+    due: due ?? this.due,
+    lastReview: lastReview.present ? lastReview.value : this.lastReview,
+    reps: reps ?? this.reps,
+    lapses: lapses ?? this.lapses,
+    correct: correct ?? this.correct,
+    attempts: attempts ?? this.attempts,
+  );
+  SkillRow copyWithCompanion(SkillsCompanion data) {
+    return SkillRow(
+      id: data.id.present ? data.id.value : this.id,
+      state: data.state.present ? data.state.value : this.state,
+      step: data.step.present ? data.step.value : this.step,
+      stability: data.stability.present ? data.stability.value : this.stability,
+      difficulty: data.difficulty.present
+          ? data.difficulty.value
+          : this.difficulty,
+      due: data.due.present ? data.due.value : this.due,
+      lastReview: data.lastReview.present
+          ? data.lastReview.value
+          : this.lastReview,
+      reps: data.reps.present ? data.reps.value : this.reps,
+      lapses: data.lapses.present ? data.lapses.value : this.lapses,
+      correct: data.correct.present ? data.correct.value : this.correct,
+      attempts: data.attempts.present ? data.attempts.value : this.attempts,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SkillRow(')
+          ..write('id: $id, ')
+          ..write('state: $state, ')
+          ..write('step: $step, ')
+          ..write('stability: $stability, ')
+          ..write('difficulty: $difficulty, ')
+          ..write('due: $due, ')
+          ..write('lastReview: $lastReview, ')
+          ..write('reps: $reps, ')
+          ..write('lapses: $lapses, ')
+          ..write('correct: $correct, ')
+          ..write('attempts: $attempts')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    state,
+    step,
+    stability,
+    difficulty,
+    due,
+    lastReview,
+    reps,
+    lapses,
+    correct,
+    attempts,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SkillRow &&
+          other.id == this.id &&
+          other.state == this.state &&
+          other.step == this.step &&
+          other.stability == this.stability &&
+          other.difficulty == this.difficulty &&
+          other.due == this.due &&
+          other.lastReview == this.lastReview &&
+          other.reps == this.reps &&
+          other.lapses == this.lapses &&
+          other.correct == this.correct &&
+          other.attempts == this.attempts);
+}
+
+class SkillsCompanion extends UpdateCompanion<SkillRow> {
+  final Value<String> id;
+  final Value<int> state;
+  final Value<int?> step;
+  final Value<double?> stability;
+  final Value<double?> difficulty;
+  final Value<DateTime> due;
+  final Value<DateTime?> lastReview;
+  final Value<int> reps;
+  final Value<int> lapses;
+  final Value<int> correct;
+  final Value<int> attempts;
+  final Value<int> rowid;
+  const SkillsCompanion({
+    this.id = const Value.absent(),
+    this.state = const Value.absent(),
+    this.step = const Value.absent(),
+    this.stability = const Value.absent(),
+    this.difficulty = const Value.absent(),
+    this.due = const Value.absent(),
+    this.lastReview = const Value.absent(),
+    this.reps = const Value.absent(),
+    this.lapses = const Value.absent(),
+    this.correct = const Value.absent(),
+    this.attempts = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SkillsCompanion.insert({
+    required String id,
+    this.state = const Value.absent(),
+    this.step = const Value.absent(),
+    this.stability = const Value.absent(),
+    this.difficulty = const Value.absent(),
+    this.due = const Value.absent(),
+    this.lastReview = const Value.absent(),
+    this.reps = const Value.absent(),
+    this.lapses = const Value.absent(),
+    this.correct = const Value.absent(),
+    this.attempts = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id);
+  static Insertable<SkillRow> custom({
+    Expression<String>? id,
+    Expression<int>? state,
+    Expression<int>? step,
+    Expression<double>? stability,
+    Expression<double>? difficulty,
+    Expression<DateTime>? due,
+    Expression<DateTime>? lastReview,
+    Expression<int>? reps,
+    Expression<int>? lapses,
+    Expression<int>? correct,
+    Expression<int>? attempts,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (state != null) 'state': state,
+      if (step != null) 'step': step,
+      if (stability != null) 'stability': stability,
+      if (difficulty != null) 'difficulty': difficulty,
+      if (due != null) 'due': due,
+      if (lastReview != null) 'last_review': lastReview,
+      if (reps != null) 'reps': reps,
+      if (lapses != null) 'lapses': lapses,
+      if (correct != null) 'correct': correct,
+      if (attempts != null) 'attempts': attempts,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SkillsCompanion copyWith({
+    Value<String>? id,
+    Value<int>? state,
+    Value<int?>? step,
+    Value<double?>? stability,
+    Value<double?>? difficulty,
+    Value<DateTime>? due,
+    Value<DateTime?>? lastReview,
+    Value<int>? reps,
+    Value<int>? lapses,
+    Value<int>? correct,
+    Value<int>? attempts,
+    Value<int>? rowid,
+  }) {
+    return SkillsCompanion(
+      id: id ?? this.id,
+      state: state ?? this.state,
+      step: step ?? this.step,
+      stability: stability ?? this.stability,
+      difficulty: difficulty ?? this.difficulty,
+      due: due ?? this.due,
+      lastReview: lastReview ?? this.lastReview,
+      reps: reps ?? this.reps,
+      lapses: lapses ?? this.lapses,
+      correct: correct ?? this.correct,
+      attempts: attempts ?? this.attempts,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (state.present) {
+      map['state'] = Variable<int>(state.value);
+    }
+    if (step.present) {
+      map['step'] = Variable<int>(step.value);
+    }
+    if (stability.present) {
+      map['stability'] = Variable<double>(stability.value);
+    }
+    if (difficulty.present) {
+      map['difficulty'] = Variable<double>(difficulty.value);
+    }
+    if (due.present) {
+      map['due'] = Variable<DateTime>(due.value);
+    }
+    if (lastReview.present) {
+      map['last_review'] = Variable<DateTime>(lastReview.value);
+    }
+    if (reps.present) {
+      map['reps'] = Variable<int>(reps.value);
+    }
+    if (lapses.present) {
+      map['lapses'] = Variable<int>(lapses.value);
+    }
+    if (correct.present) {
+      map['correct'] = Variable<int>(correct.value);
+    }
+    if (attempts.present) {
+      map['attempts'] = Variable<int>(attempts.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SkillsCompanion(')
+          ..write('id: $id, ')
+          ..write('state: $state, ')
+          ..write('step: $step, ')
+          ..write('stability: $stability, ')
+          ..write('difficulty: $difficulty, ')
+          ..write('due: $due, ')
+          ..write('lastReview: $lastReview, ')
+          ..write('reps: $reps, ')
+          ..write('lapses: $lapses, ')
+          ..write('correct: $correct, ')
+          ..write('attempts: $attempts, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MistakesTable extends Mistakes with TableInfo<$MistakesTable, Mistake> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MistakesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _wordIdMeta = const VerificationMeta('wordId');
+  @override
+  late final GeneratedColumn<int> wordId = GeneratedColumn<int>(
+    'word_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _skillIdMeta = const VerificationMeta(
+    'skillId',
+  );
+  @override
+  late final GeneratedColumn<String> skillId = GeneratedColumn<String>(
+    'skill_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _rightStreakMeta = const VerificationMeta(
+    'rightStreak',
+  );
+  @override
+  late final GeneratedColumn<int> rightStreak = GeneratedColumn<int>(
+    'right_streak',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _resolvedMeta = const VerificationMeta(
+    'resolved',
+  );
+  @override
+  late final GeneratedColumn<bool> resolved = GeneratedColumn<bool>(
+    'resolved',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("resolved" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    wordId,
+    skillId,
+    createdAt,
+    rightStreak,
+    resolved,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'mistakes';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Mistake> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('word_id')) {
+      context.handle(
+        _wordIdMeta,
+        wordId.isAcceptableOrUnknown(data['word_id']!, _wordIdMeta),
+      );
+    }
+    if (data.containsKey('skill_id')) {
+      context.handle(
+        _skillIdMeta,
+        skillId.isAcceptableOrUnknown(data['skill_id']!, _skillIdMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('right_streak')) {
+      context.handle(
+        _rightStreakMeta,
+        rightStreak.isAcceptableOrUnknown(
+          data['right_streak']!,
+          _rightStreakMeta,
+        ),
+      );
+    }
+    if (data.containsKey('resolved')) {
+      context.handle(
+        _resolvedMeta,
+        resolved.isAcceptableOrUnknown(data['resolved']!, _resolvedMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Mistake map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Mistake(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      wordId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}word_id'],
+      ),
+      skillId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}skill_id'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      rightStreak: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}right_streak'],
+      )!,
+      resolved: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}resolved'],
+      )!,
+    );
+  }
+
+  @override
+  $MistakesTable createAlias(String alias) {
+    return $MistakesTable(attachedDatabase, alias);
+  }
+}
+
+class Mistake extends DataClass implements Insertable<Mistake> {
+  final int id;
+  final int? wordId;
+  final String? skillId;
+  final DateTime createdAt;
+  final int rightStreak;
+  final bool resolved;
+  const Mistake({
+    required this.id,
+    this.wordId,
+    this.skillId,
+    required this.createdAt,
+    required this.rightStreak,
+    required this.resolved,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    if (!nullToAbsent || wordId != null) {
+      map['word_id'] = Variable<int>(wordId);
+    }
+    if (!nullToAbsent || skillId != null) {
+      map['skill_id'] = Variable<String>(skillId);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['right_streak'] = Variable<int>(rightStreak);
+    map['resolved'] = Variable<bool>(resolved);
+    return map;
+  }
+
+  MistakesCompanion toCompanion(bool nullToAbsent) {
+    return MistakesCompanion(
+      id: Value(id),
+      wordId: wordId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(wordId),
+      skillId: skillId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(skillId),
+      createdAt: Value(createdAt),
+      rightStreak: Value(rightStreak),
+      resolved: Value(resolved),
+    );
+  }
+
+  factory Mistake.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Mistake(
+      id: serializer.fromJson<int>(json['id']),
+      wordId: serializer.fromJson<int?>(json['wordId']),
+      skillId: serializer.fromJson<String?>(json['skillId']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      rightStreak: serializer.fromJson<int>(json['rightStreak']),
+      resolved: serializer.fromJson<bool>(json['resolved']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'wordId': serializer.toJson<int?>(wordId),
+      'skillId': serializer.toJson<String?>(skillId),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'rightStreak': serializer.toJson<int>(rightStreak),
+      'resolved': serializer.toJson<bool>(resolved),
+    };
+  }
+
+  Mistake copyWith({
+    int? id,
+    Value<int?> wordId = const Value.absent(),
+    Value<String?> skillId = const Value.absent(),
+    DateTime? createdAt,
+    int? rightStreak,
+    bool? resolved,
+  }) => Mistake(
+    id: id ?? this.id,
+    wordId: wordId.present ? wordId.value : this.wordId,
+    skillId: skillId.present ? skillId.value : this.skillId,
+    createdAt: createdAt ?? this.createdAt,
+    rightStreak: rightStreak ?? this.rightStreak,
+    resolved: resolved ?? this.resolved,
+  );
+  Mistake copyWithCompanion(MistakesCompanion data) {
+    return Mistake(
+      id: data.id.present ? data.id.value : this.id,
+      wordId: data.wordId.present ? data.wordId.value : this.wordId,
+      skillId: data.skillId.present ? data.skillId.value : this.skillId,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      rightStreak: data.rightStreak.present
+          ? data.rightStreak.value
+          : this.rightStreak,
+      resolved: data.resolved.present ? data.resolved.value : this.resolved,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Mistake(')
+          ..write('id: $id, ')
+          ..write('wordId: $wordId, ')
+          ..write('skillId: $skillId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rightStreak: $rightStreak, ')
+          ..write('resolved: $resolved')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, wordId, skillId, createdAt, rightStreak, resolved);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Mistake &&
+          other.id == this.id &&
+          other.wordId == this.wordId &&
+          other.skillId == this.skillId &&
+          other.createdAt == this.createdAt &&
+          other.rightStreak == this.rightStreak &&
+          other.resolved == this.resolved);
+}
+
+class MistakesCompanion extends UpdateCompanion<Mistake> {
+  final Value<int> id;
+  final Value<int?> wordId;
+  final Value<String?> skillId;
+  final Value<DateTime> createdAt;
+  final Value<int> rightStreak;
+  final Value<bool> resolved;
+  const MistakesCompanion({
+    this.id = const Value.absent(),
+    this.wordId = const Value.absent(),
+    this.skillId = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rightStreak = const Value.absent(),
+    this.resolved = const Value.absent(),
+  });
+  MistakesCompanion.insert({
+    this.id = const Value.absent(),
+    this.wordId = const Value.absent(),
+    this.skillId = const Value.absent(),
+    required DateTime createdAt,
+    this.rightStreak = const Value.absent(),
+    this.resolved = const Value.absent(),
+  }) : createdAt = Value(createdAt);
+  static Insertable<Mistake> custom({
+    Expression<int>? id,
+    Expression<int>? wordId,
+    Expression<String>? skillId,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rightStreak,
+    Expression<bool>? resolved,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (wordId != null) 'word_id': wordId,
+      if (skillId != null) 'skill_id': skillId,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rightStreak != null) 'right_streak': rightStreak,
+      if (resolved != null) 'resolved': resolved,
+    });
+  }
+
+  MistakesCompanion copyWith({
+    Value<int>? id,
+    Value<int?>? wordId,
+    Value<String?>? skillId,
+    Value<DateTime>? createdAt,
+    Value<int>? rightStreak,
+    Value<bool>? resolved,
+  }) {
+    return MistakesCompanion(
+      id: id ?? this.id,
+      wordId: wordId ?? this.wordId,
+      skillId: skillId ?? this.skillId,
+      createdAt: createdAt ?? this.createdAt,
+      rightStreak: rightStreak ?? this.rightStreak,
+      resolved: resolved ?? this.resolved,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (wordId.present) {
+      map['word_id'] = Variable<int>(wordId.value);
+    }
+    if (skillId.present) {
+      map['skill_id'] = Variable<String>(skillId.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rightStreak.present) {
+      map['right_streak'] = Variable<int>(rightStreak.value);
+    }
+    if (resolved.present) {
+      map['resolved'] = Variable<bool>(resolved.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MistakesCompanion(')
+          ..write('id: $id, ')
+          ..write('wordId: $wordId, ')
+          ..write('skillId: $skillId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rightStreak: $rightStreak, ')
+          ..write('resolved: $resolved')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $DictionaryTable extends Dictionary
+    with TableInfo<$DictionaryTable, DictEntry> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DictionaryTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _wordMeta = const VerificationMeta('word');
+  @override
+  late final GeneratedColumn<String> word = GeneratedColumn<String>(
+    'word',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _posMeta = const VerificationMeta('pos');
+  @override
+  late final GeneratedColumn<String> pos = GeneratedColumn<String>(
+    'pos',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _levelMeta = const VerificationMeta('level');
+  @override
+  late final GeneratedColumn<String> level = GeneratedColumn<String>(
+    'level',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hanjaMeta = const VerificationMeta('hanja');
+  @override
+  late final GeneratedColumn<String> hanja = GeneratedColumn<String>(
+    'hanja',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _pronunciationMeta = const VerificationMeta(
+    'pronunciation',
+  );
+  @override
+  late final GeneratedColumn<String> pronunciation = GeneratedColumn<String>(
+    'pronunciation',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _sensesMeta = const VerificationMeta('senses');
+  @override
+  late final GeneratedColumn<String> senses = GeneratedColumn<String>(
+    'senses',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _exampleMeta = const VerificationMeta(
+    'example',
+  );
+  @override
+  late final GeneratedColumn<String> example = GeneratedColumn<String>(
+    'example',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _formsMeta = const VerificationMeta('forms');
+  @override
+  late final GeneratedColumn<String> forms = GeneratedColumn<String>(
+    'forms',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    word,
+    pos,
+    level,
+    hanja,
+    pronunciation,
+    senses,
+    example,
+    forms,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'dictionary';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DictEntry> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('word')) {
+      context.handle(
+        _wordMeta,
+        word.isAcceptableOrUnknown(data['word']!, _wordMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_wordMeta);
+    }
+    if (data.containsKey('pos')) {
+      context.handle(
+        _posMeta,
+        pos.isAcceptableOrUnknown(data['pos']!, _posMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_posMeta);
+    }
+    if (data.containsKey('level')) {
+      context.handle(
+        _levelMeta,
+        level.isAcceptableOrUnknown(data['level']!, _levelMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_levelMeta);
+    }
+    if (data.containsKey('hanja')) {
+      context.handle(
+        _hanjaMeta,
+        hanja.isAcceptableOrUnknown(data['hanja']!, _hanjaMeta),
+      );
+    }
+    if (data.containsKey('pronunciation')) {
+      context.handle(
+        _pronunciationMeta,
+        pronunciation.isAcceptableOrUnknown(
+          data['pronunciation']!,
+          _pronunciationMeta,
+        ),
+      );
+    }
+    if (data.containsKey('senses')) {
+      context.handle(
+        _sensesMeta,
+        senses.isAcceptableOrUnknown(data['senses']!, _sensesMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sensesMeta);
+    }
+    if (data.containsKey('example')) {
+      context.handle(
+        _exampleMeta,
+        example.isAcceptableOrUnknown(data['example']!, _exampleMeta),
+      );
+    }
+    if (data.containsKey('forms')) {
+      context.handle(
+        _formsMeta,
+        forms.isAcceptableOrUnknown(data['forms']!, _formsMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DictEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DictEntry(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      word: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}word'],
+      )!,
+      pos: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}pos'],
+      )!,
+      level: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}level'],
+      )!,
+      hanja: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}hanja'],
+      ),
+      pronunciation: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}pronunciation'],
+      ),
+      senses: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}senses'],
+      )!,
+      example: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}example'],
+      ),
+      forms: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}forms'],
+      ),
+    );
+  }
+
+  @override
+  $DictionaryTable createAlias(String alias) {
+    return $DictionaryTable(attachedDatabase, alias);
+  }
+}
+
+class DictEntry extends DataClass implements Insertable<DictEntry> {
+  final int id;
+  final String word;
+  final String pos;
+  final String level;
+  final String? hanja;
+  final String? pronunciation;
+
+  /// JSON list of {"m": [English words], "d": short definition}.
+  final String senses;
+  final String? example;
+
+  /// KRDict 활용 forms (JSON) for verbs/adjectives; used to look up conjugated words.
+  final String? forms;
+  const DictEntry({
+    required this.id,
+    required this.word,
+    required this.pos,
+    required this.level,
+    this.hanja,
+    this.pronunciation,
+    required this.senses,
+    this.example,
+    this.forms,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['word'] = Variable<String>(word);
+    map['pos'] = Variable<String>(pos);
+    map['level'] = Variable<String>(level);
+    if (!nullToAbsent || hanja != null) {
+      map['hanja'] = Variable<String>(hanja);
+    }
+    if (!nullToAbsent || pronunciation != null) {
+      map['pronunciation'] = Variable<String>(pronunciation);
+    }
+    map['senses'] = Variable<String>(senses);
+    if (!nullToAbsent || example != null) {
+      map['example'] = Variable<String>(example);
+    }
+    if (!nullToAbsent || forms != null) {
+      map['forms'] = Variable<String>(forms);
+    }
+    return map;
+  }
+
+  DictionaryCompanion toCompanion(bool nullToAbsent) {
+    return DictionaryCompanion(
+      id: Value(id),
+      word: Value(word),
+      pos: Value(pos),
+      level: Value(level),
+      hanja: hanja == null && nullToAbsent
+          ? const Value.absent()
+          : Value(hanja),
+      pronunciation: pronunciation == null && nullToAbsent
+          ? const Value.absent()
+          : Value(pronunciation),
+      senses: Value(senses),
+      example: example == null && nullToAbsent
+          ? const Value.absent()
+          : Value(example),
+      forms: forms == null && nullToAbsent
+          ? const Value.absent()
+          : Value(forms),
+    );
+  }
+
+  factory DictEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DictEntry(
+      id: serializer.fromJson<int>(json['id']),
+      word: serializer.fromJson<String>(json['word']),
+      pos: serializer.fromJson<String>(json['pos']),
+      level: serializer.fromJson<String>(json['level']),
+      hanja: serializer.fromJson<String?>(json['hanja']),
+      pronunciation: serializer.fromJson<String?>(json['pronunciation']),
+      senses: serializer.fromJson<String>(json['senses']),
+      example: serializer.fromJson<String?>(json['example']),
+      forms: serializer.fromJson<String?>(json['forms']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'word': serializer.toJson<String>(word),
+      'pos': serializer.toJson<String>(pos),
+      'level': serializer.toJson<String>(level),
+      'hanja': serializer.toJson<String?>(hanja),
+      'pronunciation': serializer.toJson<String?>(pronunciation),
+      'senses': serializer.toJson<String>(senses),
+      'example': serializer.toJson<String?>(example),
+      'forms': serializer.toJson<String?>(forms),
+    };
+  }
+
+  DictEntry copyWith({
+    int? id,
+    String? word,
+    String? pos,
+    String? level,
+    Value<String?> hanja = const Value.absent(),
+    Value<String?> pronunciation = const Value.absent(),
+    String? senses,
+    Value<String?> example = const Value.absent(),
+    Value<String?> forms = const Value.absent(),
+  }) => DictEntry(
+    id: id ?? this.id,
+    word: word ?? this.word,
+    pos: pos ?? this.pos,
+    level: level ?? this.level,
+    hanja: hanja.present ? hanja.value : this.hanja,
+    pronunciation: pronunciation.present
+        ? pronunciation.value
+        : this.pronunciation,
+    senses: senses ?? this.senses,
+    example: example.present ? example.value : this.example,
+    forms: forms.present ? forms.value : this.forms,
+  );
+  DictEntry copyWithCompanion(DictionaryCompanion data) {
+    return DictEntry(
+      id: data.id.present ? data.id.value : this.id,
+      word: data.word.present ? data.word.value : this.word,
+      pos: data.pos.present ? data.pos.value : this.pos,
+      level: data.level.present ? data.level.value : this.level,
+      hanja: data.hanja.present ? data.hanja.value : this.hanja,
+      pronunciation: data.pronunciation.present
+          ? data.pronunciation.value
+          : this.pronunciation,
+      senses: data.senses.present ? data.senses.value : this.senses,
+      example: data.example.present ? data.example.value : this.example,
+      forms: data.forms.present ? data.forms.value : this.forms,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DictEntry(')
+          ..write('id: $id, ')
+          ..write('word: $word, ')
+          ..write('pos: $pos, ')
+          ..write('level: $level, ')
+          ..write('hanja: $hanja, ')
+          ..write('pronunciation: $pronunciation, ')
+          ..write('senses: $senses, ')
+          ..write('example: $example, ')
+          ..write('forms: $forms')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    word,
+    pos,
+    level,
+    hanja,
+    pronunciation,
+    senses,
+    example,
+    forms,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DictEntry &&
+          other.id == this.id &&
+          other.word == this.word &&
+          other.pos == this.pos &&
+          other.level == this.level &&
+          other.hanja == this.hanja &&
+          other.pronunciation == this.pronunciation &&
+          other.senses == this.senses &&
+          other.example == this.example &&
+          other.forms == this.forms);
+}
+
+class DictionaryCompanion extends UpdateCompanion<DictEntry> {
+  final Value<int> id;
+  final Value<String> word;
+  final Value<String> pos;
+  final Value<String> level;
+  final Value<String?> hanja;
+  final Value<String?> pronunciation;
+  final Value<String> senses;
+  final Value<String?> example;
+  final Value<String?> forms;
+  const DictionaryCompanion({
+    this.id = const Value.absent(),
+    this.word = const Value.absent(),
+    this.pos = const Value.absent(),
+    this.level = const Value.absent(),
+    this.hanja = const Value.absent(),
+    this.pronunciation = const Value.absent(),
+    this.senses = const Value.absent(),
+    this.example = const Value.absent(),
+    this.forms = const Value.absent(),
+  });
+  DictionaryCompanion.insert({
+    this.id = const Value.absent(),
+    required String word,
+    required String pos,
+    required String level,
+    this.hanja = const Value.absent(),
+    this.pronunciation = const Value.absent(),
+    required String senses,
+    this.example = const Value.absent(),
+    this.forms = const Value.absent(),
+  }) : word = Value(word),
+       pos = Value(pos),
+       level = Value(level),
+       senses = Value(senses);
+  static Insertable<DictEntry> custom({
+    Expression<int>? id,
+    Expression<String>? word,
+    Expression<String>? pos,
+    Expression<String>? level,
+    Expression<String>? hanja,
+    Expression<String>? pronunciation,
+    Expression<String>? senses,
+    Expression<String>? example,
+    Expression<String>? forms,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (word != null) 'word': word,
+      if (pos != null) 'pos': pos,
+      if (level != null) 'level': level,
+      if (hanja != null) 'hanja': hanja,
+      if (pronunciation != null) 'pronunciation': pronunciation,
+      if (senses != null) 'senses': senses,
+      if (example != null) 'example': example,
+      if (forms != null) 'forms': forms,
+    });
+  }
+
+  DictionaryCompanion copyWith({
+    Value<int>? id,
+    Value<String>? word,
+    Value<String>? pos,
+    Value<String>? level,
+    Value<String?>? hanja,
+    Value<String?>? pronunciation,
+    Value<String>? senses,
+    Value<String?>? example,
+    Value<String?>? forms,
+  }) {
+    return DictionaryCompanion(
+      id: id ?? this.id,
+      word: word ?? this.word,
+      pos: pos ?? this.pos,
+      level: level ?? this.level,
+      hanja: hanja ?? this.hanja,
+      pronunciation: pronunciation ?? this.pronunciation,
+      senses: senses ?? this.senses,
+      example: example ?? this.example,
+      forms: forms ?? this.forms,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (word.present) {
+      map['word'] = Variable<String>(word.value);
+    }
+    if (pos.present) {
+      map['pos'] = Variable<String>(pos.value);
+    }
+    if (level.present) {
+      map['level'] = Variable<String>(level.value);
+    }
+    if (hanja.present) {
+      map['hanja'] = Variable<String>(hanja.value);
+    }
+    if (pronunciation.present) {
+      map['pronunciation'] = Variable<String>(pronunciation.value);
+    }
+    if (senses.present) {
+      map['senses'] = Variable<String>(senses.value);
+    }
+    if (example.present) {
+      map['example'] = Variable<String>(example.value);
+    }
+    if (forms.present) {
+      map['forms'] = Variable<String>(forms.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DictionaryCompanion(')
+          ..write('id: $id, ')
+          ..write('word: $word, ')
+          ..write('pos: $pos, ')
+          ..write('level: $level, ')
+          ..write('hanja: $hanja, ')
+          ..write('pronunciation: $pronunciation, ')
+          ..write('senses: $senses, ')
+          ..write('example: $example, ')
+          ..write('forms: $forms')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -3178,6 +4771,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $LessonProgressTable lessonProgress = $LessonProgressTable(this);
   late final $AchievementsTable achievements = $AchievementsTable(this);
   late final $QuestClaimsTable questClaims = $QuestClaimsTable(this);
+  late final $SkillsTable skills = $SkillsTable(this);
+  late final $MistakesTable mistakes = $MistakesTable(this);
+  late final $DictionaryTable dictionary = $DictionaryTable(this);
+  late final Index dictionaryWord = Index(
+    'dictionary_word',
+    'CREATE INDEX dictionary_word ON dictionary (word)',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -3190,6 +4790,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     lessonProgress,
     achievements,
     questClaims,
+    skills,
+    mistakes,
+    dictionary,
+    dictionaryWord,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -5309,6 +6913,817 @@ typedef $$QuestClaimsTableProcessedTableManager =
       QuestClaim,
       PrefetchHooks Function()
     >;
+typedef $$SkillsTableCreateCompanionBuilder = SkillsCompanion Function({
+  required String id,
+  Value<int> state,
+  Value<int?> step,
+  Value<double?> stability,
+  Value<double?> difficulty,
+  Value<DateTime> due,
+  Value<DateTime?> lastReview,
+  Value<int> reps,
+  Value<int> lapses,
+  Value<int> correct,
+  Value<int> attempts,
+  Value<int> rowid,
+});
+typedef $$SkillsTableUpdateCompanionBuilder = SkillsCompanion Function({
+  Value<String> id,
+  Value<int> state,
+  Value<int?> step,
+  Value<double?> stability,
+  Value<double?> difficulty,
+  Value<DateTime> due,
+  Value<DateTime?> lastReview,
+  Value<int> reps,
+  Value<int> lapses,
+  Value<int> correct,
+  Value<int> attempts,
+  Value<int> rowid,
+});
+
+class $$SkillsTableFilterComposer
+    extends Composer<_$AppDatabase, $SkillsTable> {
+  $$SkillsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get state => $composableBuilder(
+    column: $table.state,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get step => $composableBuilder(
+    column: $table.step,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get stability => $composableBuilder(
+    column: $table.stability,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get difficulty => $composableBuilder(
+    column: $table.difficulty,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get due => $composableBuilder(
+    column: $table.due,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastReview => $composableBuilder(
+    column: $table.lastReview,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get reps => $composableBuilder(
+    column: $table.reps,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get lapses => $composableBuilder(
+    column: $table.lapses,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get correct => $composableBuilder(
+    column: $table.correct,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get attempts => $composableBuilder(
+    column: $table.attempts,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SkillsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SkillsTable> {
+  $$SkillsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get state => $composableBuilder(
+    column: $table.state,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get step => $composableBuilder(
+    column: $table.step,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get stability => $composableBuilder(
+    column: $table.stability,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get difficulty => $composableBuilder(
+    column: $table.difficulty,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get due => $composableBuilder(
+    column: $table.due,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastReview => $composableBuilder(
+    column: $table.lastReview,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get reps => $composableBuilder(
+    column: $table.reps,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get lapses => $composableBuilder(
+    column: $table.lapses,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get correct => $composableBuilder(
+    column: $table.correct,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get attempts => $composableBuilder(
+    column: $table.attempts,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SkillsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SkillsTable> {
+  $$SkillsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get state =>
+      $composableBuilder(column: $table.state, builder: (column) => column);
+
+  GeneratedColumn<int> get step =>
+      $composableBuilder(column: $table.step, builder: (column) => column);
+
+  GeneratedColumn<double> get stability =>
+      $composableBuilder(column: $table.stability, builder: (column) => column);
+
+  GeneratedColumn<double> get difficulty => $composableBuilder(
+    column: $table.difficulty,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get due =>
+      $composableBuilder(column: $table.due, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastReview => $composableBuilder(
+    column: $table.lastReview,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get reps =>
+      $composableBuilder(column: $table.reps, builder: (column) => column);
+
+  GeneratedColumn<int> get lapses =>
+      $composableBuilder(column: $table.lapses, builder: (column) => column);
+
+  GeneratedColumn<int> get correct =>
+      $composableBuilder(column: $table.correct, builder: (column) => column);
+
+  GeneratedColumn<int> get attempts =>
+      $composableBuilder(column: $table.attempts, builder: (column) => column);
+}
+
+class $$SkillsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SkillsTable,
+          SkillRow,
+          $$SkillsTableFilterComposer,
+          $$SkillsTableOrderingComposer,
+          $$SkillsTableAnnotationComposer,
+          $$SkillsTableCreateCompanionBuilder,
+          $$SkillsTableUpdateCompanionBuilder,
+          (SkillRow, BaseReferences<_$AppDatabase, $SkillsTable, SkillRow>),
+          SkillRow,
+          PrefetchHooks Function()
+        > {
+  $$SkillsTableTableManager(_$AppDatabase db, $SkillsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SkillsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SkillsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SkillsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<int> state = const Value.absent(),
+                Value<int?> step = const Value.absent(),
+                Value<double?> stability = const Value.absent(),
+                Value<double?> difficulty = const Value.absent(),
+                Value<DateTime> due = const Value.absent(),
+                Value<DateTime?> lastReview = const Value.absent(),
+                Value<int> reps = const Value.absent(),
+                Value<int> lapses = const Value.absent(),
+                Value<int> correct = const Value.absent(),
+                Value<int> attempts = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SkillsCompanion(
+                id: id,
+                state: state,
+                step: step,
+                stability: stability,
+                difficulty: difficulty,
+                due: due,
+                lastReview: lastReview,
+                reps: reps,
+                lapses: lapses,
+                correct: correct,
+                attempts: attempts,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                Value<int> state = const Value.absent(),
+                Value<int?> step = const Value.absent(),
+                Value<double?> stability = const Value.absent(),
+                Value<double?> difficulty = const Value.absent(),
+                Value<DateTime> due = const Value.absent(),
+                Value<DateTime?> lastReview = const Value.absent(),
+                Value<int> reps = const Value.absent(),
+                Value<int> lapses = const Value.absent(),
+                Value<int> correct = const Value.absent(),
+                Value<int> attempts = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SkillsCompanion.insert(
+                id: id,
+                state: state,
+                step: step,
+                stability: stability,
+                difficulty: difficulty,
+                due: due,
+                lastReview: lastReview,
+                reps: reps,
+                lapses: lapses,
+                correct: correct,
+                attempts: attempts,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$SkillsTable, SkillRow>(table),
+                  BaseReferences<_$AppDatabase, $SkillsTable, SkillRow>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SkillsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SkillsTable,
+      SkillRow,
+      $$SkillsTableFilterComposer,
+      $$SkillsTableOrderingComposer,
+      $$SkillsTableAnnotationComposer,
+      $$SkillsTableCreateCompanionBuilder,
+      $$SkillsTableUpdateCompanionBuilder,
+      (SkillRow, BaseReferences<_$AppDatabase, $SkillsTable, SkillRow>),
+      SkillRow,
+      PrefetchHooks Function()
+    >;
+typedef $$MistakesTableCreateCompanionBuilder = MistakesCompanion Function({
+  Value<int> id,
+  Value<int?> wordId,
+  Value<String?> skillId,
+  required DateTime createdAt,
+  Value<int> rightStreak,
+  Value<bool> resolved,
+});
+typedef $$MistakesTableUpdateCompanionBuilder = MistakesCompanion Function({
+  Value<int> id,
+  Value<int?> wordId,
+  Value<String?> skillId,
+  Value<DateTime> createdAt,
+  Value<int> rightStreak,
+  Value<bool> resolved,
+});
+
+class $$MistakesTableFilterComposer
+    extends Composer<_$AppDatabase, $MistakesTable> {
+  $$MistakesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get wordId => $composableBuilder(
+    column: $table.wordId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get skillId => $composableBuilder(
+    column: $table.skillId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rightStreak => $composableBuilder(
+    column: $table.rightStreak,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get resolved => $composableBuilder(
+    column: $table.resolved,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$MistakesTableOrderingComposer
+    extends Composer<_$AppDatabase, $MistakesTable> {
+  $$MistakesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get wordId => $composableBuilder(
+    column: $table.wordId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get skillId => $composableBuilder(
+    column: $table.skillId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rightStreak => $composableBuilder(
+    column: $table.rightStreak,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get resolved => $composableBuilder(
+    column: $table.resolved,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$MistakesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MistakesTable> {
+  $$MistakesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get wordId =>
+      $composableBuilder(column: $table.wordId, builder: (column) => column);
+
+  GeneratedColumn<String> get skillId =>
+      $composableBuilder(column: $table.skillId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get rightStreak => $composableBuilder(
+    column: $table.rightStreak,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get resolved =>
+      $composableBuilder(column: $table.resolved, builder: (column) => column);
+}
+
+class $$MistakesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MistakesTable,
+          Mistake,
+          $$MistakesTableFilterComposer,
+          $$MistakesTableOrderingComposer,
+          $$MistakesTableAnnotationComposer,
+          $$MistakesTableCreateCompanionBuilder,
+          $$MistakesTableUpdateCompanionBuilder,
+          (Mistake, BaseReferences<_$AppDatabase, $MistakesTable, Mistake>),
+          Mistake,
+          PrefetchHooks Function()
+        > {
+  $$MistakesTableTableManager(_$AppDatabase db, $MistakesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MistakesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MistakesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MistakesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int?> wordId = const Value.absent(),
+                Value<String?> skillId = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rightStreak = const Value.absent(),
+                Value<bool> resolved = const Value.absent(),
+              }) => MistakesCompanion(
+                id: id,
+                wordId: wordId,
+                skillId: skillId,
+                createdAt: createdAt,
+                rightStreak: rightStreak,
+                resolved: resolved,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int?> wordId = const Value.absent(),
+                Value<String?> skillId = const Value.absent(),
+                required DateTime createdAt,
+                Value<int> rightStreak = const Value.absent(),
+                Value<bool> resolved = const Value.absent(),
+              }) => MistakesCompanion.insert(
+                id: id,
+                wordId: wordId,
+                skillId: skillId,
+                createdAt: createdAt,
+                rightStreak: rightStreak,
+                resolved: resolved,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$MistakesTable, Mistake>(table),
+                  BaseReferences<_$AppDatabase, $MistakesTable, Mistake>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$MistakesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MistakesTable,
+      Mistake,
+      $$MistakesTableFilterComposer,
+      $$MistakesTableOrderingComposer,
+      $$MistakesTableAnnotationComposer,
+      $$MistakesTableCreateCompanionBuilder,
+      $$MistakesTableUpdateCompanionBuilder,
+      (Mistake, BaseReferences<_$AppDatabase, $MistakesTable, Mistake>),
+      Mistake,
+      PrefetchHooks Function()
+    >;
+typedef $$DictionaryTableCreateCompanionBuilder = DictionaryCompanion Function({
+  Value<int> id,
+  required String word,
+  required String pos,
+  required String level,
+  Value<String?> hanja,
+  Value<String?> pronunciation,
+  required String senses,
+  Value<String?> example,
+  Value<String?> forms,
+});
+typedef $$DictionaryTableUpdateCompanionBuilder = DictionaryCompanion Function({
+  Value<int> id,
+  Value<String> word,
+  Value<String> pos,
+  Value<String> level,
+  Value<String?> hanja,
+  Value<String?> pronunciation,
+  Value<String> senses,
+  Value<String?> example,
+  Value<String?> forms,
+});
+
+class $$DictionaryTableFilterComposer
+    extends Composer<_$AppDatabase, $DictionaryTable> {
+  $$DictionaryTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get word => $composableBuilder(
+    column: $table.word,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get pos => $composableBuilder(
+    column: $table.pos,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get level => $composableBuilder(
+    column: $table.level,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get hanja => $composableBuilder(
+    column: $table.hanja,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get pronunciation => $composableBuilder(
+    column: $table.pronunciation,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get senses => $composableBuilder(
+    column: $table.senses,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get example => $composableBuilder(
+    column: $table.example,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get forms => $composableBuilder(
+    column: $table.forms,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DictionaryTableOrderingComposer
+    extends Composer<_$AppDatabase, $DictionaryTable> {
+  $$DictionaryTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get word => $composableBuilder(
+    column: $table.word,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get pos => $composableBuilder(
+    column: $table.pos,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get level => $composableBuilder(
+    column: $table.level,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get hanja => $composableBuilder(
+    column: $table.hanja,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get pronunciation => $composableBuilder(
+    column: $table.pronunciation,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get senses => $composableBuilder(
+    column: $table.senses,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get example => $composableBuilder(
+    column: $table.example,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get forms => $composableBuilder(
+    column: $table.forms,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DictionaryTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DictionaryTable> {
+  $$DictionaryTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get word =>
+      $composableBuilder(column: $table.word, builder: (column) => column);
+
+  GeneratedColumn<String> get pos =>
+      $composableBuilder(column: $table.pos, builder: (column) => column);
+
+  GeneratedColumn<String> get level =>
+      $composableBuilder(column: $table.level, builder: (column) => column);
+
+  GeneratedColumn<String> get hanja =>
+      $composableBuilder(column: $table.hanja, builder: (column) => column);
+
+  GeneratedColumn<String> get pronunciation => $composableBuilder(
+    column: $table.pronunciation,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get senses =>
+      $composableBuilder(column: $table.senses, builder: (column) => column);
+
+  GeneratedColumn<String> get example =>
+      $composableBuilder(column: $table.example, builder: (column) => column);
+
+  GeneratedColumn<String> get forms =>
+      $composableBuilder(column: $table.forms, builder: (column) => column);
+}
+
+class $$DictionaryTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DictionaryTable,
+          DictEntry,
+          $$DictionaryTableFilterComposer,
+          $$DictionaryTableOrderingComposer,
+          $$DictionaryTableAnnotationComposer,
+          $$DictionaryTableCreateCompanionBuilder,
+          $$DictionaryTableUpdateCompanionBuilder,
+          (
+            DictEntry,
+            BaseReferences<_$AppDatabase, $DictionaryTable, DictEntry>,
+          ),
+          DictEntry,
+          PrefetchHooks Function()
+        > {
+  $$DictionaryTableTableManager(_$AppDatabase db, $DictionaryTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DictionaryTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DictionaryTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DictionaryTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> word = const Value.absent(),
+                Value<String> pos = const Value.absent(),
+                Value<String> level = const Value.absent(),
+                Value<String?> hanja = const Value.absent(),
+                Value<String?> pronunciation = const Value.absent(),
+                Value<String> senses = const Value.absent(),
+                Value<String?> example = const Value.absent(),
+                Value<String?> forms = const Value.absent(),
+              }) => DictionaryCompanion(
+                id: id,
+                word: word,
+                pos: pos,
+                level: level,
+                hanja: hanja,
+                pronunciation: pronunciation,
+                senses: senses,
+                example: example,
+                forms: forms,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String word,
+                required String pos,
+                required String level,
+                Value<String?> hanja = const Value.absent(),
+                Value<String?> pronunciation = const Value.absent(),
+                required String senses,
+                Value<String?> example = const Value.absent(),
+                Value<String?> forms = const Value.absent(),
+              }) => DictionaryCompanion.insert(
+                id: id,
+                word: word,
+                pos: pos,
+                level: level,
+                hanja: hanja,
+                pronunciation: pronunciation,
+                senses: senses,
+                example: example,
+                forms: forms,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$DictionaryTable, DictEntry>(table),
+                  BaseReferences<_$AppDatabase, $DictionaryTable, DictEntry>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DictionaryTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DictionaryTable,
+      DictEntry,
+      $$DictionaryTableFilterComposer,
+      $$DictionaryTableOrderingComposer,
+      $$DictionaryTableAnnotationComposer,
+      $$DictionaryTableCreateCompanionBuilder,
+      $$DictionaryTableUpdateCompanionBuilder,
+      (DictEntry, BaseReferences<_$AppDatabase, $DictionaryTable, DictEntry>),
+      DictEntry,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -5327,4 +7742,10 @@ class $AppDatabaseManager {
       $$AchievementsTableTableManager(_db, _db.achievements);
   $$QuestClaimsTableTableManager get questClaims =>
       $$QuestClaimsTableTableManager(_db, _db.questClaims);
+  $$SkillsTableTableManager get skills =>
+      $$SkillsTableTableManager(_db, _db.skills);
+  $$MistakesTableTableManager get mistakes =>
+      $$MistakesTableTableManager(_db, _db.mistakes);
+  $$DictionaryTableTableManager get dictionary =>
+      $$DictionaryTableTableManager(_db, _db.dictionary);
 }

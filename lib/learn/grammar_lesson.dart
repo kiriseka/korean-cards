@@ -29,6 +29,7 @@ Future<bool?> openGrammarLesson(BuildContext context, WidgetRef ref, GrammarLess
       onComplete: (s) async {
         final game = ref.read(gameProvider);
         await game.recordLesson(lesson.progressId, stars: s.stars, accuracy: s.accuracy);
+        await ref.read(skillServiceProvider).seedLesson(lesson.id);
         return game.award([
           ...sessionActivities(game, s),
           game.activity(ActivityKind.lesson,

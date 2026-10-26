@@ -6,7 +6,7 @@ import 'exercises.dart';
 /// The three steps of "Today's session".
 enum DailyStep {
   review('Review', '🔁', 'Flashcards that are due'),
-  speakListen('Speak & listen', '🎧', 'Shadow, reply, dictation'),
+  speakListen('Practice', '🎧', 'Grammar review, then speak & listen'),
   learn('Something new', '✨', 'A scene, lesson or grammar point');
 
   const DailyStep(this.title, this.emoji, this.description);

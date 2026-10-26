@@ -19,6 +19,12 @@ abstract final class Direction {
   static const enToKo = 1;
 }
 
+/// New 중급 flashcards start once this many beginner words are learned (or when switched on).
+const intermediateUnlockAt = 1500;
+
+/// Forgotten this many times after being learned: a "tricky word" that gets extra help.
+const trickyLapses = 4;
+
 /// A review-state card whose interval is at least this many days counts as "known".
 const knownStabilityDays = 21.0;
 
@@ -114,6 +120,8 @@ abstract final class ActivityKind {
   static const spoken = 'spoken';
   static const dialogue = 'dialogue';
   static const daily = 'daily';
+  static const gym = 'gym';
+  static const fixed = 'fixed';
 }
 
 class LessonProgress extends Table {
@@ -131,6 +139,59 @@ class LessonProgress extends Table {
 class Achievements extends Table {
   TextColumn get id => text()();
   DateTimeColumn get unlockedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// A grammar or number skill (lib/learn/skills.dart), scheduled with FSRS like a card.
+@DataClassName('SkillRow')
+class Skills extends Table {
+  TextColumn get id => text()();
+  IntColumn get state => integer().withDefault(const Constant(CardState.newCard))();
+  IntColumn get step => integer().nullable()();
+  RealColumn get stability => real().nullable()();
+  RealColumn get difficulty => real().nullable()();
+  DateTimeColumn get due => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get lastReview => dateTime().nullable()();
+  IntColumn get reps => integer().withDefault(const Constant(0))();
+  IntColumn get lapses => integer().withDefault(const Constant(0))();
+
+  /// Exercises answered right / attempted, first tries only.
+  IntColumn get correct => integer().withDefault(const Constant(0))();
+  IntColumn get attempts => integer().withDefault(const Constant(0))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Something answered wrong: a word, a skill, or both. Two right answers in a row resolve it.
+class Mistakes extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get wordId => integer().nullable()();
+  TextColumn get skillId => text().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+  IntColumn get rightStreak => integer().withDefault(const Constant(0))();
+  BoolColumn get resolved => boolean().withDefault(const Constant(false))();
+}
+
+/// The full offline KRDict dictionary (assets/data/dictionary.json.gz), loaded on first use.
+@DataClassName('DictEntry')
+@TableIndex(name: 'dictionary_word', columns: {#word})
+class Dictionary extends Table {
+  IntColumn get id => integer()();
+  TextColumn get word => text()();
+  TextColumn get pos => text()();
+  TextColumn get level => text()();
+  TextColumn get hanja => text().nullable()();
+  TextColumn get pronunciation => text().nullable()();
+
+  /// JSON list of {"m": [English words], "d": short definition}.
+  TextColumn get senses => text()();
+  TextColumn get example => text().nullable()();
+
+  /// KRDict 활용 forms (JSON) for verbs/adjectives; used to look up conjugated words.
+  TextColumn get forms => text().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -200,7 +261,7 @@ class CardWithWord {
   final Word word;
 }
 
-enum WordFilter { all, newWords, learning, known, starred, suspended }
+enum WordFilter { all, newWords, learning, known, starred, tricky, suspended }
 
 class TodayCounts {
   const TodayCounts({
@@ -251,12 +312,12 @@ DateTime studyDayStart(DateTime now) {
 /// Calendar-day arithmetic that keeps the wall-clock time across daylight-saving changes.
 DateTime addDays(DateTime d, int days) => DateTime(d.year, d.month, d.day + days, d.hour, d.minute);
 
-@DriftDatabase(tables: [Words, Cards, ReviewLogs, Activities, LessonProgress, Achievements, QuestClaims])
+@DriftDatabase(tables: [Words, Cards, ReviewLogs, Activities, LessonProgress, Achievements, QuestClaims, Skills, Mistakes, Dictionary])
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.executor);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -272,6 +333,13 @@ class AppDatabase extends _$AppDatabase {
             await m.createTable(schema.achievements);
             await m.createTable(schema.questClaims);
             await customStatement("UPDATE words SET unit = 'custom' WHERE is_custom = 1");
+          },
+          // v1.3: grammar/number skills, the mistakes notebook and the offline dictionary.
+          from2To3: (m, schema) async {
+            await m.createTable(schema.skills);
+            await m.createTable(schema.mistakes);
+            await m.createTable(schema.dictionary);
+            await m.createIndex(schema.dictionaryWord);
           },
         ),
         beforeOpen: (details) async => customStatement('PRAGMA foreign_keys = ON'),
@@ -309,7 +377,7 @@ class AppDatabase extends _$AppDatabase {
 
   /// New cards in learning order. A reverse card only becomes available once its word's
   /// forward card has been studied.
-  Future<List<CardWithWord>> newCards({required bool reverse, required int limit}) {
+  Future<List<CardWithWord>> newCards({required bool reverse, required int limit, bool intermediate = false}) {
     if (limit <= 0) return Future.value([]);
     final forwardStudied = existsQuery(
       select(cards.createAlias('f'))
@@ -320,6 +388,7 @@ class AppDatabase extends _$AppDatabase {
     );
     return _cardsWithWords(
       cards.state.equals(CardState.newCard) &
+          (Constant(intermediate) | words.level.isNotValue('중급')) &
           (cards.direction.equals(Direction.koToEn) |
               (_reverseAllowed(reverse) & cards.direction.equals(Direction.enToKo) & forwardStudied)),
       orderBy: [OrderingTerm.asc(words.rank), OrderingTerm.asc(words.id), OrderingTerm.asc(cards.direction)],
@@ -341,14 +410,14 @@ class AppDatabase extends _$AppDatabase {
       });
 
   /// Recomputes the home screen counts whenever cards or logs change.
-  Stream<TodayCounts> watchTodayCounts({required int newPerDay, required bool reverse}) {
+  Stream<TodayCounts> watchTodayCounts({required int newPerDay, required bool reverse, bool intermediate = false}) {
     final trigger = customSelect('SELECT 1', readsFrom: {cards, reviewLogs}).watch();
     return trigger.asyncMap((_) async {
       final now = DateTime.now();
       final dayStart = studyDayStart(now);
       final due = await dueCards(now, reverse: reverse);
       final newToday = await newIntroducedSince(dayStart);
-      final newAvailable = (await newCards(reverse: reverse, limit: (newPerDay - newToday).clamp(0, 9999))).length;
+      final newAvailable = (await newCards(reverse: reverse, limit: (newPerDay - newToday).clamp(0, 9999), intermediate: intermediate)).length;
       final reviewed = reviewLogs.id.count();
       final reviewedToday = await (selectOnly(reviewLogs)
             ..addColumns([reviewed])
@@ -382,6 +451,7 @@ class AppDatabase extends _$AppDatabase {
           WordFilter.known =>
             cards.state.equals(CardState.review) & cards.stability.isBiggerOrEqualValue(knownStabilityDays),
           WordFilter.starred => words.starred.equals(true),
+          WordFilter.tricky => cards.lapses.isBiggerOrEqualValue(trickyLapses) & cards.suspended.equals(false),
           WordFilter.suspended => cards.suspended.equals(true),
         };
     final select_ = select(cards).join([innerJoin(words, words.id.equalsExp(cards.wordId))])
@@ -395,6 +465,18 @@ class AppDatabase extends _$AppDatabase {
         ..orderBy([(w) => OrderingTerm.asc(w.isCustom), (w) => OrderingTerm.asc(w.rank), (w) => OrderingTerm.asc(w.id)]))
       .watch();
 
+  /// How many beginner words have been studied (Level 2 unlocks at [intermediateUnlockAt]).
+  Stream<int> watchLearnedBeginnerCount() => _learnedBeginner().watchSingle();
+  Future<int> learnedBeginnerCount() => _learnedBeginner().getSingle();
+
+  Selectable<int> _learnedBeginner() {
+    final count = cards.id.count();
+    final q = selectOnly(cards).join([innerJoin(words, words.id.equalsExp(cards.wordId))])
+      ..addColumns([count])
+      ..where(cards.direction.equals(Direction.koToEn) & cards.state.isNotValue(CardState.newCard) & words.level.equals('초급'));
+    return q.map((r) => r.read(count) ?? 0);
+  }
+
   /// Ids of words whose Korean→English card has been studied at least once.
   Stream<Set<int>> watchLearnedWordIds() => (selectOnly(cards)
         ..addColumns([cards.wordId])
@@ -402,6 +484,14 @@ class AppDatabase extends _$AppDatabase {
       .map((r) => r.read(cards.wordId)!)
       .watch()
       .map((ids) => ids.toSet());
+
+  /// Words forgotten [trickyLapses]+ times after being learned.
+  Stream<List<Word>> watchTrickyWords() {
+    final q = select(words).join([innerJoin(cards, cards.wordId.equalsExp(words.id))])
+      ..where(cards.direction.equals(Direction.koToEn) & cards.lapses.isBiggerOrEqualValue(trickyLapses) & cards.suspended.equals(false))
+      ..orderBy([OrderingTerm.desc(cards.lapses)]);
+    return q.watch().map((rows) => [for (final r in rows) r.readTable(words)]);
+  }
 
   Future<List<StudyCard>> newForwardCards(List<int> wordIds) => (select(cards)
         ..where((c) => c.wordId.isIn(wordIds) & c.direction.equals(Direction.koToEn) & c.state.equals(CardState.newCard)))

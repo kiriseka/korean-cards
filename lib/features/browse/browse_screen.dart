@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/db.dart';
 import '../../providers.dart';
 import '../../widgets/common.dart';
+import '../dictionary/dictionary_screen.dart';
 import 'add_word_screen.dart';
 import 'word_detail_screen.dart';
 
@@ -33,13 +34,23 @@ class _BrowseScreenState extends ConsumerState<BrowseScreen> {
     WordFilter.learning: 'Learning',
     WordFilter.known: 'Known',
     WordFilter.starred: '★ Starred',
+    WordFilter.tricky: '😵‍💫 Tricky',
     WordFilter.suspended: 'Suspended',
   };
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('단어 · Words')),
+      appBar: AppBar(
+        title: const Text('단어 · Words'),
+        actions: [
+          IconButton(
+            tooltip: 'Dictionary',
+            icon: const Icon(Icons.menu_book),
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const DictionaryScreen())),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         icon: const Icon(Icons.add),
         label: const Text('Add word'),
@@ -79,7 +90,21 @@ class _BrowseScreenState extends ConsumerState<BrowseScreen> {
               builder: (context, snap) {
                 final items = snap.data;
                 if (items == null) return const Center(child: CircularProgressIndicator());
-                if (items.isEmpty) return const Center(child: Text('No words found'));
+                if (items.isEmpty) {
+                  return Center(
+                    child: Column(mainAxisSize: MainAxisSize.min, children: [
+                      const Text('Not in your words'),
+                      if (_query.trim().isNotEmpty)
+                        TextButton.icon(
+                          icon: const Icon(Icons.menu_book),
+                          label: Text('Search the dictionary for “${_query.trim()}”'),
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute(builder: (_) => DictionaryScreen(initialQuery: _query.trim())),
+                          ),
+                        ),
+                    ]),
+                  );
+                }
                 return ListView.builder(
                   padding: const EdgeInsets.only(bottom: 88),
                   itemCount: items.length + 1,

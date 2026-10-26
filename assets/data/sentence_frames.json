@@ -1,0 +1,80 @@
+{
+ "_format": "Hand-written building blocks for the Particle & Tense Gym. Verbs are dictionary forms looked up in words.json for correct conjugation; English verb forms are [base, -s, past, -ing]. Every object list only pairs with verbs that make sense.",
+ "subjects": [
+  {"ko": "저", "en": "I", "third": false},
+  {"ko": "친구", "en": "my friend", "third": true},
+  {"ko": "엄마", "en": "Mom", "third": true},
+  {"ko": "동생", "en": "my little brother", "third": true},
+  {"ko": "민수", "en": "Minsu", "third": true}
+ ],
+ "times": {
+  "past": [{"ko": "어제", "en": "yesterday"}, {"ko": "지난주에", "en": "last week"}, {"ko": "아까", "en": "earlier"}],
+  "present": [{"ko": "매일", "en": "every day"}, {"ko": "아침마다", "en": "every morning"}],
+  "future": [{"ko": "내일", "en": "tomorrow"}, {"ko": "다음 주에", "en": "next week"}, {"ko": "이따가", "en": "later"}],
+  "progressive": [{"ko": "지금", "en": "right now"}]
+ },
+ "objects": {
+  "food": [{"ko": "밥", "en": "rice"}, {"ko": "빵", "en": "bread"}, {"ko": "사과", "en": "apples"}, {"ko": "김치", "en": "kimchi"}, {"ko": "라면", "en": "ramyeon"}],
+  "dishes": [{"ko": "밥", "en": "rice"}, {"ko": "김치", "en": "kimchi"}, {"ko": "라면", "en": "ramyeon"}, {"ko": "김밥", "en": "gimbap"}, {"ko": "케이크", "en": "a cake"}],
+  "drinks": [{"ko": "커피", "en": "coffee"}, {"ko": "물", "en": "water"}, {"ko": "우유", "en": "milk"}, {"ko": "주스", "en": "juice"}, {"ko": "차", "en": "tea"}],
+  "clothes": [{"ko": "옷", "en": "clothes"}, {"ko": "신발", "en": "shoes"}, {"ko": "가방", "en": "a bag"}, {"ko": "모자", "en": "a hat"}],
+  "media": [{"ko": "영화", "en": "a movie"}, {"ko": "드라마", "en": "a drama"}, {"ko": "뉴스", "en": "the news"}],
+  "reading": [{"ko": "책", "en": "a book"}, {"ko": "신문", "en": "the newspaper"}, {"ko": "편지", "en": "a letter"}],
+  "people": [{"ko": "친구", "en": "a friend"}, {"ko": "선생님", "en": "the teacher"}, {"ko": "가족", "en": "my family"}],
+  "subjects": [{"ko": "한국어", "en": "Korean"}, {"ko": "영어", "en": "English"}, {"ko": "수학", "en": "math"}],
+  "music": [{"ko": "음악", "en": "music"}, {"ko": "노래", "en": "a song"}, {"ko": "라디오", "en": "the radio"}]
+ },
+ "transitive": [
+  {"verb": "먹다", "en": ["eat", "eats", "ate", "eating"], "objects": ["food"]},
+  {"verb": "마시다", "en": ["drink", "drinks", "drank", "drinking"], "objects": ["drinks"]},
+  {"verb": "사다", "en": ["buy", "buys", "bought", "buying"], "objects": ["food", "clothes"]},
+  {"verb": "보다", "en": ["watch", "watches", "watched", "watching"], "objects": ["media"]},
+  {"verb": "읽다", "en": ["read", "reads", "read", "reading"], "objects": ["reading"]},
+  {"verb": "만나다", "en": ["meet", "meets", "met", "meeting"], "objects": ["people"]},
+  {"verb": "공부하다", "en": ["study", "studies", "studied", "studying"], "objects": ["subjects"]},
+  {"verb": "만들다", "en": ["make", "makes", "made", "making"], "objects": ["dishes"]},
+  {"verb": "듣다", "en": ["listen to", "listens to", "listened to", "listening to"], "objects": ["music"]}
+ ],
+ "likes": {"verb": "좋아하다", "en": ["like", "likes", "liked", "liking"], "objects": ["food", "drinks", "media", "music"]},
+ "places": [
+  {"ko": "학교", "to": "to school", "at": "at school"},
+  {"ko": "집", "to": "home", "at": "at home"},
+  {"ko": "회사", "to": "to work", "at": "at work"},
+  {"ko": "도서관", "to": "to the library", "at": "at the library"},
+  {"ko": "카페", "to": "to a café", "at": "at a café"},
+  {"ko": "공원", "to": "to the park", "at": "at the park"},
+  {"ko": "식당", "to": "to a restaurant", "at": "at a restaurant"},
+  {"ko": "시장", "to": "to the market", "at": "at the market"}
+ ],
+ "goVerbs": [
+  {"verb": "가다", "en": ["go", "goes", "went", "going"]},
+  {"verb": "오다", "en": ["come", "comes", "came", "coming"]}
+ ],
+ "placeVerbs": [
+  {"verb": "공부하다", "en": ["study", "studies", "studied", "studying"], "places": ["학교", "도서관", "카페", "집"]},
+  {"verb": "일하다", "en": ["work", "works", "worked", "working"], "places": ["회사", "카페", "식당", "시장"]},
+  {"verb": "쉬다", "en": ["rest", "rests", "rested", "resting"], "places": ["집", "공원", "카페"]},
+  {"verb": "놀다", "en": ["hang out", "hangs out", "hung out", "hanging out"], "places": ["공원", "집", "카페"]}
+ ],
+ "vehicles": [
+  {"ko": "버스", "en": "by bus"}, {"ko": "지하철", "en": "by subway"}, {"ko": "택시", "en": "by taxi"},
+  {"ko": "자전거", "en": "by bike"}, {"ko": "기차", "en": "by train"}, {"ko": "비행기", "en": "by plane"}
+ ],
+ "have": [
+  {"ko": "시간", "en": "time"}, {"ko": "돈", "en": "money"}, {"ko": "질문", "en": "a question"},
+  {"ko": "숙제", "en": "homework"}, {"ko": "약속", "en": "plans"}
+ ],
+ "descriptions": [
+  {"ko": "날씨", "adj": "좋다", "en": "The weather is nice."},
+  {"ko": "음식", "adj": "맛있다", "en": "The food is delicious."},
+  {"ko": "가방", "adj": "비싸다", "en": "The bag is expensive."},
+  {"ko": "방", "adj": "크다", "en": "The room is big."},
+  {"ko": "한국어", "adj": "재미있다", "en": "Korean is fun."},
+  {"ko": "시험", "adj": "어렵다", "en": "The exam is hard."},
+  {"ko": "머리", "adj": "아프다", "en": "My head hurts."}
+ ],
+ "jobs": [
+  {"ko": "학생", "en": "a student"}, {"ko": "회사원", "en": "an office worker"},
+  {"ko": "선생님", "en": "a teacher"}, {"ko": "의사", "en": "a doctor"}, {"ko": "가수", "en": "a singer"}
+ ]
+}

@@ -11,7 +11,7 @@ class BackupService {
   BackupService(this.db);
   final AppDatabase db;
 
-  static const formatVersion = 2;
+  static const formatVersion = 3;
 
   Future<String> export() async {
     final words = await db.select(db.words).get();
@@ -32,6 +32,8 @@ class BackupService {
       'lessonProgress': [for (final l in await db.select(db.lessonProgress).get()) l.toJson()],
       'achievements': [for (final a in await db.select(db.achievements).get()) a.toJson()],
       'questClaims': [for (final q in await db.select(db.questClaims).get()) q.toJson()],
+      'skills': [for (final s in await db.select(db.skills).get()) s.toJson()],
+      'mistakes': [for (final m in await db.select(db.mistakes).get()) m.toJson()],
     });
   }
 
@@ -52,6 +54,8 @@ class BackupService {
       await db.delete(db.lessonProgress).go();
       await db.delete(db.achievements).go();
       await db.delete(db.questClaims).go();
+      await db.delete(db.skills).go();
+      await db.delete(db.mistakes).go();
       await (db.delete(db.words)..where((w) => w.isCustom.equals(true))).go();
       await db.update(db.words).write(const WordsCompanion(starred: Value(false), note: Value(null)));
 
@@ -74,6 +78,8 @@ class BackupService {
         b.insertAll(db.lessonProgress, [for (final l in list('lessonProgress')) LessonProgressData.fromJson(l)]);
         b.insertAll(db.achievements, [for (final a in list('achievements')) Achievement.fromJson(a)]);
         b.insertAll(db.questClaims, [for (final q in list('questClaims')) QuestClaim.fromJson(q)]);
+        b.insertAll(db.skills, [for (final s in list('skills')) SkillRow.fromJson(s)]);
+        b.insertAll(db.mistakes, [for (final m in list('mistakes')) Mistake.fromJson(m)]);
       });
       await db.ensureCards();
     });

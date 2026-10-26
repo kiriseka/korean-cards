@@ -32,6 +32,10 @@ class ExerciseSession extends ChangeNotifier {
   /// Exercises skipped with "Can't talk now"; they don't count for or against accuracy.
   int skipped = 0;
   final Set<int> missedWordIds = {};
+  final Set<String> missedSkillIds = {};
+
+  /// First-try results per skill: (right, wrong). Drives skill scheduling after a Gym round.
+  final Map<String, (int, int)> skillResults = {};
 
   /// Set after each answer until [next] is called.
   bool? lastCorrect;
@@ -57,6 +61,12 @@ class ExerciseSession extends ChangeNotifier {
     if (ex == null || lastCorrect != null) return;
     lastCorrect = correct;
     final retry = _missed.contains(ex);
+    if (!retry) {
+      for (final s in ex.skillIds) {
+        final (r, w) = skillResults[s] ?? (0, 0);
+        skillResults[s] = correct ? (r + 1, w) : (r, w + 1);
+      }
+    }
     if (correct) {
       combo++;
       if (combo > bestCombo) bestCombo = combo;
@@ -70,6 +80,7 @@ class ExerciseSession extends ChangeNotifier {
       lastXp = 0;
       mistakes++;
       missedWordIds.addAll(ex.wordIds);
+      missedSkillIds.addAll(ex.skillIds);
       if (retryMistakes && !retry) {
         _missed.add(ex);
         _queue.add(ex);

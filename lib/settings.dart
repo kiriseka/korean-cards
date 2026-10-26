@@ -18,6 +18,7 @@ class Settings {
     this.typingExercises = true,
     this.speakingExercises = true,
     this.dailyMinutes = 15,
+    this.intermediate = false,
   });
 
   final int newPerDay;
@@ -39,6 +40,9 @@ class Settings {
   /// Length of "Today's session": 10, 15 or 20 minutes.
   final int dailyMinutes;
 
+  /// Include 중급 words in new flashcards before the automatic unlock.
+  final bool intermediate;
+
   Settings copyWith({
     int? newPerDay,
     int? reviewCap,
@@ -54,6 +58,7 @@ class Settings {
     bool? typingExercises,
     bool? speakingExercises,
     int? dailyMinutes,
+    bool? intermediate,
   }) =>
       Settings(
         newPerDay: newPerDay ?? this.newPerDay,
@@ -70,6 +75,7 @@ class Settings {
         typingExercises: typingExercises ?? this.typingExercises,
         speakingExercises: speakingExercises ?? this.speakingExercises,
         dailyMinutes: dailyMinutes ?? this.dailyMinutes,
+        intermediate: intermediate ?? this.intermediate,
       );
 
   static Settings load(SharedPreferences p) {
@@ -92,6 +98,7 @@ class Settings {
       typingExercises: p.getBool('typingExercises') ?? d.typingExercises,
       speakingExercises: p.getBool('speakingExercises') ?? d.speakingExercises,
       dailyMinutes: p.getInt('dailyMinutes') ?? d.dailyMinutes,
+      intermediate: p.getBool('intermediate') ?? d.intermediate,
     );
   }
 
@@ -111,6 +118,7 @@ class Settings {
     await p.setBool('typingExercises', typingExercises);
     await p.setBool('speakingExercises', speakingExercises);
     await p.setInt('dailyMinutes', dailyMinutes);
+    await p.setBool('intermediate', intermediate);
   }
 }
 
