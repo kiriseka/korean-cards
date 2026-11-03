@@ -34,6 +34,12 @@ const firstCustomWordId = 10000000;
 /// The topic unit for the user's own words unless they pick another.
 const customUnit = 'custom';
 
+/// Where a swipe puts a word: right into "learned", left into "hard".
+abstract final class Pile {
+  static const learned = 1;
+  static const hard = 2;
+}
+
 class Words extends Table {
   IntColumn get id => integer()();
   TextColumn get word => text()();
@@ -56,6 +62,9 @@ class Words extends Table {
 
   /// KRDict conjugation forms for verbs/adjectives, JSON {"a": "들어", "euni": "들으니"}.
   TextColumn get forms => text().nullable()();
+
+  /// The pile the last card swipe put the word in: one of [Pile], or null if never swiped.
+  IntColumn get pile => integer().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -263,6 +272,16 @@ class CardWithWord {
 
 enum WordFilter { all, newWords, learning, known, starred, tricky, suspended }
 
+/// How many words share a unit, level, pile and star (one row of [AppDatabase.watchDrillCounts]).
+class DrillCountRow {
+  const DrillCountRow({required this.unit, required this.level, required this.pile, required this.starred, required this.count});
+  final String unit;
+  final String level;
+  final int? pile;
+  final bool starred;
+  final int count;
+}
+
 class TodayCounts {
   const TodayCounts({
     required this.due,
@@ -317,7 +336,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(super.executor);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -340,6 +359,10 @@ class AppDatabase extends _$AppDatabase {
             await m.createTable(schema.mistakes);
             await m.createTable(schema.dictionary);
             await m.createIndex(schema.dictionaryWord);
+          },
+          // v1.4: learned / hard piles for swipe drills.
+          from3To4: (m, schema) async {
+            await m.addColumn(schema.words, schema.words.pile);
           },
         ),
         beforeOpen: (details) async => customStatement('PRAGMA foreign_keys = ON'),
@@ -492,6 +515,58 @@ class AppDatabase extends _$AppDatabase {
       ..orderBy([OrderingTerm.desc(cards.lapses)]);
     return q.watch().map((rows) => [for (final r in rows) r.readTable(words)]);
   }
+
+  // ---- Drills ------------------------------------------------------------
+
+  /// Korean→English cards for a category drill, due or not, in learning order.
+  /// [unit] follows [watchUnitWords]; [skipLearned] leaves out words swiped into [Pile.learned].
+  Future<List<CardWithWord>> drillCards({
+    String? unit,
+    String? level,
+    int? pile,
+    bool starred = false,
+    bool skipLearned = false,
+    Iterable<int> exceptWordIds = const [],
+    int? limit,
+  }) {
+    Expression<bool> where = cards.direction.equals(Direction.koToEn);
+    if (unit != null) {
+      where = where &
+          (unit == customUnit ? words.unit.equals(customUnit) | (words.unit.isNull() & words.isCustom.equals(true)) : words.unit.equals(unit));
+    }
+    if (level != null) where = where & words.level.equals(level);
+    if (pile != null) where = where & words.pile.equals(pile);
+    if (starred) where = where & words.starred.equals(true);
+    if (skipLearned) where = where & (words.pile.isNull() | words.pile.isNotValue(Pile.learned));
+    if (exceptWordIds.isNotEmpty) where = where & words.id.isNotIn(exceptWordIds);
+    return _cardsWithWords(
+      where,
+      orderBy: [OrderingTerm.asc(words.isCustom), OrderingTerm.asc(words.rank), OrderingTerm.asc(words.id)],
+      limit: limit,
+    );
+  }
+
+  Future<void> setPile(int wordId, int? pile) =>
+      (update(words)..where((w) => w.id.equals(wordId))).write(WordsCompanion(pile: Value(pile)));
+
+  /// Word counts grouped by unit, level, pile and star, for the drill tiles.
+  Stream<List<DrillCountRow>> watchDrillCounts() => customSelect(
+        'SELECT COALESCE(w.unit, CASE WHEN w.is_custom = 1 THEN ? ELSE ? END) AS unit, w.level AS level, '
+        'w.pile AS pile, w.starred AS starred, COUNT(*) AS n '
+        'FROM words w JOIN cards c ON c.word_id = w.id AND c.direction = ? AND c.suspended = 0 '
+        'GROUP BY 1, 2, 3, 4',
+        variables: [Variable.withString(customUnit), Variable.withString('more'), Variable.withInt(Direction.koToEn)],
+        readsFrom: {words, cards},
+      ).watch().map((rows) => [
+            for (final r in rows)
+              DrillCountRow(
+                unit: r.read<String>('unit'),
+                level: r.read<String>('level'),
+                pile: r.read<int?>('pile'),
+                starred: r.read<bool>('starred'),
+                count: r.read<int>('n'),
+              ),
+          ]);
 
   Future<List<StudyCard>> newForwardCards(List<int> wordIds) => (select(cards)
         ..where((c) => c.wordId.isIn(wordIds) & c.direction.equals(Direction.koToEn) & c.state.equals(CardState.newCard)))

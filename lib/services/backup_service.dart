@@ -4,7 +4,7 @@ import 'package:drift/drift.dart';
 
 import '../data/db.dart';
 
-/// Whole-progress backup as JSON: custom words, stars and notes, cards, the review history and
+/// Whole-progress backup as JSON: custom words, stars, notes and piles, cards, the review history and
 /// game progress (XP, lessons, badges, quests).
 /// Bundled word text is not included; it comes back from the app's own word list.
 class BackupService {
@@ -23,8 +23,8 @@ class BackupService {
       'exportedAt': DateTime.now().toIso8601String(),
       'customWords': [for (final w in words.where((w) => w.isCustom)) w.toJson()],
       'wordMarks': [
-        for (final w in words.where((w) => !w.isCustom && (w.starred || w.note != null)))
-          {'id': w.id, 'starred': w.starred, 'note': w.note},
+        for (final w in words.where((w) => !w.isCustom && (w.starred || w.note != null || w.pile != null)))
+          {'id': w.id, 'starred': w.starred, 'note': w.note, 'pile': w.pile},
       ],
       'cards': [for (final c in cards) c.toJson()],
       'reviewLogs': [for (final l in logs) l.toJson()],
@@ -57,13 +57,15 @@ class BackupService {
       await db.delete(db.skills).go();
       await db.delete(db.mistakes).go();
       await (db.delete(db.words)..where((w) => w.isCustom.equals(true))).go();
-      await db.update(db.words).write(const WordsCompanion(starred: Value(false), note: Value(null)));
+      await db.update(db.words).write(const WordsCompanion(starred: Value(false), note: Value(null), pile: Value(null)));
 
       await db.batch((b) {
         b.insertAll(db.words, [for (final w in list('customWords')) Word.fromJson(w)]);
         for (final m in list('wordMarks')) {
           if (!bundledIds.contains(m['id'])) continue;
-          b.update(db.words, WordsCompanion(starred: Value(m['starred'] as bool), note: Value(m['note'] as String?)),
+          b.update(
+              db.words,
+              WordsCompanion(starred: Value(m['starred'] as bool), note: Value(m['note'] as String?), pile: Value(m['pile'] as int?)),
               where: (w) => w.id.equals(m['id'] as int));
         }
       });

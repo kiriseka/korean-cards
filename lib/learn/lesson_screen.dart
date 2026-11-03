@@ -8,6 +8,7 @@ import '../game/game_service.dart';
 import '../game/sound_service.dart';
 import '../games/exercise_views.dart';
 import '../providers.dart';
+import '../widgets/common.dart';
 import 'exercises.dart';
 import 'session.dart';
 
@@ -183,7 +184,8 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 4),
+              if (ex?.focusWordId case final id?) StarButton(id) else const SizedBox(width: 8),
               if (widget.hearts != null)
                 Text('❤️ ${_session.heartsLeft}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold))
               else
@@ -251,12 +253,16 @@ class _FeedbackBar extends StatelessWidget {
         final SentenceExercise e => e.sentence,
         final SpeakExercise e => e.target,
         final DictationExercise e => e.sentence,
+        final PictureExercise e => '${e.correct} ${e.word}',
+        final ReplyExercise e => e.reply,
         MatchExercise() => null,
       };
 
   String? get _explanation => switch (exercise) {
         final ChoiceExercise e => e.explanation,
         final SentenceExercise e => e.explanation,
+        final PictureExercise e => '${e.word} = ${e.english}',
+        final ReplyExercise e => e.english,
         _ => null,
       };
 

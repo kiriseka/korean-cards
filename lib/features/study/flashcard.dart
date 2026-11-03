@@ -28,7 +28,7 @@ class Flashcard extends StatelessWidget {
             transform: Matrix4.identity()
               ..setEntry(3, 2, 0.001)
               ..rotateY(pi * t + (showBack ? pi : 0)),
-            child: _Face(child: showBack ? _Back(item: item) : _Front(item: item)),
+            child: _Face(wordId: item.word.id, child: showBack ? _Back(item: item) : _Front(item: item)),
           );
         },
       ),
@@ -37,15 +37,19 @@ class Flashcard extends StatelessWidget {
 }
 
 class _Face extends StatelessWidget {
-  const _Face({required this.child});
+  const _Face({required this.wordId, required this.child});
+  final int wordId;
   final Widget child;
 
   @override
   Widget build(BuildContext context) => Card(
         elevation: 2,
-        child: SizedBox.expand(
-          child: Padding(padding: const EdgeInsets.all(24), child: child),
-        ),
+        child: Stack(children: [
+          SizedBox.expand(
+            child: Padding(padding: const EdgeInsets.all(24), child: child),
+          ),
+          Positioned(top: 4, right: 4, child: StarButton(wordId)),
+        ]),
       );
 }
 
@@ -75,7 +79,7 @@ class _Front extends StatelessWidget {
         const SizedBox(height: 16),
         TagChip(word.pos),
         const SizedBox(height: 32),
-        Text('Tap to reveal', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.outline)),
+        Text('Tap to see the meaning', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.outline)),
       ],
     );
   }

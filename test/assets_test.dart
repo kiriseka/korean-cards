@@ -16,6 +16,8 @@ void main() {
     'assets/data/phrases.json',
     'assets/data/dialogues.json',
     'assets/data/sentence_frames.json',
+    'assets/data/pictures.json',
+    'assets/data/replies.json',
   ];
 
   for (final path in dataFiles) {

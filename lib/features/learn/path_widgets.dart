@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-enum NodeState { locked, open, current, done }
+enum NodeState { open, current, done }
 
 /// One stop on a lesson path: a round button with stars underneath.
 class PathNode extends StatefulWidget {
@@ -54,7 +54,6 @@ class _PathNodeState extends State<PathNode> with SingleTickerProviderStateMixin
     final scheme = Theme.of(context).colorScheme;
     final base = widget.color ?? scheme.primary;
     final (bg, fg) = switch (widget.state) {
-      NodeState.locked => (scheme.surfaceContainerHighest, scheme.outline),
       NodeState.done => (Colors.amber.shade600, Colors.white),
       _ => (base, Colors.white),
     };
@@ -77,9 +76,7 @@ class _PathNodeState extends State<PathNode> with SingleTickerProviderStateMixin
                 border: widget.state == NodeState.current ? Border.all(color: Colors.white, width: 4) : null,
               ),
               alignment: Alignment.center,
-              child: widget.state == NodeState.locked
-                  ? Icon(Icons.lock, color: fg, size: 28)
-                  : Text(widget.label, style: TextStyle(fontSize: widget.big ? 36 : 26, color: fg, fontWeight: FontWeight.bold)),
+              child: Text(widget.label, style: TextStyle(fontSize: widget.big ? 36 : 26, color: fg, fontWeight: FontWeight.bold)),
             ),
           ),
         ),

@@ -11,8 +11,10 @@ import '../../learn/curriculum.dart';
 import '../../learn/exercises.dart';
 import '../../learn/grammar_lesson.dart';
 import '../../learn/lesson_screen.dart';
+import '../../learn/pictures.dart';
 import '../../learn/topic_lesson.dart';
 import '../../providers.dart';
+import '../../talk/replies.dart';
 import 'echo_screen.dart';
 import 'match_madness_screen.dart';
 import 'speed_round_screen.dart';
@@ -29,6 +31,8 @@ class ArcadeGame {
 const arcadeGames = [
   ArcadeGame('speed', '⚡', 'Speed Round', '60 seconds. As many right answers as you can.', Color(0xFFFB8C00)),
   ArcadeGame('match', '🧩', 'Match Madness', 'Match pairs against the clock.', Color(0xFF8E24AA)),
+  ArcadeGame('picture', '🖼️', 'Picture Pick', 'See or hear the word, tap its picture. 10 rounds.', Color(0xFFF4511E)),
+  ArcadeGame('reply', '💬', 'Quick Reply', 'Someone talks to you: build your answer. 10 rounds.', Color(0xFF3949AB)),
   ArcadeGame('listen', '🎧', 'Listening Challenge', 'Hear it, pick it. 10 rounds.', Color(0xFF1E88E5)),
   ArcadeGame('sentences', '🏗️', 'Sentence Builder', 'Build sentences from your grammar lessons.', Color(0xFF43A047)),
   ArcadeGame('spell', '🐝', 'Spelling Bee', 'Type the Korean word. 10 rounds.', Color(0xFFE53935)),
@@ -85,7 +89,8 @@ class _PlayScreenState extends ConsumerState<PlayScreen> {
   Future<void> _start(ArcadeGame game) async {
     final words = await _words();
     if (!mounted) return;
-    if (game.id != 'sentences' && words.length < 6) {
+    // These bring their own content (or top up the pool), so any pool can play.
+    if (!const {'sentences', 'picture', 'reply'}.contains(game.id) && words.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Pick a pool with at least 6 words')));
       return;
     }
@@ -118,7 +123,25 @@ class _PlayScreenState extends ConsumerState<PlayScreen> {
       case 'sentences':
         final exercises = await _sentenceItems(rng);
         if (mounted) await _runLessonGame(game, exercises);
+      case 'picture':
+        final pictures = await ref.read(picturesProvider.future);
+        final exercises = ExerciseGenerator(pool: pool, pictures: pictures, random: rng).pictureGame(_pictured(words, pool, pictures), 10);
+        if (mounted) await _runLessonGame(game, exercises);
+      case 'reply':
+        final situations = await ref.read(repliesProvider.future);
+        final items = [for (final s in situations) ...s.items]..shuffle(rng);
+        if (mounted) await _runLessonGame(game, [for (final item in items.take(10)) item.toExercise(rng)]);
     }
+  }
+
+  /// The pool's words that have a picture, topped up with common pictured words to make 10.
+  List<Word> _pictured(List<Word> words, List<Word> pool, Map<int, String> pictures) {
+    final picked = [for (final w in words) if (pictures.containsKey(w.id)) w];
+    if (picked.length >= 10) return picked;
+    final ids = {for (final w in picked) w.id};
+    final common = [for (final w in pool) if (pictures.containsKey(w.id) && !ids.contains(w.id)) w]
+      ..sort((a, b) => a.rank.compareTo(b.rank));
+    return [...picked, ...common.take(10 - picked.length)];
   }
 
   /// Sentences from grammar lessons already finished (or the first unit, to get started).

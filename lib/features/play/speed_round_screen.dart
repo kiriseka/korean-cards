@@ -9,6 +9,7 @@ import '../../game/game_service.dart';
 import '../../game/sound_service.dart';
 import '../../learn/exercises.dart';
 import '../../providers.dart';
+import '../../widgets/common.dart';
 import 'play_screen.dart';
 
 /// 60 seconds of rapid-fire meaning questions. Wrong answers cost 3 seconds.
@@ -133,9 +134,11 @@ class _SpeedRoundScreenState extends ConsumerState<SpeedRoundScreen> {
                     Text('⏱ $_left', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
                   ]),
                   const SizedBox(height: 12),
-                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                  Row(children: [
                     Text('Score $_score', style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+                    const Spacer(),
                     if (_combo >= 3) Text('🔥 $_combo', style: theme.textTheme.headlineSmall?.copyWith(color: Colors.deepOrange)),
+                    StarButton(_current.wordIds.first),
                   ]),
                   Expanded(
                     child: Center(

@@ -1,18 +1,15 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/db.dart';
-import '../../game/rules.dart';
-import '../../game/sound_service.dart';
+import '../../learn/swipe_review.dart';
 import '../../providers.dart';
 import '../../services/tts_service.dart';
 import '../../settings.dart';
-import '../../srs/scheduler.dart';
 import '../../srs/session_queue.dart';
-import 'flashcard.dart';
+import 'swipe_card.dart';
 
 class StudyScreen extends ConsumerStatefulWidget {
   const StudyScreen({super.key, this.extraNew = 0, this.maxCards});
@@ -30,12 +27,11 @@ class StudyScreen extends ConsumerStatefulWidget {
 class _StudyScreenState extends ConsumerState<StudyScreen> {
   SessionQueue? _queue;
   CardWithWord? _current;
-  Map<Rating, ReviewOutcome> _outcomes = const {};
   bool _revealed = false;
   DateTime _shownAt = DateTime.now();
   final DateTime _startedAt = DateTime.now();
   int _done = 0;
-  int _again = 0;
+  int _hard = 0;
   late final TtsService _tts;
 
   @override
@@ -68,44 +64,31 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
       _current = next;
       _revealed = false;
       _shownAt = now;
-      _outcomes = next == null ? const {} : ref.read(schedulerProvider).preview(next.card, now);
     });
     if (next != null && next.card.direction == Direction.koToEn && ref.read(settingsProvider).autoPlay) {
       ref.speak(next.word.word);
     }
   }
 
-  void _reveal() {
-    if (_revealed || _current == null) return;
-    setState(() => _revealed = true);
-    if (_current!.card.direction == Direction.enToKo && ref.read(settingsProvider).autoPlay) {
+  void _flip() {
+    if (_current == null) return;
+    setState(() => _revealed = !_revealed);
+    if (_revealed && _current!.card.direction == Direction.enToKo && ref.read(settingsProvider).autoPlay) {
       ref.speak(_current!.word.word);
     }
   }
 
-  Future<void> _rate(Rating rating) async {
+  /// Right is Good, left is Again. Only a hard card comes back later in this session; a learned
+  /// one waits for its next review, even if that is a short learning step away.
+  Future<void> _swiped(bool learned) async {
     final item = _current!;
-    final outcome = _outcomes[rating]!;
-    HapticFeedback.lightImpact();
-    ref.read(soundProvider).play(rating == Rating.again ? Sfx.flip : Sfx.tap);
-    final now = DateTime.now();
-    await ref.read(dbProvider).saveReview(
-          outcome.card,
-          ReviewLogsCompanion.insert(
-            cardId: item.card.id,
-            rating: rating.fsrsRating.value,
-            stateBefore: item.card.state,
-            reviewedAt: now,
-            elapsedMs: now.difference(_shownAt).inMilliseconds,
-          ),
-        );
-    final game = ref.read(gameProvider);
-    game.award([
-      game.activity(ActivityKind.review, xp: rating == Rating.again ? Xp.reviewAgain : Xp.review, value: rating.fsrsRating.value),
-    ]);
+    final saved = await recordSwipe(ref, item, learned: learned, shownAt: _shownAt);
+    if (!mounted) return;
     _done++;
-    if (rating == Rating.again) _again++;
-    _queue!.requeueIfDueSoon(CardWithWord(outcome.card, item.word), now);
+    if (!learned) {
+      _hard++;
+      _queue!.requeueIfDueSoon(CardWithWord(saved, item.word), DateTime.now());
+    }
     _showNext();
   }
 
@@ -127,85 +110,31 @@ class _StudyScreenState extends ConsumerState<StudyScreen> {
         child: queue == null
             ? const Center(child: CircularProgressIndicator())
             : _current == null
-                ? _Summary(done: _done, again: _again, elapsed: DateTime.now().difference(_startedAt))
-                : Column(
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                          child: Flashcard(item: _current!, revealed: _revealed, onTap: _reveal),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                        child: _revealed
-                            ? _RatingButtons(outcomes: _outcomes, onRate: _rate)
-                            : FilledButton(
-                                style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(64)),
-                                onPressed: _reveal,
-                                child: const Text('Show answer', style: TextStyle(fontSize: 18)),
-                              ),
-                      ),
-                    ],
+                ? _Summary(done: _done, hard: _hard, elapsed: DateTime.now().difference(_startedAt))
+                : Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                    child: SwipeCard(
+                      key: ValueKey(_done),
+                      item: _current!,
+                      revealed: _revealed,
+                      onTap: _flip,
+                      onSwipe: _swiped,
+                    ),
                   ),
       ),
     );
   }
 }
 
-class _RatingButtons extends StatelessWidget {
-  const _RatingButtons({required this.outcomes, required this.onRate});
-  final Map<Rating, ReviewOutcome> outcomes;
-  final void Function(Rating) onRate;
-
-  static const _colors = {
-    Rating.again: Color(0xFFD32F2F),
-    Rating.hard: Color(0xFFF57C00),
-    Rating.good: Color(0xFF388E3C),
-    Rating.easy: Color(0xFF1976D2),
-  };
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        for (final r in Rating.values)
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: FilledButton(
-                style: FilledButton.styleFrom(
-                  backgroundColor: _colors[r],
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size.fromHeight(64),
-                  padding: EdgeInsets.zero,
-                ),
-                onPressed: () => onRate(r),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(r.label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                    Text(formatInterval(outcomes[r]!.interval), style: const TextStyle(fontSize: 12)),
-                  ],
-                ),
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-}
-
 class _Summary extends StatelessWidget {
-  const _Summary({required this.done, required this.again, required this.elapsed});
+  const _Summary({required this.done, required this.hard, required this.elapsed});
   final int done;
-  final int again;
+  final int hard;
   final Duration elapsed;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final accuracy = done == 0 ? null : ((done - again) / done * 100).round();
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -217,7 +146,7 @@ class _Summary extends StatelessWidget {
             Text(done == 0 ? 'Nothing to study right now.' : 'Session complete', style: theme.textTheme.titleMedium),
             const SizedBox(height: 32),
             if (done > 0) ...[
-              Text('$done cards · ${accuracy!}% correct · ${elapsed.inMinutes}m ${elapsed.inSeconds % 60}s',
+              Text('${done - hard} learned · $hard hard · ${elapsed.inMinutes}m ${elapsed.inSeconds % 60}s',
                   style: theme.textTheme.bodyLarge),
               const SizedBox(height: 32),
             ],

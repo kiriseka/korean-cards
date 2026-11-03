@@ -162,6 +162,15 @@ class $WordsTable extends Words with TableInfo<$WordsTable, Word> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _pileMeta = const VerificationMeta('pile');
+  @override
+  late final GeneratedColumn<int> pile = GeneratedColumn<int>(
+    'pile',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -179,6 +188,7 @@ class $WordsTable extends Words with TableInfo<$WordsTable, Word> {
     note,
     unit,
     forms,
+    pile,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -292,6 +302,12 @@ class $WordsTable extends Words with TableInfo<$WordsTable, Word> {
         forms.isAcceptableOrUnknown(data['forms']!, _formsMeta),
       );
     }
+    if (data.containsKey('pile')) {
+      context.handle(
+        _pileMeta,
+        pile.isAcceptableOrUnknown(data['pile']!, _pileMeta),
+      );
+    }
     return context;
   }
 
@@ -361,6 +377,10 @@ class $WordsTable extends Words with TableInfo<$WordsTable, Word> {
         DriftSqlType.string,
         data['${effectivePrefix}forms'],
       ),
+      pile: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}pile'],
+      ),
     );
   }
 
@@ -392,6 +412,9 @@ class Word extends DataClass implements Insertable<Word> {
 
   /// KRDict conjugation forms for verbs/adjectives, JSON {"a": "들어", "euni": "들으니"}.
   final String? forms;
+
+  /// The pile the last card swipe put the word in: one of [Pile], or null if never swiped.
+  final int? pile;
   const Word({
     required this.id,
     required this.word,
@@ -408,6 +431,7 @@ class Word extends DataClass implements Insertable<Word> {
     this.note,
     this.unit,
     this.forms,
+    this.pile,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -439,6 +463,9 @@ class Word extends DataClass implements Insertable<Word> {
     if (!nullToAbsent || forms != null) {
       map['forms'] = Variable<String>(forms);
     }
+    if (!nullToAbsent || pile != null) {
+      map['pile'] = Variable<int>(pile);
+    }
     return map;
   }
 
@@ -467,6 +494,7 @@ class Word extends DataClass implements Insertable<Word> {
       forms: forms == null && nullToAbsent
           ? const Value.absent()
           : Value(forms),
+      pile: pile == null && nullToAbsent ? const Value.absent() : Value(pile),
     );
   }
 
@@ -491,6 +519,7 @@ class Word extends DataClass implements Insertable<Word> {
       note: serializer.fromJson<String?>(json['note']),
       unit: serializer.fromJson<String?>(json['unit']),
       forms: serializer.fromJson<String?>(json['forms']),
+      pile: serializer.fromJson<int?>(json['pile']),
     );
   }
   @override
@@ -512,6 +541,7 @@ class Word extends DataClass implements Insertable<Word> {
       'note': serializer.toJson<String?>(note),
       'unit': serializer.toJson<String?>(unit),
       'forms': serializer.toJson<String?>(forms),
+      'pile': serializer.toJson<int?>(pile),
     };
   }
 
@@ -531,6 +561,7 @@ class Word extends DataClass implements Insertable<Word> {
     Value<String?> note = const Value.absent(),
     Value<String?> unit = const Value.absent(),
     Value<String?> forms = const Value.absent(),
+    Value<int?> pile = const Value.absent(),
   }) => Word(
     id: id ?? this.id,
     word: word ?? this.word,
@@ -549,6 +580,7 @@ class Word extends DataClass implements Insertable<Word> {
     note: note.present ? note.value : this.note,
     unit: unit.present ? unit.value : this.unit,
     forms: forms.present ? forms.value : this.forms,
+    pile: pile.present ? pile.value : this.pile,
   );
   Word copyWithCompanion(WordsCompanion data) {
     return Word(
@@ -569,6 +601,7 @@ class Word extends DataClass implements Insertable<Word> {
       note: data.note.present ? data.note.value : this.note,
       unit: data.unit.present ? data.unit.value : this.unit,
       forms: data.forms.present ? data.forms.value : this.forms,
+      pile: data.pile.present ? data.pile.value : this.pile,
     );
   }
 
@@ -589,7 +622,8 @@ class Word extends DataClass implements Insertable<Word> {
           ..write('starred: $starred, ')
           ..write('note: $note, ')
           ..write('unit: $unit, ')
-          ..write('forms: $forms')
+          ..write('forms: $forms, ')
+          ..write('pile: $pile')
           ..write(')'))
         .toString();
   }
@@ -611,6 +645,7 @@ class Word extends DataClass implements Insertable<Word> {
     note,
     unit,
     forms,
+    pile,
   );
   @override
   bool operator ==(Object other) =>
@@ -630,7 +665,8 @@ class Word extends DataClass implements Insertable<Word> {
           other.starred == this.starred &&
           other.note == this.note &&
           other.unit == this.unit &&
-          other.forms == this.forms);
+          other.forms == this.forms &&
+          other.pile == this.pile);
 }
 
 class WordsCompanion extends UpdateCompanion<Word> {
@@ -649,6 +685,7 @@ class WordsCompanion extends UpdateCompanion<Word> {
   final Value<String?> note;
   final Value<String?> unit;
   final Value<String?> forms;
+  final Value<int?> pile;
   const WordsCompanion({
     this.id = const Value.absent(),
     this.word = const Value.absent(),
@@ -665,6 +702,7 @@ class WordsCompanion extends UpdateCompanion<Word> {
     this.note = const Value.absent(),
     this.unit = const Value.absent(),
     this.forms = const Value.absent(),
+    this.pile = const Value.absent(),
   });
   WordsCompanion.insert({
     this.id = const Value.absent(),
@@ -682,6 +720,7 @@ class WordsCompanion extends UpdateCompanion<Word> {
     this.note = const Value.absent(),
     this.unit = const Value.absent(),
     this.forms = const Value.absent(),
+    this.pile = const Value.absent(),
   }) : word = Value(word),
        pos = Value(pos),
        level = Value(level),
@@ -703,6 +742,7 @@ class WordsCompanion extends UpdateCompanion<Word> {
     Expression<String>? note,
     Expression<String>? unit,
     Expression<String>? forms,
+    Expression<int>? pile,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -720,6 +760,7 @@ class WordsCompanion extends UpdateCompanion<Word> {
       if (note != null) 'note': note,
       if (unit != null) 'unit': unit,
       if (forms != null) 'forms': forms,
+      if (pile != null) 'pile': pile,
     });
   }
 
@@ -739,6 +780,7 @@ class WordsCompanion extends UpdateCompanion<Word> {
     Value<String?>? note,
     Value<String?>? unit,
     Value<String?>? forms,
+    Value<int?>? pile,
   }) {
     return WordsCompanion(
       id: id ?? this.id,
@@ -756,6 +798,7 @@ class WordsCompanion extends UpdateCompanion<Word> {
       note: note ?? this.note,
       unit: unit ?? this.unit,
       forms: forms ?? this.forms,
+      pile: pile ?? this.pile,
     );
   }
 
@@ -807,6 +850,9 @@ class WordsCompanion extends UpdateCompanion<Word> {
     if (forms.present) {
       map['forms'] = Variable<String>(forms.value);
     }
+    if (pile.present) {
+      map['pile'] = Variable<int>(pile.value);
+    }
     return map;
   }
 
@@ -827,7 +873,8 @@ class WordsCompanion extends UpdateCompanion<Word> {
           ..write('starred: $starred, ')
           ..write('note: $note, ')
           ..write('unit: $unit, ')
-          ..write('forms: $forms')
+          ..write('forms: $forms, ')
+          ..write('pile: $pile')
           ..write(')'))
         .toString();
   }
@@ -4830,6 +4877,7 @@ typedef $$WordsTableCreateCompanionBuilder = WordsCompanion Function({
   Value<String?> note,
   Value<String?> unit,
   Value<String?> forms,
+  Value<int?> pile,
 });
 typedef $$WordsTableUpdateCompanionBuilder = WordsCompanion Function({
   Value<int> id,
@@ -4847,6 +4895,7 @@ typedef $$WordsTableUpdateCompanionBuilder = WordsCompanion Function({
   Value<String?> note,
   Value<String?> unit,
   Value<String?> forms,
+  Value<int?> pile,
 });
 
 final class $$WordsTableReferences
@@ -4953,6 +5002,11 @@ class $$WordsTableFilterComposer extends Composer<_$AppDatabase, $WordsTable> {
 
   ColumnFilters<String> get forms => $composableBuilder(
     column: $table.forms,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get pile => $composableBuilder(
+    column: $table.pile,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5065,6 +5119,11 @@ class $$WordsTableOrderingComposer
     column: $table.forms,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get pile => $composableBuilder(
+    column: $table.pile,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$WordsTableAnnotationComposer
@@ -5122,6 +5181,9 @@ class $$WordsTableAnnotationComposer
 
   GeneratedColumn<String> get forms =>
       $composableBuilder(column: $table.forms, builder: (column) => column);
+
+  GeneratedColumn<int> get pile =>
+      $composableBuilder(column: $table.pile, builder: (column) => column);
 
   Expression<T> cardsRefs<T extends Object>(
     Expression<T> Function($$CardsTableAnnotationComposer a) f,
@@ -5192,6 +5254,7 @@ class $$WordsTableTableManager
                 Value<String?> note = const Value.absent(),
                 Value<String?> unit = const Value.absent(),
                 Value<String?> forms = const Value.absent(),
+                Value<int?> pile = const Value.absent(),
               }) => WordsCompanion(
                 id: id,
                 word: word,
@@ -5208,6 +5271,7 @@ class $$WordsTableTableManager
                 note: note,
                 unit: unit,
                 forms: forms,
+                pile: pile,
               ),
           createCompanionCallback:
               ({
@@ -5226,6 +5290,7 @@ class $$WordsTableTableManager
                 Value<String?> note = const Value.absent(),
                 Value<String?> unit = const Value.absent(),
                 Value<String?> forms = const Value.absent(),
+                Value<int?> pile = const Value.absent(),
               }) => WordsCompanion.insert(
                 id: id,
                 word: word,
@@ -5242,6 +5307,7 @@ class $$WordsTableTableManager
                 note: note,
                 unit: unit,
                 forms: forms,
+                pile: pile,
               ),
           withReferenceMapper: (p0) => p0
               .map(

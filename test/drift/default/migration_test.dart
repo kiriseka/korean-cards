@@ -9,6 +9,7 @@ import 'generated/schema.dart';
 import 'generated/schema_v1.dart' as v1;
 import 'generated/schema_v2.dart' as v2;
 import 'generated/schema_v3.dart' as v3;
+import 'generated/schema_v4.dart' as v4;
 
 void main() {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
@@ -99,6 +100,25 @@ void main() {
         expect(await newDb.select(newDb.skills).get(), isEmpty);
         expect(await newDb.select(newDb.mistakes).get(), isEmpty);
         expect(await newDb.select(newDb.dictionary).get(), isEmpty);
+      },
+    );
+  });
+
+  test('v1.3 words keep their stars and notes and start with no pile in v4', () async {
+    const word = v3.WordsData(
+      id: 66371, word: '사과', homonym: 1, pos: 'noun', level: '초급', senses: '[]', rank: 10,
+      isCustom: 0, starred: 1, note: 'my note', unit: 'food',
+    );
+    await verifier.testWithDataIntegrity(
+      oldVersion: 3,
+      newVersion: 4,
+      createOld: v3.DatabaseAtV3.new,
+      createNew: v4.DatabaseAtV4.new,
+      openTestedDatabase: AppDatabase.new,
+      createItems: (batch, oldDb) => batch.insertAll(oldDb.words, [word]),
+      validateItems: (newDb) async {
+        final w = (await newDb.select(newDb.words).get()).single;
+        expect((w.word, w.starred, w.note, w.unit, w.pile), ('사과', 1, 'my note', 'food', null));
       },
     );
   });

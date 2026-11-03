@@ -14,6 +14,7 @@ import '../../settings.dart';
 import '../../widgets/common.dart';
 import '../browse/add_word_screen.dart';
 import '../daily/daily_session_screen.dart';
+import '../drill/drills_view.dart';
 import '../study/study_screen.dart';
 
 /// The first unfinished topic lesson, following the curriculum order.
@@ -302,6 +303,12 @@ class _ReviewCard extends ConsumerWidget {
               label: const Text('All caught up 🎉 · learn 5 more'),
               onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const StudyScreen(extraNew: 5), fullscreenDialog: true)),
             ),
+          const SizedBox(height: 4),
+          TextButton.icon(
+            icon: const Text('🃏'),
+            label: const Text('Drill cards by category'),
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const DrillsScreen())),
+          ),
         ]),
       ),
     );

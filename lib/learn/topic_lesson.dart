@@ -11,6 +11,7 @@ import '../widgets/common.dart';
 import 'curriculum.dart';
 import 'exercises.dart';
 import 'lesson_screen.dart';
+import 'pictures.dart';
 import 'session.dart';
 
 /// Puts a lesson's new words into spaced repetition as if rated "Good" once.
@@ -43,8 +44,9 @@ List<ActivitiesCompanion> sessionActivities(GameService game, ExerciseSession s)
 
 Future<bool?> openTopicLesson(BuildContext context, WidgetRef ref, TopicLesson lesson, TopicUnit unit) async {
   final pool = await ref.read(allWordsProvider.future);
+  final pictures = await ref.read(picturesProvider.future);
   if (!context.mounted) return null;
-  final generator = ExerciseGenerator(pool: pool);
+  final generator = ExerciseGenerator(pool: pool, pictures: pictures);
   final settings = ref.read(settingsProvider);
   final exercises = generator.topicPractice(lesson.words, typingOn: settings.typingExercises, speakingOn: settings.speakingExercises);
   return Navigator.of(context).push<bool>(MaterialPageRoute(
@@ -183,7 +185,10 @@ class WordIntroCard extends StatelessWidget {
               fit: BoxFit.scaleDown,
               child: Text(word.word, style: theme.textTheme.displayLarge?.copyWith(fontWeight: FontWeight.w700)),
             ),
-            SpeakButton(word.word, size: 40),
+            Row(mainAxisSize: MainAxisSize.min, children: [
+              SpeakButton(word.word, size: 40),
+              StarButton(word.id, size: 32),
+            ]),
             if (word.pronunciation != null && word.pronunciation != word.word)
               Text('[${word.pronunciation}]', style: theme.textTheme.titleMedium),
             const SizedBox(height: 12),

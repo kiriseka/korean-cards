@@ -73,7 +73,7 @@ class ExerciseSession extends ChangeNotifier {
       lastXp = Xp.forAnswer(combo);
       xp += lastXp;
       if (!retry) correctFirstTry++;
-      if (ex is SentenceExercise || ex is DictationExercise) sentencesBuilt++;
+      if (ex is SentenceExercise || ex is DictationExercise || ex is ReplyExercise) sentencesBuilt++;
       if (ex is SpeakExercise) spoken++;
     } else {
       combo = 0;

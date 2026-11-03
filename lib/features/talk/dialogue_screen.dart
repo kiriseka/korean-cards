@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,6 +8,7 @@ import '../../data/db.dart';
 import '../../game/game_service.dart';
 import '../../game/rules.dart';
 import '../../game/sound_service.dart';
+import '../../games/exercise_views.dart';
 import '../../games/speak_view.dart';
 import '../../learn/exercises.dart';
 import '../../learn/topic_lesson.dart';
@@ -13,6 +16,7 @@ import '../../providers.dart';
 import '../../services/tts_service.dart';
 import '../../settings.dart';
 import '../../talk/dialogue.dart';
+import '../../talk/replies.dart';
 
 enum _Step { listen, understand, shadow, rolePlay, results }
 
@@ -47,6 +51,10 @@ class _DialogueScreenState extends ConsumerState<DialogueScreen> {
   int _rolePassed = 0;
   int _spoken = 0;
   AwardOutcome? _outcome;
+
+  /// Without the microphone, your shorter lines are built from chips (made once per line).
+  final Map<int, ReplyExercise?> _chips = {};
+  ReplyExercise? _chipsFor(int line) => _chips.putIfAbsent(line, () => replyFromScene(scene, line, Random()));
 
   Scene get scene => widget.scene;
 
@@ -371,7 +379,19 @@ class _DialogueScreenState extends ConsumerState<DialogueScreen> {
                         },
                         onSkip: () => _yourTurnDone(false),
                       )
-                    : _ChooseLine(key: ValueKey('choose$_line'), scene: scene, line: current, onAnswer: _yourTurnDone),
+                    : switch (_chipsFor(_line)) {
+                        final build? => ReplyView(
+                            key: ValueKey('build$_line'),
+                            exercise: build,
+                            showPrompt: false,
+                            showEnglishHint: true,
+                            onAnswer: (ok) {
+                              ref.read(soundProvider).play(ok ? Sfx.correct : Sfx.wrong);
+                              _yourTurnDone(ok);
+                            },
+                          ),
+                        null => _ChooseLine(key: ValueKey('choose$_line'), scene: scene, line: current, onAnswer: _yourTurnDone),
+                      },
               ),
               if (_turnAnswered)
                 FilledButton(

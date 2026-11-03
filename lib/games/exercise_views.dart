@@ -7,6 +7,7 @@ import '../game/sound_service.dart';
 import '../learn/exercises.dart';
 import '../providers.dart';
 import '../settings.dart';
+import '../talk/dialogue.dart';
 import 'speak_view.dart';
 
 typedef AnswerCallback = void Function(bool correct);
@@ -32,6 +33,8 @@ class ExerciseView extends StatelessWidget {
         final SentenceExercise e => SentenceView(exercise: e, onAnswer: onAnswer),
         final SpeakExercise e => SpeakView(exercise: e, onAnswer: onAnswer, onSkip: onSkip ?? () => onAnswer(true)),
         final DictationExercise e => DictationView(exercise: e, onAnswer: onAnswer),
+        final PictureExercise e => PictureView(exercise: e, onAnswer: onAnswer),
+        final ReplyExercise e => ReplyView(exercise: e, onAnswer: onAnswer),
       };
 }
 
@@ -136,6 +139,7 @@ class _ChoiceViewState extends ConsumerState<ChoiceView> {
                     Text(e.subPrompt!, textAlign: TextAlign.center, style: theme.textTheme.bodyLarge?.copyWith(color: scheme.outline)),
                   ],
                 ]),
+              PromptStyle.picture => Text(e.prompt, style: const TextStyle(fontSize: 96)),
             },
           ),
         ),
@@ -149,13 +153,7 @@ class _ChoiceViewState extends ConsumerState<ChoiceView> {
                   child: _OptionButton(
                     text: option,
                     korean: e.optionsKorean,
-                    state: _picked == null
-                        ? _OptionState.idle
-                        : i == e.answer
-                            ? _OptionState.right
-                            : i == _picked
-                                ? _OptionState.wrong
-                                : _OptionState.dim,
+                    state: _OptionState.of(i, picked: _picked, answer: e.answer),
                     onTap: () => _pick(i),
                   ),
                 ),
@@ -167,14 +165,30 @@ class _ChoiceViewState extends ConsumerState<ChoiceView> {
   }
 }
 
-enum _OptionState { idle, right, wrong, dim }
+enum _OptionState {
+  idle,
+  right,
+  wrong,
+  dim;
+
+  static _OptionState of(int option, {required int? picked, required int answer}) => picked == null
+      ? idle
+      : option == answer
+          ? right
+          : option == picked
+              ? wrong
+              : dim;
+}
 
 class _OptionButton extends StatelessWidget {
-  const _OptionButton({required this.text, required this.korean, required this.state, required this.onTap});
+  const _OptionButton({required this.text, required this.korean, required this.state, required this.onTap, this.fontSize});
   final String text;
   final bool korean;
   final _OptionState state;
   final VoidCallback onTap;
+
+  /// Set for big centred options (picture tiles).
+  final double? fontSize;
 
   @override
   Widget build(BuildContext context) {
@@ -185,6 +199,11 @@ class _OptionButton extends StatelessWidget {
       _OptionState.wrong => (Colors.red.shade100, Colors.red.shade900, Colors.red),
       _OptionState.dim => (scheme.surface, scheme.onSurface.withValues(alpha: 0.4), scheme.outlineVariant),
     };
+    final label = Text(
+      text,
+      textAlign: TextAlign.center,
+      style: TextStyle(fontSize: fontSize ?? (korean ? 22 : 17), color: fg, fontWeight: FontWeight.w600),
+    );
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       decoration: BoxDecoration(
@@ -198,14 +217,9 @@ class _OptionButton extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: state == _OptionState.idle ? onTap : null,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            child: Text(
-              text,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: korean ? 22 : 17, color: fg, fontWeight: FontWeight.w600),
-            ),
-          ),
+          child: fontSize != null
+              ? Center(child: Opacity(opacity: state == _OptionState.dim ? 0.4 : 1, child: label))
+              : Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16), child: label),
         ),
       ),
     );
@@ -233,6 +247,86 @@ class _AudioPrompt extends ConsumerWidget {
           icon: const Text('🐢', style: TextStyle(fontSize: 22)),
           onPressed: () => ref.read(ttsProvider).speak(text, rate: 0.25),
           style: IconButton.styleFrom(backgroundColor: scheme.secondaryContainer),
+        ),
+      ],
+    );
+  }
+}
+
+// ---- Pictures -------------------------------------------------------------
+
+/// Read (or hear) a Korean word, tap its picture.
+class PictureView extends ConsumerStatefulWidget {
+  const PictureView({super.key, required this.exercise, required this.onAnswer});
+  final PictureExercise exercise;
+  final AnswerCallback onAnswer;
+
+  @override
+  ConsumerState<PictureView> createState() => _PictureViewState();
+}
+
+class _PictureViewState extends ConsumerState<PictureView> {
+  int? _picked;
+
+  PictureExercise get e => widget.exercise;
+
+  @override
+  void initState() {
+    super.initState();
+    if (e.listen || ref.read(settingsProvider).autoPlay) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => ref.speak(e.word));
+    }
+  }
+
+  void _pick(int i) {
+    if (_picked != null) return;
+    setState(() => _picked = i);
+    widget.onAnswer(i == e.answer);
+    ref.speak(e.word);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _Instruction(e.listen ? 'Listen: pick the picture' : 'Pick the right picture'),
+        Expanded(
+          flex: 2,
+          child: Center(
+            // By ear, the word shows only once answered.
+            child: e.listen && _picked == null
+                ? _AudioPrompt(text: e.word)
+                : Row(mainAxisSize: MainAxisSize.min, children: [
+                    Flexible(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(e.word, style: theme.textTheme.displayMedium?.copyWith(fontWeight: FontWeight.w600)),
+                      ),
+                    ),
+                    IconButton(icon: const Icon(Icons.volume_up_rounded), onPressed: () => ref.speak(e.word)),
+                  ]),
+          ),
+        ),
+        Expanded(
+          flex: 4,
+          child: GridView.count(
+            crossAxisCount: 2,
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            childAspectRatio: 1.2,
+            children: [
+              for (final (i, emoji) in e.options.indexed)
+                _OptionButton(
+                  text: emoji,
+                  korean: false,
+                  fontSize: 64,
+                  state: _OptionState.of(i, picked: _picked, answer: e.answer),
+                  onTap: () => _pick(i),
+                ),
+            ],
+          ),
         ),
       ],
     );
@@ -437,11 +531,16 @@ class _TileBuilder extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border(bottom: BorderSide(color: border, width: 2), top: BorderSide(color: border, width: 2)),
           ),
-          child: Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [for (final i in placed) _chip(context, tiles[i], onTap: () => onRemove(i))],
-          ),
+          child: Row(children: [
+            Expanded(
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [for (final i in placed) _chip(context, tiles[i], onTap: () => onRemove(i))],
+              ),
+            ),
+            if (result == true) const Icon(Icons.check_circle_rounded, color: Colors.green, size: 32),
+          ]),
         ),
         const SizedBox(height: 24),
         Wrap(
@@ -574,6 +673,113 @@ class _SentenceViewState extends ConsumerState<SentenceView> {
               widget.onAnswer(ok);
             },
           ),
+      ],
+    );
+  }
+}
+
+// ---- Replies ----------------------------------------------------------------------
+
+/// Someone talks to you: build your answer from word chips.
+class ReplyView extends ConsumerStatefulWidget {
+  const ReplyView({
+    super.key,
+    required this.exercise,
+    required this.onAnswer,
+    this.showPrompt = true,
+    this.showEnglishHint = false,
+  });
+
+  final ReplyExercise exercise;
+  final AnswerCallback onAnswer;
+
+  /// Off in role-play, where the other person's line is already in the chat.
+  final bool showPrompt;
+
+  /// Says in English what to answer (role-play, where you play a scripted part).
+  final bool showEnglishHint;
+
+  @override
+  ConsumerState<ReplyView> createState() => _ReplyViewState();
+}
+
+class _ReplyViewState extends ConsumerState<ReplyView> {
+  final List<int> _placed = [];
+  bool? _result;
+  bool _translated = false;
+
+  ReplyExercise get e => widget.exercise;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.showPrompt) WidgetsBinding.instance.addPostFrameCallback((_) => _say(e.prompt, partnerPitch));
+  }
+
+  /// The two voices sound different, as in the conversation scenes.
+  void _say(String text, double pitch) =>
+      ref.read(ttsProvider).speak(text, rate: ref.read(settingsProvider).speechRate, pitch: pitch);
+
+  void _check() {
+    final ok = e.accepts([for (final i in _placed) e.tiles[i]]);
+    setState(() => _result = ok);
+    _say(e.reply, youPitch);
+    widget.onAnswer(ok);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (widget.showPrompt) ...[
+          const _Instruction('Build your reply'),
+          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text('🧑', style: TextStyle(fontSize: 40)),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                InkWell(
+                  onTap: () => _say(e.prompt, partnerPitch),
+                  borderRadius: BorderRadius.circular(18),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(color: scheme.secondaryContainer, borderRadius: BorderRadius.circular(18)),
+                    child: Row(children: [
+                      Expanded(child: Text(e.prompt, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600))),
+                      const Icon(Icons.volume_up_rounded),
+                    ]),
+                  ),
+                ),
+                if (e.promptEnglish != null)
+                  TextButton(
+                    onPressed: () => setState(() => _translated = !_translated),
+                    child: Text(_translated ? e.promptEnglish! : 'Show English'),
+                  ),
+              ]),
+            ),
+          ]),
+          const SizedBox(height: 12),
+        ],
+        if (widget.showEnglishHint) ...[
+          Text('What do you say? · ${e.english}', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 12),
+        ],
+        _TileBuilder(
+          tiles: e.tiles,
+          placed: _placed,
+          locked: _result != null,
+          result: _result,
+          onPlace: (i) {
+            setState(() => _placed.add(i));
+            ref.speak(e.tiles[i]);
+          },
+          onRemove: (i) => setState(() => _placed.remove(i)),
+        ),
+        const Spacer(),
+        if (_result == null) _CheckButton(enabled: _placed.isNotEmpty, onPressed: _check),
       ],
     );
   }

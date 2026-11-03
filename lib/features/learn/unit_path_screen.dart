@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/db.dart';
 import '../../learn/curriculum.dart';
+import '../../learn/drill.dart';
 import '../../learn/topic_lesson.dart';
 import '../../providers.dart';
 import '../browse/add_word_screen.dart';
+import '../drill/drill_screen.dart';
 import 'path_widgets.dart';
 
 class UnitPathScreen extends ConsumerWidget {
@@ -42,25 +44,27 @@ class UnitPathScreen extends ConsumerWidget {
           final words = [for (final l in beginner) ...l.words];
           final allDone = beginner.every((l) => progress.containsKey(l.id));
           final challenge = progress[TopicLesson.challengeId(unit.id)];
-          // Lessons unlock in order; Level 2 (중급) starts once every beginner lesson is done.
-          final unlockedUpTo = lessons.indexWhere((l) => !progress.containsKey(l.id));
-          PathNode node(TopicLesson lesson) {
-            final locked = unlockedUpTo != -1 && lesson.index > unlockedUpTo;
-            return PathNode(
-              label: '${lesson.index + 1}',
-              color: lesson.intermediate ? Colors.teal : null,
-              stars: progress[lesson.id]?.stars ?? 0,
-              state: progress.containsKey(lesson.id)
-                  ? NodeState.done
-                  : lesson.index == unlockedUpTo
-                      ? NodeState.current
-                      : NodeState.locked,
-              onTap: () => _openLesson(context, ref, lesson, locked: locked),
-            );
-          }
+          // Every lesson is open, so learners can skip what they know; the first unfinished one is suggested.
+          final next = lessons.indexWhere((l) => !progress.containsKey(l.id));
+          PathNode node(TopicLesson lesson) => PathNode(
+                label: '${lesson.index + 1}',
+                color: lesson.intermediate ? Colors.teal : null,
+                stars: progress[lesson.id]?.stars ?? 0,
+                state: progress.containsKey(lesson.id)
+                    ? NodeState.done
+                    : lesson.index == next
+                        ? NodeState.current
+                        : NodeState.open,
+                onTap: () => _openLesson(context, ref, lesson),
+              );
 
           return ZigzagPath(
-            header: _UnitHeader(unit: unit, lessons: beginner, progress: progress),
+            header: _UnitHeader(
+              unit: unit,
+              lessons: beginner,
+              progress: progress,
+              onDrill: () => openDrill(context, ref, Drill.topic(unit)),
+            ),
             children: [
               for (final lesson in beginner) node(lesson),
               PathNode(
@@ -72,14 +76,8 @@ class UnitPathScreen extends ConsumerWidget {
                     ? NodeState.done
                     : allDone
                         ? NodeState.current
-                        : NodeState.locked,
-                onTap: () {
-                  if (!allDone) {
-                    _snack(context, 'Finish every lesson to unlock the challenge 🏆');
-                  } else {
-                    openUnitChallenge(context, ref, unit, words);
-                  }
-                },
+                        : NodeState.open,
+                onTap: () => openUnitChallenge(context, ref, unit, words),
               ),
               if (level2.isNotEmpty) ...[
                 Padding(
@@ -98,14 +96,7 @@ class UnitPathScreen extends ConsumerWidget {
     );
   }
 
-  void _snack(BuildContext context, String text) =>
-      ScaffoldMessenger.of(context)..hideCurrentSnackBar()..showSnackBar(SnackBar(content: Text(text)));
-
-  void _openLesson(BuildContext context, WidgetRef ref, TopicLesson lesson, {required bool locked}) {
-    if (locked) {
-      _snack(context, 'Finish the lessons before this one first 🔒');
-      return;
-    }
+  void _openLesson(BuildContext context, WidgetRef ref, TopicLesson lesson) {
     showModalBottomSheet(
       context: context,
       showDragHandle: true,
@@ -140,10 +131,11 @@ class UnitPathScreen extends ConsumerWidget {
 }
 
 class _UnitHeader extends StatelessWidget {
-  const _UnitHeader({required this.unit, required this.lessons, required this.progress});
+  const _UnitHeader({required this.unit, required this.lessons, required this.progress, required this.onDrill});
   final TopicUnit unit;
   final List<TopicLesson> lessons;
   final Map<String, LessonProgressData> progress;
+  final VoidCallback onDrill;
 
   @override
   Widget build(BuildContext context) {
@@ -165,6 +157,12 @@ class _UnitHeader extends StatelessWidget {
                   children: [
                     Text(unit.titleKo, style: Theme.of(context).textTheme.titleLarge),
                     Text('$words words · $done/${lessons.length} lessons · ⭐ $stars/${lessons.length * 3}'),
+                    const SizedBox(height: 8),
+                    FilledButton.tonalIcon(
+                      icon: const Text('🃏'),
+                      label: const Text('Drill these word cards'),
+                      onPressed: onDrill,
+                    ),
                   ],
                 ),
               ),

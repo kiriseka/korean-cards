@@ -87,15 +87,19 @@ void main() {
     final first = (await db.newCards(reverse: false, limit: 1)).single;
     await study(db, first, stability: 30);
     await db.setStarred(first.word.id, true);
+    await db.setPile(first.word.id + 1, Pile.hard);
     await db.addCustomWord(word: '맛있다', pos: 'adjective', meanings: ['delicious'], note: 'yum');
     final json = await BackupService(db).export();
 
     final fresh = await seededDb(3);
+    await fresh.setPile(first.word.id + 2, Pile.learned);
     await BackupService(fresh).import(json);
     final overview = await fresh.watchOverview().first;
     expect(overview.known, 1);
     expect(overview.total, 4);
     expect((await fresh.watchWord(first.word.id).first).starred, isTrue);
+    expect((await fresh.watchWord(first.word.id + 1).first).pile, Pile.hard);
+    expect((await fresh.watchWord(first.word.id + 2).first).pile, isNull, reason: 'restore replaces piles');
     expect(await fresh.select(fresh.reviewLogs).get(), hasLength(1));
     expect(() => BackupService(fresh).import('{"app":"other"}'), throwsFormatException);
     await db.close();

@@ -45,6 +45,29 @@ class FakeSpeech implements SpeechService {
   Future<void> stop() async {}
 }
 
+/// Hears [words] as a partial result and keeps listening until stopped.
+class HoldingSpeech implements SpeechService {
+  HoldingSpeech(this.words);
+  final String words;
+  bool stopped = false;
+  void Function()? _onDone;
+
+  @override
+  Future<bool> init() async => true;
+
+  @override
+  Future<void> listen({required void Function(String text, bool isFinal) onResult, required void Function() onDone}) async {
+    _onDone = onDone;
+    onResult(words, false);
+  }
+
+  @override
+  Future<void> stop() async {
+    stopped = true;
+    _onDone?.call();
+  }
+}
+
 void main() {
   final phrasesJson = jsonDecode(File('assets/data/phrases.json').readAsStringSync()) as Map<String, dynamic>;
   final phrases = (phrasesJson['phrases'] as List).cast<Map<String, dynamic>>();
@@ -231,6 +254,52 @@ void main() {
     await tester.tap(find.text('I said it ✓'));
     await tester.pump();
     expect(result, isTrue);
+    await tester.runAsync(db.close);
+  });
+
+  testWidgets("speak: silence doesn't use up a try; a right answer stops listening at once", (tester) async {
+    final (prefs, db) = await setup(tester, {});
+    bool? result;
+    Widget app(SpeechService speech) => ProviderScope(
+          overrides: [
+            prefsProvider.overrideWithValue(prefs),
+            dbProvider.overrideWithValue(db),
+            ttsProvider.overrideWithValue(SilentTts()),
+            speechProvider.overrideWithValue(speech),
+          ],
+          child: MaterialApp(
+            home: Scaffold(
+              body: SpeakView(
+                key: UniqueKey(),
+                exercise: const SpeakExercise(target: '감사합니다', mode: SpeakMode.readAloud),
+                onAnswer: (ok) => result = ok,
+                onSkip: () {},
+              ),
+            ),
+          ),
+        );
+
+    await tester.pumpWidget(app(FakeSpeech(['', '', '감사합니다'])));
+    await tester.pumpAndSettle();
+    for (var i = 0; i < 2; i++) {
+      await tester.tap(find.byIcon(Icons.mic_rounded));
+      await tester.pumpAndSettle();
+      expect(result, isNull);
+      expect(find.textContaining("didn't hear anything"), findsOneWidget);
+      expect(find.textContaining('Almost'), findsNothing);
+    }
+    await tester.tap(find.byIcon(Icons.mic_rounded));
+    await tester.pumpAndSettle();
+    expect(result, isTrue, reason: 'two silent takes still leave both tries');
+
+    result = null;
+    final holding = HoldingSpeech('감사합니다');
+    await tester.pumpWidget(app(holding));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.mic_rounded));
+    await tester.pumpAndSettle();
+    expect(result, isTrue);
+    expect(holding.stopped, isTrue);
     await tester.runAsync(db.close);
   });
 

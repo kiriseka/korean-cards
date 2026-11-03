@@ -163,7 +163,7 @@ class PracticeScreen extends ConsumerWidget {
           _HubCard(
             emoji: '🎮',
             title: 'Arcade games',
-            subtitle: 'Speed Round, Match Madness, Listening, Sentence Builder, Spelling Bee, Echo',
+            subtitle: 'Speed Round, Match Madness, Picture Pick, Quick Reply, Listening, Sentence Builder, Spelling Bee, Echo',
             color: const Color(0xFFFB8C00),
             onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PlayScreen())),
           ),

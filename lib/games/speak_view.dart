@@ -9,8 +9,9 @@ import '../speech/speech_service.dart';
 
 /// Say it out loud: big mic button, live transcript, then which syllables were heard right.
 ///
-/// Two tries; "Can't talk now" skips without penalty. If the phone has no speech recognizer,
-/// an honest "I said it" button stands in.
+/// Two tries; a take where nothing was heard doesn't count as one, and a right answer stops
+/// listening straight away. "Can't talk now" skips without penalty. If the phone has no speech
+/// recognizer, an honest "I said it" button stands in.
 class SpeakView extends ConsumerStatefulWidget {
   const SpeakView({super.key, required this.exercise, required this.onAnswer, required this.onSkip});
   final SpeakExercise exercise;
@@ -29,6 +30,7 @@ class _SpeakViewState extends ConsumerState<SpeakView> {
   int _tries = 0;
   bool _answered = false;
   bool _showText = false;
+  bool _heardNothing = false;
   late final SpeechService _speech;
 
   SpeakExercise get e => widget.exercise;
@@ -57,12 +59,19 @@ class _SpeakViewState extends ConsumerState<SpeakView> {
     await ref.read(ttsProvider).stop();
     setState(() {
       _listening = true;
+      _heardNothing = false;
       _transcript = '';
       _result = null;
     });
     await _speech.listen(
       onResult: (text, isFinal) {
-        if (mounted) setState(() => _transcript = text);
+        if (!mounted || !_listening) return;
+        setState(() => _transcript = text);
+        // Right already: no need to wait for the learner to go quiet.
+        if (matchSpeech(e.target, text).passed) {
+          _speech.stop();
+          _finish();
+        }
       },
       onDone: _finish,
     );
@@ -70,6 +79,14 @@ class _SpeakViewState extends ConsumerState<SpeakView> {
 
   void _finish() {
     if (!mounted || !_listening) return;
+    if (_transcript.trim().isEmpty) {
+      // Silence isn't a wrong answer: let them try again when they're ready.
+      setState(() {
+        _listening = false;
+        _heardNothing = true;
+      });
+      return;
+    }
     final result = matchSpeech(e.target, _transcript);
     setState(() {
       _listening = false;
@@ -168,6 +185,18 @@ class _SpeakViewState extends ConsumerState<SpeakView> {
                             : 'Heard: “${result.heard.isEmpty ? '…' : result.heard}” · ${result.percent}%',
                         textAlign: TextAlign.center,
                         style: theme.textTheme.titleMedium?.copyWith(color: scheme.outline),
+                      ),
+                    if (_listening && _transcript.isEmpty)
+                      Text(
+                        "Listening… take your time. Tap ■ when you're done.",
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyMedium?.copyWith(color: scheme.outline),
+                      ),
+                    if (_heardNothing)
+                      Text(
+                        "I didn't hear anything. Tap the mic and speak when you're ready.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.orange.shade800),
                       ),
                     if (result != null && !result.passed && _tries < 2)
                       Padding(

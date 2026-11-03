@@ -13,9 +13,22 @@ sealed class Exercise {
 
   /// Grammar/number skills this exercise trains (Gym, smart review).
   final List<String> skillIds;
+
+  /// The one word this exercise is about, for the star button. Null for pairs, sentences and replies.
+  int? get focusWordId {
+    if (wordIds.length != 1) return null;
+    final aboutTheWord = switch (this) {
+      ChoiceExercise(:final style) => style != PromptStyle.sentence && style != PromptStyle.dialogue,
+      SpeakExercise(:final mode) => mode != SpeakMode.shadow,
+      SyllableExercise() || TypingExercise() || PictureExercise() => true,
+      MatchExercise() || SentenceExercise() || DictationExercise() || ReplyExercise() => false,
+    };
+    return aboutTheWord ? wordIds.single : null;
+  }
 }
 
-enum PromptStyle { korean, english, audio, sentence, dialogue }
+/// How a [ChoiceExercise] shows its question. [picture] is an emoji standing for a word.
+enum PromptStyle { korean, english, audio, sentence, dialogue, picture }
 
 /// Pick one of several options. Covers meaning checks, listening, particles and conjugation.
 class ChoiceExercise extends Exercise {
@@ -115,6 +128,67 @@ class DictationExercise extends Exercise {
   String get sentence => answer.join(' ');
 }
 
+/// See (or hear) a Korean word, pick its picture.
+class PictureExercise extends Exercise {
+  const PictureExercise({
+    required this.word,
+    required this.english,
+    required this.options,
+    required this.answer,
+    this.listen = false,
+    super.wordIds,
+  });
+
+  final String word;
+  final String english;
+
+  /// Emoji; [answer] is the right one.
+  final List<String> options;
+  final int answer;
+
+  /// Audio only: the word is heard, not shown.
+  final bool listen;
+
+  String get correct => options[answer];
+}
+
+/// A reply split into chips: its words without punctuation.
+List<String> replyTokens(String text) =>
+    text.replaceAll(RegExp(r'[.?!,~]'), ' ').split(RegExp(r'\s+')).where((t) => t.isNotEmpty).toList();
+
+/// Answer what someone says by tapping word chips in order.
+class ReplyExercise extends Exercise {
+  const ReplyExercise({
+    required this.prompt,
+    required this.reply,
+    required this.english,
+    required this.tiles,
+    this.promptEnglish,
+    this.accepted = const [],
+  });
+
+  /// What the other person says.
+  final String prompt;
+  final String? promptEnglish;
+
+  /// The reply as written, with punctuation ("영화 봤어요.").
+  final String reply;
+  final String english;
+
+  /// The reply's chips plus decoys, shuffled.
+  final List<String> tiles;
+
+  /// Other word orders that are right too.
+  final List<String> accepted;
+
+  List<String> get answer => replyTokens(reply);
+
+  bool accepts(List<String> placed) {
+    final built = placed.join(' ');
+    return [reply, ...accepted].any((r) => replyTokens(r).join(' ') == built);
+  }
+}
+
 /// Korean example sentences and spoken mini dialogues from KRDict, for listening and speaking.
 class SentenceBank {
   SentenceBank(this.sentences, this.dialogues);
@@ -157,10 +231,13 @@ String shortGloss(Word w) {
 
 /// Builds exercises from words. [pool] supplies wrong options; same unit and part of speech first.
 class ExerciseGenerator {
-  ExerciseGenerator({required this.pool, Random? random}) : rng = random ?? Random();
+  ExerciseGenerator({required this.pool, this.pictures = const {}, Random? random}) : rng = random ?? Random();
 
   final List<Word> pool;
   final Random rng;
+
+  /// Emoji per word id, for picture questions.
+  final Map<int, String> pictures;
 
   List<Word> _distractors(Word target, int count, {required bool byKorean}) {
     String key(Word w) => byKorean ? w.word : shortGloss(w);
@@ -222,6 +299,73 @@ class ExerciseGenerator {
         style: PromptStyle.audio,
         optionsKorean: pickKorean,
       );
+
+  /// Three other pictured words, the same kind of thing first (fruit with fruit, colours with
+  /// colours), never one spelled or glossed the same (배 the pear vs 배 the ship).
+  List<Word> _pictureDistractors(Word target) {
+    final ranked = [for (final w in pool) if (w.id != target.id && pictures.containsKey(w.id)) w]..shuffle(rng);
+    int score(Word w) => (w.category == target.category ? 2 : 0) + (w.unitId == target.unitId ? 1 : 0);
+    ranked.sort((a, b) => score(b).compareTo(score(a)));
+    final words = {target.word};
+    final glosses = {shortGloss(target)};
+    final out = <Word>[];
+    for (final w in ranked) {
+      if (words.contains(w.word) || !glosses.add(shortGloss(w))) continue;
+      words.add(w.word);
+      out.add(w);
+      if (out.length == 3) break;
+    }
+    return out;
+  }
+
+  /// The word (or its sound) → pick its picture. Null when the word has no picture.
+  PictureExercise? picture(Word w, {bool listen = false}) {
+    if (!pictures.containsKey(w.id)) return null;
+    final wrong = _pictureDistractors(w);
+    if (wrong.length < 3) return null;
+    final options = [w, ...wrong]..shuffle(rng);
+    return PictureExercise(
+      word: w.word,
+      english: shortGloss(w),
+      options: [for (final o in options) pictures[o.id]!],
+      answer: options.indexOf(w),
+      listen: listen,
+      wordIds: [w.id],
+    );
+  }
+
+  /// A picture → pick the Korean word.
+  ChoiceExercise? pictureToWord(Word w) {
+    final emoji = pictures[w.id];
+    if (emoji == null) return null;
+    final wrong = _pictureDistractors(w);
+    if (wrong.length < 3) return null;
+    final options = [w, ...wrong]..shuffle(rng);
+    return ChoiceExercise(
+      instruction: 'Which word is this?',
+      prompt: emoji,
+      style: PromptStyle.picture,
+      options: [for (final o in options) o.word],
+      answer: options.indexOf(w),
+      optionsKorean: true,
+      speak: w.word,
+      explanation: '${w.word} = ${shortGloss(w)}',
+      wordIds: [w.id],
+    );
+  }
+
+  /// Picture Pick: mostly word → picture, some by ear, some picture → word.
+  List<Exercise> pictureGame(List<Word> words, int count) {
+    final picks = ([...words.where((w) => pictures.containsKey(w.id))]..shuffle(rng)).take(count).toList();
+    return [
+      for (final (i, w) in picks.indexed)
+        ?switch (i % 5) {
+          2 => picture(w, listen: true),
+          4 => pictureToWord(w),
+          _ => picture(w),
+        },
+    ];
+  }
 
   MatchExercise match(List<Word> words) => MatchExercise(
         pairs: [for (final w in words) (w.word, shortGloss(w))],
@@ -305,8 +449,14 @@ class ExerciseGenerator {
     final rest = shuffled.skip(6).toList();
     final matchWords = [...rest, ...firstPass.take(5 - rest.length.clamp(0, 5))].take(5).toList();
     final pick = [...words]..shuffle(rng);
+    // Up to two of the first questions show pictures instead, for words that have one.
+    final firstQuestions = <Exercise>[];
+    for (final w in firstPass) {
+      final pictured = firstQuestions.whereType<PictureExercise>().length < 2 ? picture(w) : null;
+      firstQuestions.add(pictured ?? meaning(w));
+    }
     final out = <Exercise>[
-      ...firstPass.map(meaning),
+      ...firstQuestions,
       if (matchWords.length >= 3) match(matchWords),
       reverse(pick[0]),
       listening(pick[1 % pick.length]),

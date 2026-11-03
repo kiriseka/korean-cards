@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../drill/drills_view.dart';
 import '../talk/talk_view.dart';
 import 'grammar_view.dart';
 import 'topics_view.dart';
@@ -10,14 +11,18 @@ class LearnScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => DefaultTabController(
-        length: 3,
+        length: 4,
         initialIndex: initialTab,
         child: Scaffold(
           appBar: AppBar(
             title: const Text('배우기 · Learn'),
-            bottom: const TabBar(tabs: [Tab(text: '🗂️ Topics'), Tab(text: '🗣️ Talk'), Tab(text: '📐 Grammar')]),
+            bottom: const TabBar(
+              isScrollable: true,
+              tabAlignment: TabAlignment.center,
+              tabs: [Tab(text: '🗂️ Topics'), Tab(text: '🗣️ Talk'), Tab(text: '📐 Grammar'), Tab(text: '🃏 Cards')],
+            ),
           ),
-          body: const TabBarView(children: [TopicsView(), TalkView(), GrammarView()]),
+          body: const TabBarView(children: [TopicsView(), TalkView(), GrammarView(), DrillsView()]),
         ),
       );
 }

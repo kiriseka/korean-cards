@@ -73,3 +73,21 @@ class SpeakButton extends ConsumerWidget {
         onPressed: () => ref.speak(text),
       );
 }
+
+/// Adds a word to the ⭐ Starred pile, or takes it out.
+class StarButton extends ConsumerWidget {
+  const StarButton(this.wordId, {super.key, this.size = 28});
+  final int wordId;
+  final double size;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final starred = ref.watch(wordStarredProvider(wordId)).value ?? false;
+    return IconButton(
+      tooltip: starred ? 'Unstar' : 'Star',
+      iconSize: size,
+      icon: Icon(starred ? Icons.star_rounded : Icons.star_border_rounded, color: starred ? Colors.amber : null),
+      onPressed: () => ref.read(dbProvider).setStarred(wordId, !starred),
+    );
+  }
+}

@@ -8,13 +8,14 @@ A personal, offline, gamified Korean app for Android focused on talking with peo
 - **Speaking**: lessons, scenes and the Echo game use the phone's speech recognition (Google, works offline with the Korean speech pack). You see which syllables were heard right; two tries; "Can't talk now" skips without penalty.
 - **Home**: daily XP goal ring, streak 🔥 (with streak freezes 🧊), three daily quests, *Continue* buttons for your next topic and grammar lesson, flashcard review, word of the day.
 - **Learn → Topics**: 8 survival-phrase units first (150 phrases: politeness, not understanding, café, shopping, getting around, meeting people, reactions, help — practised by saying them), then 20 topics (Food, Family, Weather, Transport…) plus *My words*. Each is a path of 8-word lessons: meet the words, then ~14 mixed exercises (meaning, listening, matching pairs, syllable building, typing), then stars. Lessons inside a topic unlock in order; finish them all to unlock the 🏆 unit challenge (3 hearts). Learned words go into your flashcards automatically.
-- **Learn → Talk**: 24 everyday conversation scenes (introductions, café, taxi, pharmacy, weekend plans…). Listen, understand, shadow your lines, then role-play: the app speaks the other person and checks what you say.
+- **Learn → Talk**: 💬 **Quick replies** — 146 short exchanges in 12 situations (café, shopping, weather, making plans…): someone asks you something, you build the answer by tapping word chips in order. Then 24 everyday conversation scenes (introductions, café, taxi, pharmacy, weekend plans…). Listen, understand, shadow your lines, then role-play: the app speaks the other person and checks what you say (with speaking off, you build your shorter lines from chips).
+- **Learn → Cards**: 🃏 swipe-card drills by topic, level, or pile — swipe right for *Learned*, left for *Hard*, then re-drill just the hard ones. Tap ⭐ on any card, lesson question or Speed Round word to add it to the *Starred* pile.
 - **Learn → Grammar**: 37 lessons in 5 units — sentence basics (word order, 이에요, 있어요, speech levels), particles (은/는, 이/가, 을/를, 도, 에, 에서, 의, 하고, (으)로, 부터/까지, 한테, 만), tenses (present, past, future, -고 있어요, formal, negation, irregular verbs), connecting & describing endings (-고, -지만, -아서, -(으)니까, -(으)면, -는, -(으)ㄴ, -(으)ㄹ) and everyday patterns (-고 싶어요, -(으)세요, -아/어 주세요, can, must, shall we). Each lesson has swipeable explanation cards with formulas and tap-to-hear examples, then sentence building, fill-in-the-blank and conjugation drills generated from real words.
 - **Practice**:
   - 💪 **Grammar Gym** — particles (은/는, 이/가, 을/를, 도, 에, 에서, (으)로) and verb tenses (present, past, future, -고 있어요, negative, formal, "which tense fits 어제/내일/지금?") drilled in generated sentences with English, each skill scheduled like a flashcard with a mastery meter.
   - 🔢 **Numbers & money** — Sino vs native numbers, prices, time, age, months (유월, 시월) and counters (개, 명, 잔, 권, 장, 마리).
   - 🩹 **Fix my mistakes** (anything missed this week, until you get it right twice) and 😵‍💫 **Tricky words** (forgotten 4+ times).
-  - 🎮 Arcade: Speed Round, Match Madness, Listening Challenge (now with "pick the natural reply"), Sentence Builder, Spelling Bee, Echo (repeat sentences against the clock) — with your learned words, a topic, or your own words. Personal bests are kept.
+  - 🎮 Arcade: Speed Round, Match Madness, 🖼️ Picture Pick (see or hear a word, tap its emoji — 244 picturable words), 💬 Quick Reply, Listening Challenge (with "pick the natural reply"), Sentence Builder, Spelling Bee, Echo (repeat sentences against the clock) — with your learned words, a topic, or your own words. Personal bests are kept. Topic lessons also mix in picture questions.
 - **Words**: search and filter all words; 📖 **offline dictionary** (53,000 KRDict entries, conjugated forms work: 들었어요 → 듣다); add your own words with dictionary autofill, and edit them.
 - **Share to the app**: share text from any app, or select Korean text → *Look up in Korean Cards* — every word is looked up and can be added in one tap.
 - **Home-screen widget**: streak, cards due, today's steps and the word of the day.
@@ -30,7 +31,8 @@ Built APKs are kept per version in `releases/` (git-ignored):
 - `releases/v1.0.0/` — the first build (flashcards only; reports version 0.1.0).
 - `releases/v1.1.0/` — topics, grammar, games, gamification.
 - `releases/v1.2.0/` — speaking, conversations, phrases, Today's session.
-- `releases/v1.3.0/korean-cards-1.3.0-arm64.apk` — this version: Grammar Gym, numbers, smart review, intermediate words, dictionary, share-to-look-up, widget, new icon. Installs over any earlier APK and keeps your progress.
+- `releases/v1.3.0/` — Grammar Gym, numbers, smart review, intermediate words, dictionary, share-to-look-up, widget, new icon.
+- `releases/v1.4.0/korean-cards-1.4.0-arm64.apk` — this version: swipe-card drills with Hard/Learned/Starred piles, star button everywhere, Picture Pick, Quick Replies, chip-built role-play lines, more patient speech recognition. Installs over any earlier APK and keeps your progress.
 
 ## Phone setup
 
@@ -56,6 +58,8 @@ Layout: `lib/data` (drift database, word import, migrations), `lib/srs` (FSRS), 
 Content:
 
 - `assets/data/phrases.json` / `dialogues.json` — hand-written survival phrases (ids are permanent) and conversation scenes. Checked by `test/talk_test.dart`.
+- `assets/data/replies.json` — hand-written Quick Replies (answer chips plus two wrong ones per item). Checked by `test/replies_test.dart`.
+- `assets/data/pictures.json` — an emoji per picturable word, built by `python tools/build_pictures.py` (edit the list there). Checked by `test/picture_test.dart`.
 - `assets/data/grammar.json` — the hand-written grammar course (first option in a question is the right one; the app shuffles). `test/content_test.dart` checks it.
 - `assets/data/sentence_frames.json` — hand-written sentence building blocks for the Grammar Gym (`lib/grammar/sentence_gen.dart`). Checked by `test/sentence_gen_test.dart`.
 - `assets/data/dictionary.json.gz` — built by `python tools/build_dictionary.py` from the KRDict dump.

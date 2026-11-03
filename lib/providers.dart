@@ -37,6 +37,9 @@ final todayCountsProvider = StreamProvider<TodayCounts>((ref) {
 
 final overviewProvider = StreamProvider<Overview>((ref) => ref.watch(dbProvider).watchOverview());
 
+/// Word counts per unit, level and pile for the drill tiles.
+final drillCountsProvider = StreamProvider<List<DrillCountRow>>((ref) => ref.watch(dbProvider).watchDrillCounts());
+
 final gameProvider = Provider<GameService>((ref) => throw UnimplementedError('overridden in main'));
 
 final soundProvider = Provider<SoundService>((ref) {
@@ -64,6 +67,11 @@ final topicLessonsProvider = Provider.family<AsyncValue<List<TopicLesson>>, Stri
 
 /// Every word, for wrong answer options and arcade pools.
 final allWordsProvider = StreamProvider<List<Word>>((ref) => ref.watch(dbProvider).select(ref.watch(dbProvider).words).watch());
+
+/// Whether one word is starred, live (screens that hold a copy of the word stay right).
+final wordStarredProvider = StreamProvider.autoDispose.family<bool, int>(
+  (ref, wordId) => ref.watch(dbProvider).watchWord(wordId).map((w) => w.starred).distinct(),
+);
 
 final skillServiceProvider = Provider<SkillService>((ref) => SkillService(ref.watch(dbProvider), ref.watch(schedulerProvider)));
 final skillRowsProvider = StreamProvider<Map<String, SkillRow>>((ref) => ref.watch(skillServiceProvider).watch());

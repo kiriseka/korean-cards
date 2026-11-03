@@ -6,7 +6,7 @@ import '../../grammar/grammar_content.dart';
 import '../../learn/grammar_lesson.dart';
 import '../../providers.dart';
 
-/// Grammar units, each a short trail of lessons that unlock in order.
+/// Grammar units, each a short trail of lessons. All are open; the first unfinished one is suggested.
 class GrammarView extends ConsumerWidget {
   const GrammarView({super.key});
 
@@ -53,7 +53,6 @@ class _GrammarUnitSection extends ConsumerWidget {
             _LessonRow(
               lesson: l,
               stars: progress[l.progressId]?.stars,
-              locked: current != -1 && l.index > current,
               current: l.index == current,
               last: l.index == unit.lessons.length - 1,
             ),
@@ -64,10 +63,9 @@ class _GrammarUnitSection extends ConsumerWidget {
 }
 
 class _LessonRow extends ConsumerWidget {
-  const _LessonRow({required this.lesson, required this.stars, required this.locked, required this.current, required this.last});
+  const _LessonRow({required this.lesson, required this.stars, required this.current, required this.last});
   final GrammarLesson lesson;
   final int? stars;
-  final bool locked;
   final bool current;
   final bool last;
 
@@ -75,7 +73,7 @@ class _LessonRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final scheme = Theme.of(context).colorScheme;
     final done = stars != null;
-    final color = done ? Colors.amber.shade600 : locked ? scheme.surfaceContainerHighest : scheme.primary;
+    final color = done ? Colors.amber.shade600 : scheme.primary;
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -88,11 +86,9 @@ class _LessonRow extends ConsumerWidget {
                 height: 40,
                 decoration: BoxDecoration(color: color, shape: BoxShape.circle, border: current ? Border.all(color: scheme.primaryContainer, width: 4) : null),
                 alignment: Alignment.center,
-                child: locked
-                    ? Icon(Icons.lock, size: 18, color: scheme.outline)
-                    : done
-                        ? const Icon(Icons.check, color: Colors.white)
-                        : Text('${lesson.index + 1}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                child: done
+                    ? const Icon(Icons.check, color: Colors.white)
+                    : Text('${lesson.index + 1}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
               ),
               if (!last) Expanded(child: Container(width: 3, color: scheme.outlineVariant)),
             ]),
@@ -103,15 +99,7 @@ class _LessonRow extends ConsumerWidget {
               color: current ? scheme.primaryContainer : null,
               child: InkWell(
                 borderRadius: BorderRadius.circular(12),
-                onTap: () {
-                  if (locked) {
-                    ScaffoldMessenger.of(context)
-                      ..hideCurrentSnackBar()
-                      ..showSnackBar(const SnackBar(content: Text('Finish the lesson before this one first 🔒')));
-                  } else {
-                    openGrammarLesson(context, ref, lesson);
-                  }
-                },
+                onTap: () => openGrammarLesson(context, ref, lesson),
                 child: Padding(
                   padding: const EdgeInsets.all(12),
                   child: Row(children: [
