@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
 
 import 'data/db.dart';
 import 'dictionary/dictionary_service.dart';
@@ -10,6 +11,7 @@ import 'learn/mistakes.dart';
 import 'learn/skill_service.dart';
 import 'services/notification_service.dart';
 import 'services/tts_service.dart';
+import 'services/update_service.dart';
 import 'speech/speech_service.dart';
 import 'settings.dart';
 import 'srs/scheduler.dart';
@@ -20,6 +22,10 @@ final notificationsProvider = Provider<NotificationService>((ref) => throw Unimp
 final ttsProvider = Provider<TtsService>((ref) => TtsService());
 final speechProvider = Provider<SpeechService>((ref) => DeviceSpeechService());
 final schedulerProvider = Provider<Scheduler>((ref) => Scheduler());
+
+final updateServiceProvider = Provider<UpdateService>((ref) => UpdateService(http.Client()));
+final updateStoreProvider = Provider<UpdateStore>((ref) => UpdateStore(ref.watch(prefsProvider)));
+final appInfoProvider = FutureProvider<AppInfo?>((ref) => ref.watch(updateServiceProvider).appInfo());
 
 final koreanVoiceProvider = FutureProvider<bool>((ref) => ref.watch(ttsProvider).koreanAvailable);
 

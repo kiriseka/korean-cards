@@ -20,7 +20,8 @@ A personal, offline, gamified Korean app for Android focused on talking with peo
 - **Share to the app**: share text from any app, or select Korean text → *Look up in Korean Cards* — every word is looked up and can be added in one tap.
 - **Home-screen widget**: streak, cards due, today's steps and the word of the day.
 - **Level 2 (중급)**: 8,669 intermediate words as Level 2 lessons in each topic (after its beginner lessons); new flashcards include them after 1,500 beginner words or when switched on.
-- **Me**: level and title (새싹 → 한국어 왕), XP, 23 badges, detailed stats, ⚙ settings (daily goal, sounds, vibration, typing exercises, flashcards, reminder, theme, backup).
+- **Me**: level and title (새싹 → 한국어 왕), XP, 23 badges, detailed stats, ⚙ settings (daily goal, sounds, vibration, typing exercises, flashcards, reminder, theme, backup, updates).
+- **Updates**: once a day at launch the app looks for a newer release on GitHub and offers it. *Update* downloads the APK that fits your phone, checks it, and opens Android's installer (the first time, Android asks you to allow Korean Cards to install apps). Progress is kept. Settings → *Check for updates* checks right away; the automatic check can be switched off there. It's the only thing the app goes online for.
 
 The study day rolls over at 4am.
 
@@ -32,7 +33,18 @@ Built APKs are kept per version in `releases/` (git-ignored):
 - `releases/v1.1.0/` — topics, grammar, games, gamification.
 - `releases/v1.2.0/` — speaking, conversations, phrases, Today's session.
 - `releases/v1.3.0/` — Grammar Gym, numbers, smart review, intermediate words, dictionary, share-to-look-up, widget, new icon.
-- `releases/v1.4.0/korean-cards-1.4.0-arm64.apk` — this version: swipe-card drills with Hard/Learned/Starred piles, star button everywhere, Picture Pick, Quick Replies, chip-built role-play lines, more patient speech recognition. Installs over any earlier APK and keeps your progress.
+- `releases/v1.4.0/` — swipe-card drills with Hard/Learned/Starred piles, star button everywhere, Picture Pick, Quick Replies, chip-built role-play lines, more patient speech recognition.
+- `releases/v1.5.0/korean-cards-1.5.0-arm64.apk` — this version: in-app updates from GitHub. Installs over any earlier APK and keeps your progress; from here on the app updates itself.
+
+### Publishing a release
+
+The in-app updater (`lib/services/update_service.dart`) reads `api.github.com/repos/kiriseka/korean-cards/releases` and takes the highest version among published (non-draft, non-prerelease) releases. It gets the version from the **APK file names**, not the tag, so attach them named exactly:
+
+- `korean-cards-X.Y.Z-arm64.apk` ← `build/app/outputs/flutter-apk/app-arm64-v8a-release.apk` (`flutter build apk --release --split-per-abi`)
+- `korean-cards-X.Y.Z-armv7.apk` ← `app-armeabi-v7a-release.apk`
+- `korean-cards-X.Y.Z-universal.apk` ← `app-release.apk` (`flutter build apk --release`)
+
+Bump `version:` in `pubspec.yaml` first (both the name and the `+build` number). Split APKs get 1000 × ABI added to the build number (armv7 1xxx, arm64 2xxx), so the app always picks the APK of the same kind that is installed — a universal APK can't replace a split one. Every APK must be signed with the release key (below), or Android refuses the update.
 
 ## Phone setup
 
@@ -53,7 +65,7 @@ flutter run                      # phone connected over USB
 flutter build apk --release
 ```
 
-Layout: `lib/data` (drift database, word import, migrations), `lib/srs` (FSRS), `lib/learn` (curriculum, exercise generator, lesson runner), `lib/grammar` (Hangul helpers, conjugator, grammar content model), `lib/game` (XP, levels, streak, quests, badges, sounds), `lib/games` (exercise widgets), `lib/features/*` (screens), `lib/services` (TTS, reminder, backup).
+Layout: `lib/data` (drift database, word import, migrations), `lib/srs` (FSRS), `lib/learn` (curriculum, exercise generator, lesson runner), `lib/grammar` (Hangul helpers, conjugator, grammar content model), `lib/game` (XP, levels, streak, quests, badges, sounds), `lib/games` (exercise widgets), `lib/features/*` (screens), `lib/services` (TTS, reminder, backup, updates).
 
 Content:
 

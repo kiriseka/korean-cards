@@ -19,6 +19,7 @@ class Settings {
     this.speakingExercises = true,
     this.dailyMinutes = 15,
     this.intermediate = false,
+    this.autoUpdateCheck = true,
   });
 
   final int newPerDay;
@@ -43,6 +44,9 @@ class Settings {
   /// Include 중급 words in new flashcards before the automatic unlock.
   final bool intermediate;
 
+  /// Look for a new version on GitHub at launch, at most once a day.
+  final bool autoUpdateCheck;
+
   Settings copyWith({
     int? newPerDay,
     int? reviewCap,
@@ -59,6 +63,7 @@ class Settings {
     bool? speakingExercises,
     int? dailyMinutes,
     bool? intermediate,
+    bool? autoUpdateCheck,
   }) =>
       Settings(
         newPerDay: newPerDay ?? this.newPerDay,
@@ -76,6 +81,7 @@ class Settings {
         speakingExercises: speakingExercises ?? this.speakingExercises,
         dailyMinutes: dailyMinutes ?? this.dailyMinutes,
         intermediate: intermediate ?? this.intermediate,
+        autoUpdateCheck: autoUpdateCheck ?? this.autoUpdateCheck,
       );
 
   static Settings load(SharedPreferences p) {
@@ -99,6 +105,7 @@ class Settings {
       speakingExercises: p.getBool('speakingExercises') ?? d.speakingExercises,
       dailyMinutes: p.getInt('dailyMinutes') ?? d.dailyMinutes,
       intermediate: p.getBool('intermediate') ?? d.intermediate,
+      autoUpdateCheck: p.getBool('autoUpdateCheck') ?? d.autoUpdateCheck,
     );
   }
 
@@ -119,6 +126,7 @@ class Settings {
     await p.setBool('speakingExercises', speakingExercises);
     await p.setInt('dailyMinutes', dailyMinutes);
     await p.setBool('intermediate', intermediate);
+    await p.setBool('autoUpdateCheck', autoUpdateCheck);
   }
 }
 

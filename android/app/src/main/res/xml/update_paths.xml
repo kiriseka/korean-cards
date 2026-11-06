@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Downloaded update APKs live in the app's cache (lib/services/update_service.dart). -->
+<paths>
+    <cache-path name="updates" path="updates/" />
+</paths>

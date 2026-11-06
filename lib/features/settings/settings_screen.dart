@@ -8,7 +8,9 @@ import 'package:intl/intl.dart';
 import '../../data/db.dart' show intermediateUnlockAt;
 import '../../providers.dart';
 import '../../services/backup_service.dart';
+import '../../services/update_service.dart';
 import '../../settings.dart';
+import 'update_dialog.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -183,6 +185,14 @@ class SettingsScreen extends ConsumerWidget {
             subtitle: const Text('Replace current progress with a backup file'),
             onTap: () => _import(context, ref),
           ),
+          header('Updates'),
+          const _CheckForUpdatesTile(),
+          SwitchListTile(
+            title: const Text('Check for updates automatically'),
+            subtitle: const Text('Looks on GitHub when the app starts, once a day'),
+            value: s.autoUpdateCheck,
+            onChanged: (v) => notifier.update((s) => s.copyWith(autoUpdateCheck: v)),
+          ),
           header('About'),
           const ListTile(
             title: Text('Word data'),
@@ -247,5 +257,55 @@ class SettingsScreen extends ConsumerWidget {
     } on FormatException catch (e) {
       messenger.showSnackBar(SnackBar(content: Text('Could not import: ${e.message}')));
     }
+  }
+}
+
+/// "Check for updates" with the installed version; the check itself is in update_service.dart.
+class _CheckForUpdatesTile extends ConsumerStatefulWidget {
+  const _CheckForUpdatesTile();
+
+  @override
+  ConsumerState<_CheckForUpdatesTile> createState() => _CheckForUpdatesTileState();
+}
+
+class _CheckForUpdatesTileState extends ConsumerState<_CheckForUpdatesTile> {
+  bool _checking = false;
+
+  Future<void> _check() async {
+    final messenger = ScaffoldMessenger.of(context);
+    final service = ref.read(updateServiceProvider);
+    final store = ref.read(updateStoreProvider);
+    final app = await ref.read(appInfoProvider.future);
+    if (app == null) {
+      messenger.showSnackBar(const SnackBar(content: Text('Updates work in the Android app only')));
+      return;
+    }
+    setState(() => _checking = true);
+    try {
+      final offer = await service.check(app);
+      await store.markChecked(DateTime.now());
+      if (!mounted) return;
+      if (offer == null) {
+        messenger.showSnackBar(SnackBar(content: Text("You're up to date (${app.versionName})")));
+      } else {
+        await showUpdateDialog(context, service, store, offer);
+      }
+    } on UpdateException catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(e.message)));
+    } finally {
+      if (mounted) setState(() => _checking = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final app = ref.watch(appInfoProvider).value;
+    return ListTile(
+      leading: const Icon(Icons.system_update),
+      title: const Text('Check for updates'),
+      subtitle: Text(app == null ? 'Korean Cards' : 'Korean Cards ${app.versionName}'),
+      trailing: _checking ? const SizedBox.square(dimension: 24, child: CircularProgressIndicator(strokeWidth: 3)) : null,
+      onTap: _checking ? null : _check,
+    );
   }
 }

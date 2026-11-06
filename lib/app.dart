@@ -10,6 +10,7 @@ import 'settings.dart';
 import 'widgets/celebrations.dart';
 import 'widgets/home_widget_sync.dart';
 import 'widgets/share_listener.dart';
+import 'widgets/update_checker.dart';
 
 const _seed = Color(0xFF0047A0); // the blue of the taegeukgi
 
@@ -27,7 +28,8 @@ class KoreanCardsApp extends ConsumerWidget {
       themeMode: themeMode,
       theme: ThemeData(colorSchemeSeed: _seed, brightness: Brightness.light),
       darkTheme: ThemeData(colorSchemeSeed: _seed, brightness: Brightness.dark),
-      builder: (context, child) => CelebrationHost(child: ShareListener(child: HomeWidgetSync(child: child!))),
+      builder: (context, child) =>
+          CelebrationHost(child: ShareListener(child: UpdateChecker(child: HomeWidgetSync(child: child!)))),
       home: const HomeShell(),
     );
   }
